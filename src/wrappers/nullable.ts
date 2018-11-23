@@ -1,7 +1,7 @@
 import { graphQLTypeForWrapper, Wrapper, WrapperOrType } from './Wrapper';
 import { GraphQLNonNull } from 'graphql';
 
-function nullable<T>(type: WrapperOrType<T>): Wrapper<T | null> {
+export default function nullable<T>(type: WrapperOrType<T>): Wrapper<T | null> {
   const currentType = graphQLTypeForWrapper(type);
   let graphQLType = currentType;
   if (currentType instanceof GraphQLNonNull) {

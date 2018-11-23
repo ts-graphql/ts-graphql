@@ -1,17 +1,13 @@
 import 'reflect-metadata';
-import { Constructor, ObjectLiteral, Promiseable } from './types';
-import {
-  GraphQLFieldConfig,
-  GraphQLFieldConfigMap,
-} from 'graphql';
-import { getGraphQLOutputType, getGraphQLType } from './metadata';
-import { WrapperOrType } from './wrappers/Wrapper';
+import { Constructor } from './types';
+import { getGraphQLType } from './metadata';
+import { unsafeWrapType, WrapperOrType } from './wrappers/Wrapper';
 import ObjectTypeSource from './decorators/ObjectTypeSource';
-
-type FieldCreatorOptions<Return, Args = {}> = {
-  type: WrapperOrType<Return>,
-  args?: Constructor<Args>,
-};
+import Field from './decorators/Field';
+import { fields } from './fields';
+import { Arg, Args, getArgs } from './decorators/Args';
+import nullable from './wrappers/nullable';
+import { GraphQLInputObjectType, GraphQLString } from 'graphql';
 
 type Test<V extends { [key: string]: any }, T extends string> = {
   [key in T]: V[key];
@@ -24,50 +20,6 @@ class Foo {
   test!: string;
 }
 
-type FieldCreator<TSource, TContext> = <
-  TReturn,
-  TArgs = {},
-  RTReturn extends TReturn = TReturn,
->(
-  options: FieldCreatorOptions<TReturn, TArgs>,
-  resolve: (source: TSource, args: TArgs, context: TContext) => Promiseable<RTReturn>,
-) => GraphQLFieldConfig<TSource, TContext, TArgs>
-
-const fieldCreatorFor = <TSource, TContext = {}>(
-  source: Constructor<TSource>, context?: Constructor<TContext>
-): FieldCreator<TSource, TContext> => (options, resolve) => {
-  return {
-    type: getGraphQLOutputType(source),
-    args: {},
-    resolve,
-  };
-};
-
-class Args {
-  test!: string
-}
-
-class Context {
-  foo!: string;
-}
-
-const files = fieldCreatorFor(Foo, Context)({ args: Args, type: Foo }, async (root, args, context) => {
-  return new Foo();
-});
-
-type FieldsOptions<TSource, TContext = {}> = {
-  source: Constructor<TSource>,
-  context?: Constructor<TContext>
-}
-
-const fields = <TSource, TContext, TReturn, TArgs = null>(
-  options: FieldsOptions<TSource, TContext>,
-  callback: (field: FieldCreator<TSource, TContext>) => GraphQLFieldConfigMap<TSource, TContext>,
-): GraphQLFieldConfigMap<TSource, TContext> => {
-  const fieldCreator = fieldCreatorFor(options.source, options.context);
-  return callback(fieldCreator);
-}
-
 @ObjectTypeSource({
   name: 'Test',
   description: 'A test thing',
@@ -75,13 +27,33 @@ const fields = <TSource, TContext, TReturn, TArgs = null>(
 })
 class TestSource {
   constructor(public foo: number) {}
+
+  @Field({ type: TestSource })
+  blah = new TestSource(this.foo * 2);
 }
 
 const testFields = fields({ source: TestSource }, (field) => ({
-  foo: field({ type: TestSource }, (source) => {
-    return new TestSource(source.foo * 5);
+  foo: field({ type: nullable(TestSource) }, (source) => {
+    return null;
   }),
 }));
 
 console.log(Object.keys(getGraphQLType(TestSource)));
+
+const TestInputType = new GraphQLInputObjectType({
+  name: 'TestInput',
+  fields: {
+    foo: {
+       type: GraphQLString,
+    },
+  },
+});
+
+@Args()
+class TestArgs {
+  @Arg({ type: unsafeWrapType(TestInputType) })
+  input!: any;
+}
+
+console.log(getArgs(TestArgs));
 

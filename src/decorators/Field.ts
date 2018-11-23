@@ -14,15 +14,17 @@ const getRawFields = (type: Constructor<any>): { [key: string]: () => GraphQLFie
 }
 
 export const getFields = (type: Constructor<any>): () => GraphQLFieldConfigMap<any, any> => {
-  const fields = getRawFields(type);
+  const fields = getRawFields(type.prototype);
   return () => mapValues(fields, (field: () => GraphQLFieldConfig<any, any>) => field());
 }
 
-export default (options: Thunk<FieldCreatorOptions<any, any>>) => (target: Constructor<any>, key: string) => {
-  const { type } = resolveThunk(options);
-  const config: GraphQLFieldConfig<any, any> = {
-    type: isWrapper(type) ? type.graphQLType : getGraphQLOutputType(type),
+export default (options: Thunk<FieldCreatorOptions<any, any>>) => (target: any, key: string) => {
+  const configThunk: () => GraphQLFieldConfig<any, any> = () => {
+    const { type } = resolveThunk(options);
+    return {
+      type: isWrapper(type) ? type.graphQLType : getGraphQLOutputType(type),
+    }
   }
   const currentFields = getRawFields(target);
-  Reflect.defineMetadata(fieldsKey, { ...currentFields, [key]: config }, target)
+  Reflect.defineMetadata(fieldsKey, { ...currentFields, [key]: configThunk }, target)
 }

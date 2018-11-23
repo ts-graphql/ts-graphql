@@ -1,7 +1,6 @@
-import { WrapperOrType } from './wrappers/Wrapper';
+import { graphQLOutputTypeForWrapper, WrapperOrType } from './wrappers/Wrapper';
 import { Constructor, Promiseable } from './types';
 import { GraphQLFieldConfig, GraphQLFieldConfigMap } from 'graphql';
-import { getGraphQLOutputType } from './metadata';
 
 export type FieldCreatorOptions<Return, Args = {}> = {
   type: WrapperOrType<Return>,
@@ -27,7 +26,8 @@ export const fieldCreatorFor = <TSource, TContext = {}>(
   source: Constructor<TSource>, context?: Constructor<TContext>
 ): FieldCreator<TSource, TContext> => (options, resolve) => {
   return {
-    type: getGraphQLOutputType(source),
+    type: graphQLOutputTypeForWrapper(options.type),
+    description: options.description,
     args: {},
     resolve,
   };
