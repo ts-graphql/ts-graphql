@@ -1,0 +1,29 @@
+{
+  "name": "ts-graphql",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "author": "stephentuso",
+  "files": [
+    "dist/"
+  ],
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "lint": "tslint src/**/*.ts",
+    "lint:fix": "tslint --fix src/**/*.ts"
+  },
+  "devDependencies": {
+    "@types/graphql": "^14.0.1",
+    "@types/lodash": "^4.14.118",
+    "@types/node": "^10.11.3",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "graphql": "^14.0.2",
+    "lodash": "^4.17.11",
+    "reflect-metadata": "^0.1.12"
+  }
+}
