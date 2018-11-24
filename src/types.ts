@@ -2,6 +2,10 @@ export type Constructor<T> = {
     new (...args: any[]): T;
 };
 
+export type SimpleConstructor<T> = {
+  new (): T;
+};
+
 export type ObjectLiteral = {
   [key: string]: any;
 }

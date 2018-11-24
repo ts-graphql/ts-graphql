@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Constructor, ObjectLiteral } from './types';
+import { Constructor, ObjectLiteral, SimpleConstructor } from './types';
 import {
   GraphQLArgumentConfig,
   GraphQLFieldConfig, GraphQLFieldConfigArgumentMap,
@@ -21,6 +21,7 @@ const graphQLOutputTypeKey = Symbol('graphql-output-type');
 const fieldKey = Symbol('field');
 const fieldMapKey = Symbol('field-map');
 const inputFieldKey = Symbol('input-field');
+const isArgsKey = Symbol('isArgs');
 
 const getConstructorChain = (source: Constructor<any>): Array<Constructor<any>> => {
   const parent = Object.getPrototypeOf(source);
@@ -142,4 +143,14 @@ export const storeInputFieldConfig = (
   Reflect.defineMetadata(inputFieldKey, { ...currentFields, [name]: config }, prototype);
 }
 
-export const getArgs = getInputFieldConfigMap as (source: Constructor<any>) => Thunk<GraphQLFieldConfigArgumentMap>;
+export const saveIsArgs = (target: SimpleConstructor<any>) => {
+  Reflect.defineMetadata(isArgsKey, true, target);
+}
+
+export const getArgs = (target: SimpleConstructor<any>): Thunk<GraphQLFieldConfigArgumentMap> => {
+  const isArgs = Reflect.getMetadata(isArgsKey, target);
+  if (!isArgs) {
+    throw new Error('Args not found. Are you missing the @Args decorator?');
+  }
+  return getInputFieldConfigMap(target);
+}

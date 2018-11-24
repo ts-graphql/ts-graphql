@@ -11,6 +11,8 @@ import { resolveThunk } from './utils/thunk';
 import Field from './decorators/Field';
 import InputObjectType from './decorators/InputObjectType';
 import InputField from './decorators/InputField';
+import TSGraphQLFloat from './wrappers/TSGraphQLFloat';
+import Args from './decorators/Args';
 
 type Test<V extends { [key: string]: any }, T extends string> = {
   [key in T]: V[key];
@@ -41,8 +43,8 @@ class Foo {
   name: 'Parent',
 })
 class TestParent {
-  @Field({ type: TSGraphQLInt, args: Foo })
-  async blah(args: Foo, context: Foo) {
+  @Field({ type: TSGraphQLInt })
+  async blah(args: {}, context: Foo) {
     return 4;
   }
 }
@@ -73,9 +75,7 @@ class CommonInput {
 
 @InputObjectType()
 class TestInput extends CommonInput {
-  @InputField({
-    type: TSGraphQLInt,
-  })
+  @InputField({ type: TSGraphQLFloat })
   bar!: number;
 }
 
@@ -83,15 +83,16 @@ console.log(resolveThunk(getInputFieldConfigMap(TestInput)));
 
 console.log(getGraphQLType(TestInput));
 
+@Args
 class TestArgs {
   @Arg({ type: TestInput })
   input!: TestInput;
 }
 
+@Args
 class MoreArgs extends TestArgs {
-  @Arg({ type: TSGraphQLInt })
+  @Arg({ type: TSGraphQLInt, defaultValue: 4 })
   foo!: number;
 }
 
 console.log(resolveThunk(getArgs(MoreArgs)));
-
