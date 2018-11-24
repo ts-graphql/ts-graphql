@@ -1,24 +1,26 @@
-import { GraphQLObjectType, Thunk } from 'graphql';
-import { getFieldConfigMap, graphQLOutputTypeMetadata, storeFieldConfig, storeFieldConfigMap } from '../metadata';
+import { Thunk } from 'graphql';
+import {
+  storeFieldConfigMap, storeIsObjectType,
+  storeObjectTypeConfig,
+} from '../metadata';
 import { Constructor } from '../types';
-import { FieldConfig, FieldConfigMap } from '../fields';
+import { FieldConfigMap } from '../fields';
 
-export type ObjectTypeSourceConfig<TSource, TContext> = {
+export type ObjectTypeConfig<TSource, TContext> = {
   name?: string,
   description?: string,
   fields?: Thunk<FieldConfigMap<TSource, TContext>>
 }
 
-export default <TSource, TContext>(config: ObjectTypeSourceConfig<TSource, TContext>) =>
+export default <TSource, TContext>(config: ObjectTypeConfig<TSource, TContext>) =>
   (source: Constructor<TSource>) => {
     const { name, fields, description } = config;
     if (fields) {
       storeFieldConfigMap(source, fields);
     }
-    const type = new GraphQLObjectType({
+    storeIsObjectType(source);
+    storeObjectTypeConfig(source, {
       name: name || source.name,
-      fields: getFieldConfigMap(source),
       description,
     });
-    return graphQLOutputTypeMetadata(type)(source);
-  }
+  };

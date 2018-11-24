@@ -1,6 +1,6 @@
 import { SimpleConstructor } from '../types';
-import { saveIsArgs } from '../metadata';
+import { storeIsArgs } from '../metadata';
 
 export default (target: SimpleConstructor<any>) => {
-  saveIsArgs(target);
+  storeIsArgs(target);
 }

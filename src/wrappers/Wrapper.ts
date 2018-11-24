@@ -7,7 +7,9 @@ import {
   GraphQLScalarValueParser,
   GraphQLType,
 } from 'graphql';
-import { getGraphQLInputType, getGraphQLOutputType, getGraphQLType } from '../metadata';
+import getObjectType from '../builders/getObjectType';
+import getInputObjectType from '../builders/getInputObjectType';
+import getType from '../builders/getType';
 
 export type Wrapper<T> = {
     graphQLType: any,
@@ -22,15 +24,15 @@ export const isWrapper = (x: any): x is Wrapper<any> => {
 
 export const graphQLTypeForWrapper = (type: WrapperOrType<any>): GraphQLType => isWrapper(type)
   ? type.graphQLType
-  : getGraphQLType(type);
+  : getType(type);
 
 export const graphQLOutputTypeForWrapper = (type: WrapperOrType<any>): GraphQLOutputType => isWrapper(type)
   ? type.graphQLType
-  : getGraphQLOutputType(type);
+  : getObjectType(type);
 
 export const graphQLInputTypeForWrapper = (type: WrapperOrType<any>): GraphQLOutputType => isWrapper(type)
   ? type.graphQLType
-  : getGraphQLInputType(type);
+  : getInputObjectType(type);
 
 export interface TypedGraphQLScalar<TInternal> extends GraphQLScalarType {
   parseValue: GraphQLScalarValueParser<TInternal>;
@@ -46,7 +48,7 @@ export const wrapScalar = <T>(scalar: TypedGraphQLScalar<T>): Wrapper<T> => {
 
 export const unsafeWrapType = (type: GraphQLType): Wrapper<any> => {
   return {
-    graphQLType: type,
+    graphQLType: new GraphQLNonNull(type),
     type: null as any,
   };
 };

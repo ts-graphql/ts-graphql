@@ -1,5 +1,4 @@
-import { GraphQLInputObjectType } from 'graphql';
-import { getInputFieldConfigMap, graphQLInputTypeMetadata } from '../metadata';
+import { storeIsInputObjectType, storeObjectTypeConfig } from '../metadata';
 import { Constructor } from '../types';
 
 export type InputObjectTypeConfig<TSource, TContext> = {
@@ -8,12 +7,11 @@ export type InputObjectTypeConfig<TSource, TContext> = {
 }
 
 export default <TSource, TContext>(config: InputObjectTypeConfig<TSource, TContext> = {}) =>
-  (source: Constructor<TSource>) => {
-    const { name, description } = config;
-    const type = new GraphQLInputObjectType({
-      name: name || source.name,
-      fields: getInputFieldConfigMap(source),
-      description,
+  (target: Constructor<TSource>) => {
+    storeIsInputObjectType(target);
+    storeObjectTypeConfig(target, {
+      ...config,
+      name: config.name || target.name,
     });
-    return graphQLInputTypeMetadata(type)(source);
-  }
+  };
+

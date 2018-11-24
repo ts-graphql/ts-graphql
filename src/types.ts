@@ -1,9 +1,7 @@
 /**
- * Any non-abstract class
+ * Any class
  */
-export type Constructor<T> = {
-    new (...args: any[]): T;
-};
+export type Constructor<T> = Function & { prototype: T };
 
 /**
  * Class with empty constructor
@@ -12,17 +10,26 @@ export type SimpleConstructor<T> = {
   new (): T;
 };
 
-/**
- * Any class
- */
-export type AbstractConstructor<T> = Function & { prototype: T };
-
 export type ObjectLiteral = {
   [key: string]: any;
 }
 
+export type Maybe<T> = T | null | undefined;
+
 export type Promiseable<T> = T | Promise<T>;
 
-export type ObjectWithKeyVal<TKey extends string, TValue> = {
-  [key in TKey]: TValue;
+export type ObjectWithKeyVal<TKeys extends string, TValue> = {
+  [key in TKeys]: TValue;
 };
+
+export type ObjectWithOptionalKeyVal<TKeys extends string, TValue> = {
+  [key in TKeys]?: TValue;
+}
+
+export type MappedKeyValObject<TKeys extends string, TValue extends ObjectWithOptionalKeyVal<TKeys, any>> = {
+  [key in TKeys]: TValue[key]
+}
+
+export type OptionalMappedKeyValObject<TKeys extends string, TValue extends ObjectWithOptionalKeyVal<TKeys, any>> = {
+  [key in TKeys]?: TValue[key]
+}

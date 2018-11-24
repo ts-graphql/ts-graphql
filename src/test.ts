@@ -1,9 +1,8 @@
 import 'reflect-metadata';
 import { Constructor } from './types';
-import { getArgs, getFieldConfigMap, getGraphQLType, getInputFieldConfigMap } from './metadata';
 import { unsafeWrapType } from './wrappers/Wrapper';
 import ObjectType from './decorators/ObjectType';
-import { fields } from './fields';
+import { fieldCreatorFor, fields } from './fields';
 import Arg from './decorators/Arg';
 import TSGraphQLString from './wrappers/TSGraphQLString';
 import TSGraphQLInt from './wrappers/TSGraphQLInt';
@@ -15,6 +14,11 @@ import TSGraphQLFloat from './wrappers/TSGraphQLFloat';
 import Args from './decorators/Args';
 import TSGraphQLID, { ID } from './wrappers/TSGraphQLID';
 import Implements from './decorators/Implements';
+import getFieldConfigMap from './builders/getFieldConfigMap';
+import getInputFieldConfigMap from './builders/getInputFieldConfigMap';
+import getType from './builders/getType';
+import getArgs from './builders/getArgs';
+import InterfaceType from './decorators/InterfaceType';
 
 type Test<V extends { [key: string]: any }, T extends string> = {
   [key in T]: V[key];
@@ -66,7 +70,7 @@ class TestSource extends TestParent {
 
 console.log(resolveThunk(getFieldConfigMap(TestSource)));
 
-console.log(Object.keys(getGraphQLType(TestSource)));
+console.log(Object.keys(getType(TestSource)));
 
 class CommonInput {
   @InputField({
@@ -83,7 +87,7 @@ class TestInput extends CommonInput {
 
 console.log(resolveThunk(getInputFieldConfigMap(TestInput)));
 
-console.log(getGraphQLType(TestInput));
+console.log(getType(TestInput));
 
 @Args
 class TestArgs {
@@ -99,20 +103,31 @@ class MoreArgs extends TestArgs {
 
 console.log(resolveThunk(getArgs(MoreArgs)));
 
+@InterfaceType()
 abstract class Node {
   @Field({ type: TSGraphQLID })
   id!: ID;
 }
 
+const nodeFields = fields({ source: Node }, (field) => ({
+  id: field({ type: TSGraphQLID }),
+  node: field({ type: TSGraphQLFloat }, (source) => source.foo)
+}))
+
+type Mapped<T> = {
+  [key in keyof T]: T[key];
+}
+
 @Implements(Node)
 class File {
-  @Field({ type: TSGraphQLID })
-  async id() {
-    return ''
+  id() {
+    return 4;
   }
 
   @Field({ type: TSGraphQLString })
-  name!: string;
+  test() {
+    return ''
+  }
 }
 
 console.log(resolveThunk(getFieldConfigMap(File)));

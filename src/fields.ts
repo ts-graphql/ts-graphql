@@ -1,11 +1,11 @@
 import { WrapperOrType } from './wrappers/Wrapper';
-import { Constructor, Promiseable } from './types';
+import { Constructor, Promiseable, SimpleConstructor } from './types';
 import { GraphQLResolveInfo } from 'graphql';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
   type: WrapperOrType<TReturn>,
   description?: string,
-  args?: Constructor<TArgs>,
+  args?: SimpleConstructor<TArgs>,
 };
 
 export type FieldResolver<TSource, TContext, TReturn, TArgs = {}> =
