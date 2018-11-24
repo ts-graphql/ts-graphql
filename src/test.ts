@@ -1,14 +1,16 @@
 import 'reflect-metadata';
 import { Constructor } from './types';
-import { getFieldConfigMap, getGraphQLType } from './metadata';
+import { getArgs, getFieldConfigMap, getGraphQLType, getInputFieldConfigMap } from './metadata';
 import { unsafeWrapType } from './wrappers/Wrapper';
-import ObjectTypeSource from './decorators/ObjectTypeSource';
+import ObjectType from './decorators/ObjectType';
 import { fields } from './fields';
-import { Arg, Args, getArgs } from './decorators/Args';
-import { GraphQLInputObjectType, GraphQLString } from 'graphql';
+import Arg from './decorators/Arg';
 import TSGraphQLString from './wrappers/TSGraphQLString';
 import TSGraphQLInt from './wrappers/TSGraphQLInt';
 import { resolveThunk } from './utils/thunk';
+import Field from './decorators/Field';
+import InputObjectType from './decorators/InputObjectType';
+import InputField from './decorators/InputField';
 
 type Test<V extends { [key: string]: any }, T extends string> = {
   [key in T]: V[key];
@@ -35,52 +37,61 @@ class Foo {
   test!: string;
 }
 
-@ObjectTypeSource({
+@ObjectType({
   name: 'Parent',
-  fields: () => parentFields,
 })
 class TestParent {
-  blah!: string;
+  @Field({ type: TSGraphQLInt, args: Foo })
+  async blah(args: Foo, context: Foo) {
+    return 4;
+  }
 }
 
 const parentFields = fields({ source: TestParent }, (field) => ({
   blah: field({ type: TSGraphQLInt }, () => 4),
 }));
 
-@ObjectTypeSource({
+@ObjectType({
   name: 'Test',
   description: 'A test thing',
-  fields: () => testFields,
 })
 class TestSource extends TestParent {
-  constructor(public foo: number) {
-    super();
-  }
+  @Field({ type: TSGraphQLString })
+  foo = Promise.resolve('test');
 }
-
-const testFields = fields({ source: TestParent }, (field) => ({
-  foo: field({ type: TSGraphQLString }, (source) => {
-    return '';
-  }),
-}));
 
 console.log(resolveThunk(getFieldConfigMap(TestSource)));
 
 console.log(Object.keys(getGraphQLType(TestSource)));
 
-const TestInputType = new GraphQLInputObjectType({
-  name: 'TestInput',
-  fields: {
-    foo: {
-       type: GraphQLString,
-    },
-  },
-});
-
-@Args()
-class TestArgs {
-  @Arg({ type: unsafeWrapType(TestInputType) })
-  input!: any;
+class CommonInput {
+  @InputField({
+    type: TSGraphQLString
+  })
+  foo!: 'string';
 }
 
-console.log(getArgs(TestArgs));
+@InputObjectType()
+class TestInput extends CommonInput {
+  @InputField({
+    type: TSGraphQLInt,
+  })
+  bar!: number;
+}
+
+console.log(resolveThunk(getInputFieldConfigMap(TestInput)));
+
+console.log(getGraphQLType(TestInput));
+
+class TestArgs {
+  @Arg({ type: TestInput })
+  input!: TestInput;
+}
+
+class MoreArgs extends TestArgs {
+  @Arg({ type: TSGraphQLInt })
+  foo!: number;
+}
+
+console.log(resolveThunk(getArgs(MoreArgs)));
+

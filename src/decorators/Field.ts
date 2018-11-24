@@ -9,8 +9,8 @@ export type FieldResolverMethod<TContext, TReturn, TArgs> =
   (args: TArgs, context: TContext, info: GraphQLResolveInfo) => Promiseable<TReturn>;
 
 export default <TReturn, TArgs>(config: Thunk<FieldCreatorConfig<TReturn, TArgs>>) =>
-  <TName extends string, TSource, TContext>(
-    prototype: ObjectWithKeyVal<TName, TReturn | FieldResolverMethod<TContext, TReturn, TArgs>>,
+  <TName extends string, TSource, TContext, RTArgs extends TArgs = TArgs>(
+    prototype: ObjectWithKeyVal<TName, Promiseable<TReturn> | FieldResolverMethod<TContext, TReturn, TArgs>>,
     key: TName,
   ) => {
     storeFieldConfig(prototype, key, () => {
@@ -18,7 +18,7 @@ export default <TReturn, TArgs>(config: Thunk<FieldCreatorConfig<TReturn, TArgs>
       const fieldConfig: FieldConfig<TSource, any, TReturn, TArgs> = { ...resolved };
       if (typeof prototype[key] === 'function') {
         const resolverMethod = prototype[key] as FieldResolverMethod<TContext, TReturn, TArgs>;
-        fieldConfig.resolve = (source: TSource) => resolverMethod.apply(source);
+        fieldConfig.resolve = (source: TSource, ...args) => resolverMethod.apply(source, args);
       }
       return fieldConfig;
     });

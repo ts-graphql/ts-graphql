@@ -1,6 +1,6 @@
 import { WrapperOrType } from './wrappers/Wrapper';
 import { Constructor, Promiseable } from './types';
-import { GraphQLFieldConfigMap, GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo } from 'graphql';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
   type: WrapperOrType<TReturn>,

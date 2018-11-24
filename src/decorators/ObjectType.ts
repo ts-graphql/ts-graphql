@@ -1,7 +1,6 @@
-import { GraphQLFieldConfigMap, GraphQLObjectType, Thunk } from 'graphql';
+import { GraphQLObjectType, Thunk } from 'graphql';
 import { getFieldConfigMap, graphQLOutputTypeMetadata, storeFieldConfig, storeFieldConfigMap } from '../metadata';
 import { Constructor } from '../types';
-import { mergeThunks } from '../utils/thunk';
 import { FieldConfig, FieldConfigMap } from '../fields';
 
 export type ObjectTypeSourceConfig<TSource, TContext> = {
