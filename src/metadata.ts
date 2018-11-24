@@ -22,6 +22,7 @@ const fieldKey = Symbol('field');
 const fieldMapKey = Symbol('field-map');
 const inputFieldKey = Symbol('input-field');
 const isArgsKey = Symbol('isArgs');
+const implementsKey = Symbol('implements');
 
 const getConstructorChain = (source: Constructor<any>): Array<Constructor<any>> => {
   const parent = Object.getPrototypeOf(source);

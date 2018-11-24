@@ -13,6 +13,8 @@ import InputObjectType from './decorators/InputObjectType';
 import InputField from './decorators/InputField';
 import TSGraphQLFloat from './wrappers/TSGraphQLFloat';
 import Args from './decorators/Args';
+import TSGraphQLID, { ID } from './wrappers/TSGraphQLID';
+import Implements from './decorators/Implements';
 
 type Test<V extends { [key: string]: any }, T extends string> = {
   [key in T]: V[key];
@@ -96,3 +98,21 @@ class MoreArgs extends TestArgs {
 }
 
 console.log(resolveThunk(getArgs(MoreArgs)));
+
+abstract class Node {
+  @Field({ type: TSGraphQLID })
+  id!: ID;
+}
+
+@Implements(Node)
+class File {
+  @Field({ type: TSGraphQLID })
+  async id() {
+    return ''
+  }
+
+  @Field({ type: TSGraphQLString })
+  name!: string;
+}
+
+console.log(resolveThunk(getFieldConfigMap(File)));
