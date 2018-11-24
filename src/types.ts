@@ -7,3 +7,7 @@ export type ObjectLiteral = {
 }
 
 export type Promiseable<T> = T | Promise<T>;
+
+export type ObjectWithKeyVal<TKey extends string, TValue> = {
+  [key in TKey]: TValue;
+};

@@ -1,30 +1,25 @@
 import 'reflect-metadata';
-import { Constructor } from '../types';
-import { FieldCreatorOptions } from '../fields';
-import { GraphQLFieldConfig, GraphQLFieldConfigMap, Thunk } from 'graphql';
-import resolveThunk from '../utils/resolveThunk';
-import { mapValues } from 'lodash';
-import { getGraphQLOutputType } from '../metadata';
-import { isWrapper } from '../wrappers/Wrapper';
+import { FieldConfig, FieldCreatorConfig } from '../fields';
+import { GraphQLResolveInfo, Thunk } from 'graphql';
+import { storeFieldConfig } from '../metadata';
+import { ObjectWithKeyVal, Promiseable } from '../types';
+import { resolveThunk } from '../utils/thunk';
 
-const fieldsKey = Symbol('field');
+export type FieldResolverMethod<TContext, TReturn, TArgs> =
+  (args: TArgs, context: TContext, info: GraphQLResolveInfo) => Promiseable<TReturn>;
 
-const getRawFields = (type: Constructor<any>): { [key: string]: () => GraphQLFieldConfig<any, any> } => {
-  return Reflect.getMetadata(fieldsKey, type) || {};
-}
-
-export const getFields = (type: Constructor<any>): () => GraphQLFieldConfigMap<any, any> => {
-  const fields = getRawFields(type.prototype);
-  return () => mapValues(fields, (field: () => GraphQLFieldConfig<any, any>) => field());
-}
-
-export default (options: Thunk<FieldCreatorOptions<any, any>>) => (target: any, key: string) => {
-  const configThunk: () => GraphQLFieldConfig<any, any> = () => {
-    const { type } = resolveThunk(options);
-    return {
-      type: isWrapper(type) ? type.graphQLType : getGraphQLOutputType(type),
-    }
+export default <TReturn, TArgs>(config: Thunk<FieldCreatorConfig<TReturn, TArgs>>) =>
+  <TName extends string, TSource, TContext>(
+    prototype: ObjectWithKeyVal<TName, TReturn | FieldResolverMethod<TContext, TReturn, TArgs>>,
+    key: TName,
+  ) => {
+    storeFieldConfig(prototype, key, () => {
+      const resolved = resolveThunk(config);
+      const fieldConfig: FieldConfig<TSource, any, TReturn, TArgs> = { ...resolved };
+      if (typeof prototype[key] === 'function') {
+        const resolverMethod = prototype[key] as FieldResolverMethod<TContext, TReturn, TArgs>;
+        fieldConfig.resolve = (source: TSource) => resolverMethod.apply(source);
+      }
+      return fieldConfig;
+    });
   }
-  const currentFields = getRawFields(target);
-  Reflect.defineMetadata(fieldsKey, { ...currentFields, [key]: configThunk }, target)
-}

@@ -1,10 +1,32 @@
 import 'reflect-metadata';
-import { Constructor } from './types';
-import { GraphQLInputType, GraphQLNonNull, GraphQLOutputType, GraphQLType } from 'graphql';
+import { Constructor, ObjectLiteral } from './types';
+import {
+  GraphQLFieldConfig,
+  GraphQLFieldConfigMap,
+  GraphQLInputType,
+  GraphQLNonNull,
+  GraphQLOutputType,
+  GraphQLType,
+} from 'graphql';
+import { FieldConfig, FieldConfigMap } from './fields';
+import { resolveThunk, Thunk } from './utils/thunk';
+import { mapValues } from 'lodash';
+import { graphQLOutputTypeForWrapper } from './wrappers/Wrapper';
+import { getArgs } from './decorators/Args';
 
 const graphQLTypeKey = Symbol('graphql-type');
 const graphQLInputTypeKey = Symbol('graphql-input-type');
 const graphQLOutputTypeKey = Symbol('graphql-output-type');
+const fieldKey = Symbol('graphql-field');
+const fieldMapKey = Symbol('graphql-field-map');
+
+const getConstructorChain = (source: Constructor<any>): Array<Constructor<any>> => {
+  const parent = Object.getPrototypeOf(source);
+  if (parent == null || !parent.prototype) {
+    return [source];
+  }
+  return [source, ...getConstructorChain(parent)];
+}
 
 export const graphQLTypeMetadata = (value: GraphQLType) => Reflect.metadata(graphQLTypeKey, new GraphQLNonNull(value));
 
@@ -42,3 +64,49 @@ export const getGraphQLOutputType = (source: Constructor<any>): GraphQLOutputTyp
   return value;
 }
 
+type StoredFieldConfig = { [key: string]: Thunk<FieldConfig<any, any, any>> };
+
+const getFieldConfig = (target: Constructor<any>): StoredFieldConfig =>
+  Reflect.getMetadata(fieldKey, target.prototype);
+
+const getSavedFieldConfigMap = (target: Constructor<any>): Thunk<FieldConfigMap<any, any>> =>
+  Reflect.getMetadata(fieldMapKey, target);
+
+export const getFieldConfigMap = (source: Constructor<any>): Thunk<GraphQLFieldConfigMap<any, any>> => {
+  return () => {
+    const chain = getConstructorChain(source);
+    const allFields: FieldConfigMap<any, any> = chain
+      .map(getFieldConfig)
+      .map((config) => mapValues(config, resolveThunk))
+      .reduce((obj, config) => ({ ...obj, ...config }), {});
+
+    const allMaps: FieldConfigMap<any, any> = chain
+      .map(getSavedFieldConfigMap)
+      .map(resolveThunk)
+      .reduce((obj, config) => ({ ...obj, ...config }), {});
+
+    const merged = {
+      ...allMaps,
+      ...allFields,
+    };
+
+    return mapValues(merged, ((config) => ({
+      type: graphQLOutputTypeForWrapper(config.type),
+      ...config.args && { args: getArgs(config.args) },
+      description: config.description,
+      resolve: config.resolve,
+    } as GraphQLFieldConfig<any, any>)));
+  };
+};
+
+export const storeFieldConfig = (prototype: ObjectLiteral, name: string, config: Thunk<FieldConfig<any, any, any, any>>) => {
+  const currentFields = Reflect.get(prototype, fieldKey);
+  Reflect.defineMetadata(fieldKey, {...currentFields, [name]: config }, prototype);
+};
+
+export const storeFieldConfigMap = (
+  target: Constructor<any>,
+  configMap: Thunk<FieldConfigMap<any, any>>,
+) => {
+  Reflect.defineMetadata(fieldMapKey, configMap, target);
+};

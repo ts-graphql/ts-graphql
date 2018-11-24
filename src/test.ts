@@ -1,13 +1,14 @@
 import 'reflect-metadata';
 import { Constructor } from './types';
-import { getGraphQLType } from './metadata';
-import { unsafeWrapType, WrapperOrType } from './wrappers/Wrapper';
+import { getFieldConfigMap, getGraphQLType } from './metadata';
+import { unsafeWrapType } from './wrappers/Wrapper';
 import ObjectTypeSource from './decorators/ObjectTypeSource';
-import Field from './decorators/Field';
 import { fields } from './fields';
 import { Arg, Args, getArgs } from './decorators/Args';
-import nullable from './wrappers/nullable';
 import { GraphQLInputObjectType, GraphQLString } from 'graphql';
+import TSGraphQLString from './wrappers/TSGraphQLString';
+import TSGraphQLInt from './wrappers/TSGraphQLInt';
+import { resolveThunk } from './utils/thunk';
 
 type Test<V extends { [key: string]: any }, T extends string> = {
   [key in T]: V[key];
@@ -16,27 +17,54 @@ type Test<V extends { [key: string]: any }, T extends string> = {
 const defaultResolver = <F extends string, Root>(fieldName: F, type: Constructor<Root>) =>
   (root: Test<Root, typeof fieldName>) => root[fieldName];
 
+const blah = 'test';
+const foo = {
+  blah: '',
+  bar: 4,
+  test: ''
+}
+const a: Test<typeof foo, typeof blah> = foo;
+
+class DefaultTest {
+  foo!: string;
+}
+
+const s: string = defaultResolver('foo', DefaultTest)(new DefaultTest());
+
 class Foo {
   test!: string;
 }
+
+@ObjectTypeSource({
+  name: 'Parent',
+  fields: () => parentFields,
+})
+class TestParent {
+  blah!: string;
+}
+
+const parentFields = fields({ source: TestParent }, (field) => ({
+  blah: field({ type: TSGraphQLInt }, () => 4),
+}));
 
 @ObjectTypeSource({
   name: 'Test',
   description: 'A test thing',
   fields: () => testFields,
 })
-class TestSource {
-  constructor(public foo: number) {}
-
-  @Field({ type: TestSource })
-  blah = new TestSource(this.foo * 2);
+class TestSource extends TestParent {
+  constructor(public foo: number) {
+    super();
+  }
 }
 
-const testFields = fields({ source: TestSource }, (field) => ({
-  foo: field({ type: nullable(TestSource) }, (source) => {
-    return null;
+const testFields = fields({ source: TestParent }, (field) => ({
+  foo: field({ type: TSGraphQLString }, (source) => {
+    return '';
   }),
 }));
+
+console.log(resolveThunk(getFieldConfigMap(TestSource)));
 
 console.log(Object.keys(getGraphQLType(TestSource)));
 
@@ -56,4 +84,3 @@ class TestArgs {
 }
 
 console.log(getArgs(TestArgs));
-
