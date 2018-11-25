@@ -20,18 +20,11 @@ import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { random, times } from 'lodash';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
-
-type ID = string | number;
-
-enum UserRole {
-  ADMIN = 'ADMIN',
-  STANDARD = 'STANDARD',
-  GUEST = 'GUEST',
-}
-
-const UserRoleEnumType = new TSGraphQLEnumType(UserRole, { name: 'UserRole' });
+import TSGraphQLInt from '../../src/wrappers/TSGraphQLInt';
 
 // -- Node --
+
+type ID = string | number;
 
 @InterfaceType()
 abstract class Node {
@@ -76,6 +69,14 @@ const nodeQueryFields = fields({}, (field) => ({
 
 // --- User ---
 
+enum UserRole {
+  ADMIN = 'ADMIN',
+  STANDARD = 'STANDARD',
+  GUEST = 'GUEST',
+}
+
+const UserRoleEnumType = new TSGraphQLEnumType(UserRole, { name: 'UserRole' });
+
 @ObjectType()
 @Implements(Node)
 class User {
@@ -104,10 +105,10 @@ class User {
 @Implements(Node)
 class Record {
   // Properties can be
-  @Field({ type: TSGraphQLString })
-  version = 'v1'; // A plain value
-  // version = Promise.resolve('v1'); // A Promise
-  // version() { return 'v1' } // A resolver method (can also return Promise)
+  @Field({ type: TSGraphQLInt })
+  version = 1; // A plain value
+  // version = Promise.resolve(1); // A Promise
+  // version() { return 1 } // A resolver method (can also return Promise)
 
   @Field({ type: nullable(TSGraphQLString) })
   contents: string | null;
