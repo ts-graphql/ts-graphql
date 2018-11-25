@@ -15,6 +15,9 @@
     "lint": "tslint src/**/*.ts",
     "lint:fix": "tslint --fix src/**/*.ts"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/express": "^4.16.0",
     "@types/express-graphql": "^0.6.2",
