@@ -20,6 +20,7 @@ import getInputObjectType from './builders/getInputObjectType';
 import getInterfaceType from './builders/getInterfaceType';
 import getObjectType from './builders/getObjectType';
 import { getInputType, getNamedType, getNamedTypes, getOutputType, getType } from './typeHelpers';
+import { buildFields, fields } from './fields';
 
 export {
   Arg,
@@ -49,4 +50,6 @@ export {
   getNamedTypes,
   getOutputType,
   getType,
+  fields,
+  buildFields,
 };

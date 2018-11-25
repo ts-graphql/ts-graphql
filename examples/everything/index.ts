@@ -10,15 +10,16 @@ import {
   TSGraphQLEnumType,
   TSGraphQLString,
   TSGraphQLUnionType,
+  nullable,
+  buildFields,
+  fields,
+  InputObjectType,
+  InputField,
 } from '../../src/index';
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { random, times } from 'lodash';
-import nullable from '../../src/wrappers/nullable';
-import { buildFields, fields } from '../../src/fields';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
-import InputObjectType from '../../src/decorators/InputObjectType';
-import InputField from '../../src/decorators/InputField';
 
 type ID = string | number;
 
