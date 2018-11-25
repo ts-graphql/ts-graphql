@@ -1,5 +1,6 @@
 .idea
-dist
+lib
+coverage
 
 # Created by https://www.gitignore.io/api/node,linux,macos,windows
 # Edit at https://www.gitignore.io/?templates=node,linux,macos,windows

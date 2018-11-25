@@ -1,5 +1,5 @@
 import { WrapperOrType } from './wrappers/Wrapper';
-import { MaybePromise, EmptyConstructor, MaybeArray, ObjectLiteral } from './types';
+import { MaybePromise, EmptyConstructor, MaybeArray, AnyConstructor } from './types';
 import { GraphQLOutputType, GraphQLResolveInfo } from 'graphql';
 import { mergeThunks, resolveThunk, Thunk } from './utils/thunk';
 import { isArray } from 'lodash';
@@ -34,13 +34,13 @@ export type FieldCreator<TSource, TContext> = <
 ) => FieldConfig<TSource, TContext, TReturn, TArgs>;
 
 export type FieldsConfig<TSource = undefined, TContext = undefined> = {
-  source?: TSource,
-  context?: TContext,
+  source?: AnyConstructor<TSource>,
+  context?: AnyConstructor<TContext>,
 };
 
 export const fieldCreatorFor = <TSource = undefined, TContext = undefined>(
-  source?: TSource,
-  context?: TContext,
+  source?: AnyConstructor<TSource>,
+  context?: AnyConstructor<TContext>,
 ): FieldCreator<TSource, TContext> => (options, resolve) => {
   return {
     ...options,

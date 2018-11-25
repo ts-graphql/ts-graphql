@@ -2,16 +2,16 @@
   "exclude": [
     "node_modules",
     "./examples",
-    "./dist"
+    "./lib",
+    "./**/__tests__/"
   ],
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
     "lib": ["es5", "es6", "es7", "esnext"],
-    "jsx": "react",
     "declaration": true,
     "sourceMap": false,
-    "outDir": "./dist",
+    "outDir": "./lib",
     "rootDir": "./src",
     "strict": true,
     "noImplicitAny": true,
@@ -22,6 +22,7 @@
     "types": ["node"],
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true
   }
 }

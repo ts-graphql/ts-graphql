@@ -10,6 +10,7 @@ import {
   TSGraphQLEnumType,
   TSGraphQLString,
   TSGraphQLUnionType,
+  TSGraphQLInt,
   nullable,
   buildFields,
   fields,
@@ -20,7 +21,6 @@ import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { random, times } from 'lodash';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
-import TSGraphQLInt from '../../src/wrappers/TSGraphQLInt';
 
 // -- Node --
 
@@ -81,7 +81,7 @@ const UserRoleEnumType = new TSGraphQLEnumType(UserRole, { name: 'UserRole' });
 @Implements(Node)
 class User {
 
-  // If a property is a string, number, or bool (or synchronous method that returns those),
+  // If a property is a string, number, or bool (or synchronous method that returns one of those),
   // you can leave out the type option
   @Field()
   name: string;
@@ -128,7 +128,7 @@ class Record {
 
 @InputObjectType()
 class AddRecordInput {
-  @InputField({ type: TSGraphQLString })
+  @InputField()
   contents!: string;
 
   @InputField({ type: TSGraphQLID })
@@ -170,7 +170,7 @@ const SearchResult = new TSGraphQLUnionType<User | Record>({
 
 @Args()
 class SearchResultArgs {
-  @Arg({ type: TSGraphQLString })
+  @Arg()
   query!: string;
 }
 

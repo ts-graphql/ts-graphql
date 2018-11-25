@@ -49,9 +49,9 @@ Install with `yarn add ts-graphql`
 The goal is to keep this simple and unopinionated. The only patterns required are:
 
  - 1:1 mapping between GraphQL types and TS types
- - TODO: Remember the other one
+ - Context type has to be a class
 
-### API
+### Guide
 
 TODO
 
@@ -59,11 +59,7 @@ See [example](https://github.com/stephentuso/ts-graphql/blob/master/examples/eve
 
 ## Caveats
 
-###### Input/Output type checking
-
-Input types used where an output type is expected and vice versa
-won't show an error at compile time, they will immediately throw a runtime
-error though.
+There are a few things that can't be caught at compile time:
 
 ###### Nullable Input Fields
 
@@ -71,6 +67,12 @@ Nullable fields on input types don't enforce that the TS property is
 nullable. This is because `T` is assignable to `T | null`, which works
 fine for output types but not so much for input. There might be
 a way to type this correctly but haven't figured it out yet.
+
+###### Input/Output type checking
+
+Input types used where an output type is expected and vice versa
+won't show an error at compile time, they will immediately throw a runtime
+error though.
 
 ###### Literal Types
 
@@ -80,4 +82,32 @@ but will immediately throw at runtime. For example
 ```typescript
 @Field()
 shape: 'circle' | 'square';
+```
+
+###### Matching object types
+
+Because TS is "duck-typed", if you manage to have two classes used for object
+types that have the exact same fields, returning the wrong class can't be
+caught at build time. E.g:
+
+```typescript
+@ObjectType()
+class A { 
+  @Field()
+  foo!: string; 
+}
+
+@ObjectType()
+class B {
+  @Field()
+  foo!: string
+}
+
+@ObjectType()
+class C {
+  @Field({ type: A })
+  a() {
+    return new B();
+  }
+}
 ```
