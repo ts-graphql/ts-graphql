@@ -5,7 +5,6 @@ import {
 } from 'graphql';
 import { storeInputFieldConfig } from '../metadata';
 import { WrapperOrType } from '../wrappers/Wrapper';
-import { ObjectWithKeyVal } from '../types';
 
 export type InputFieldConfig<TValue> = {
   type: WrapperOrType<TValue, GraphQLInputType>,
@@ -14,5 +13,5 @@ export type InputFieldConfig<TValue> = {
 }
 
 export default <TValue>(options: Thunk<InputFieldConfig<TValue>>) =>
-  <TName extends string>(prototype: ObjectWithKeyVal<TName, TValue>, key: TName) =>
+  <TName extends string>(prototype: Record<TName, TValue>, key: TName) =>
     storeInputFieldConfig(prototype, key, options);

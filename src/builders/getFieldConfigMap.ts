@@ -25,13 +25,14 @@ export const buildFieldConfigMap = <TSource, TContext>(
     ...config,
     type: getOutputType(config.type, true),
     args: config.args ? resolveThunk(getArgs(config.args)) : undefined,
-  }))
+  }));
 };
 
 export default (source: AnyConstructor<any>): Thunk<GraphQLFieldConfigMap<any, any>> => {
   return () => {
     const interfaces = getImplements(source) || [];
     const chain = [...getConstructorChain(source), ...interfaces];
+
     const allFields: FieldConfigMap<any, any> = chain
       .map(getFieldConfig)
       .filter((value) => !!value)
@@ -46,16 +47,16 @@ export default (source: AnyConstructor<any>): Thunk<GraphQLFieldConfigMap<any, a
       .map(resolveThunk)
       .reduce((obj, config) => ({ ...obj, ...config }), {});
 
-    const merged: FieldConfigMap<any, any> = {
-      ...allMaps,
-      ...allFields,
-    };
-
     const addDefaultResolver = (config: FieldConfig<any, any, any>, key: string) => ({
       ...config,
       resolve: config.resolve || getDefaultFieldResolver(source.prototype, key) || undefined,
-    })
+    });
 
-    return buildFieldConfigMap(mapValues(merged, addDefaultResolver));
+    const merged = mapValues<FieldConfigMap<any, any>, FieldConfig<any, any, any>>({
+      ...allMaps,
+      ...allFields,
+    }, addDefaultResolver);
+
+    return buildFieldConfigMap(merged);
   };
 };

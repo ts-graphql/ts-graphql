@@ -1,6 +1,9 @@
 import { WrapperOrType } from './wrappers/Wrapper';
-import { AnyConstructor, MaybePromise, EmptyConstructor } from './types';
+import { MaybePromise, EmptyConstructor, MaybeArray, ObjectLiteral } from './types';
 import { GraphQLOutputType, GraphQLResolveInfo } from 'graphql';
+import { mergeThunks, resolveThunk, Thunk } from './utils/thunk';
+import { isArray } from 'lodash';
+import { buildFieldConfigMap } from './builders/getFieldConfigMap';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
   type: WrapperOrType<TReturn, GraphQLOutputType>,
@@ -18,7 +21,7 @@ export type FieldConfig<TSource, TContext, TReturn, TArgs = {}> = FieldCreatorCo
 };
 
 export type FieldConfigMap<TSource, TContext> = {
-  [key: string]: FieldConfig<TSource, TContext, any>,
+  [key: string]: FieldConfig<TSource, TContext, any, any>,
 };
 
 export type FieldCreator<TSource, TContext> = <
@@ -30,14 +33,14 @@ export type FieldCreator<TSource, TContext> = <
   resolve?: FieldResolver<TSource, TContext, TReturn, TArgs>,
 ) => FieldConfig<TSource, TContext, TReturn, TArgs>;
 
-export type FieldsConfig<TSource, TContext = {}> = {
-  source: AnyConstructor<TSource>,
-  context?: AnyConstructor<TContext>
+export type FieldsConfig<TSource = undefined, TContext = undefined> = {
+  source?: TSource,
+  context?: TContext,
 };
 
-export const fieldCreatorFor = <TSource, TContext = {}>(
-  source: AnyConstructor<TSource>,
-  context?: AnyConstructor<TContext>,
+export const fieldCreatorFor = <TSource = undefined, TContext = undefined>(
+  source?: TSource,
+  context?: TContext,
 ): FieldCreator<TSource, TContext> => (options, resolve) => {
   return {
     ...options,
@@ -45,10 +48,16 @@ export const fieldCreatorFor = <TSource, TContext = {}>(
   };
 };
 
-export const fields = <TSource, TContext, TReturn, TArgs = null>(
+export const fields = <TSource = undefined, TContext = undefined>(
   config: FieldsConfig<TSource, TContext>,
   callback: (field: FieldCreator<TSource, TContext>) => FieldConfigMap<TSource, TContext>,
 ): FieldConfigMap<TSource, TContext> => {
   const fieldCreator = fieldCreatorFor(config.source, config.context);
   return callback(fieldCreator);
 };
+
+export const buildFields = <TSource, TContext>(fields: MaybeArray<Thunk<FieldConfigMap<TSource, TContext>>>) => {
+  let thunk = isArray(fields) ? mergeThunks(...fields) : fields;
+  const configMap = resolveThunk(thunk);
+  return buildFieldConfigMap(configMap);
+}
