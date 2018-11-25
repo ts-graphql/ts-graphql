@@ -56,6 +56,7 @@ const randomNode = (id: ID, recordContents: string = 'Lorem ipsum') => {
     : new Record(id, recordContents, new User('foo', UserRole.ADMIN, 'John Doe'))
 }
 
+// Works well to modularize Query/Mutation fields
 const nodeQueryFields = fields({}, (field) => ({
   node: field(
     { type: Node, args: NodeArgs },
@@ -78,7 +79,9 @@ const nodeQueryFields = fields({}, (field) => ({
 @Implements(Node)
 class User {
 
-  @Field({ type: TSGraphQLString })
+  // If a property is a string, number, or bool (or synchronous method that returns those),
+  // you can leave out the type option
+  @Field()
   name: string;
 
   @Field({ type: UserRoleEnumType })

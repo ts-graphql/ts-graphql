@@ -1,6 +1,6 @@
 import { AnyConstructor, ObjectLiteral } from '../types';
 import { resolveThunk, Thunk } from '../utils/thunk';
-import { GraphQLFieldConfig, GraphQLFieldConfigMap } from 'graphql';
+import { GraphQLFieldConfigMap } from 'graphql';
 import { FieldConfig, FieldConfigMap, FieldResolver } from '../fields';
 import { getFieldConfig, getImplements, getSavedFieldConfigMap } from '../metadata';
 import { FieldResolverMethod } from '../decorators/Field';
@@ -11,7 +11,6 @@ import { getOutputType } from '../typeHelpers';
 
 const getDefaultFieldResolver = (prototype: ObjectLiteral, key: string): FieldResolver<any, any, any> | null => {
   if (typeof prototype[key] === 'function') {
-    console.log(key);
     const resolverMethod = prototype[key] as FieldResolverMethod<any, any, any>;
     return (source: any, ...args) => resolverMethod.apply(source, args);
   }
