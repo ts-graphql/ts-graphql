@@ -1,14 +1,18 @@
-import { graphQLTypeForWrapper, Wrapper, WrapperOrType } from './Wrapper';
-import { GraphQLNonNull } from 'graphql';
+import { Wrapper, WrapperOrType } from './Wrapper';
+import { getType } from '../typeHelpers';
+import { GraphQLNonNull, GraphQLNullableType } from 'graphql';
+import { Maybe } from '../types';
 
-export default function nullable<T>(type: WrapperOrType<T>): Wrapper<T | null | undefined> {
-  const currentType = graphQLTypeForWrapper(type);
-  let graphQLType = currentType;
-  if (currentType instanceof GraphQLNonNull) {
-    graphQLType = currentType.ofType;
-  }
+export default function nullable<T, Q extends GraphQLNullableType>(
+  type: WrapperOrType<T, Q>,
+): Wrapper<Maybe<T>, Q | GraphQLNonNull<Q>> {
+  const currentType = getType(type, true);
   return {
-    graphQLType,
+    // Can't find way around using any here :(
+    // Will at least fail fast, throws runtime error immediately if
+    // input type used for output and vice versa
+    graphQLType: currentType as any,
     type: null,
+    nullable: true,
   };
 }

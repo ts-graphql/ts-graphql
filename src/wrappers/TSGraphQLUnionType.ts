@@ -1,17 +1,17 @@
-import { GraphQLType, GraphQLUnionType } from 'graphql';
+import { GraphQLNonNull, GraphQLType, GraphQLUnionType } from 'graphql';
 import { Wrapper } from './Wrapper';
-import { Constructor } from '../types';
+import { AnyConstructor } from '../types';
 import getObjectType from '../builders/getObjectType';
 import findConstructor from '../utils/findConstructor';
 
 export type TSGraphQLUnionTypeConfig<T> = {
-  types: Array<Constructor<T>>,
+  types: Array<AnyConstructor<T>>,
   name: string,
   description?: string,
 }
 
-export default class TSGraphQLUnionType<T> implements Wrapper<T> {
-  graphQLType: GraphQLType;
+export default class TSGraphQLUnionType<T> implements Wrapper<T, GraphQLUnionType> {
+  graphQLType: GraphQLUnionType;
   type: T;
   constructor(config: TSGraphQLUnionTypeConfig<T>) {
     this.type = (null as any) as T;

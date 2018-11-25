@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import {
+  GraphQLInputType,
   Thunk,
 } from 'graphql';
 import { storeInputFieldConfig } from '../metadata';
@@ -7,7 +8,7 @@ import { WrapperOrType } from '../wrappers/Wrapper';
 import { ObjectWithKeyVal } from '../types';
 
 export type InputFieldConfig<TValue> = {
-  type: WrapperOrType<TValue>,
+  type: WrapperOrType<TValue, GraphQLInputType>,
   defaultValue?: TValue,
   description?: string,
 }

@@ -1,23 +1,34 @@
-import { Constructor, ObjectLiteral } from '../types';
+import { AnyConstructor, ObjectLiteral } from '../types';
 import { resolveThunk, Thunk } from '../utils/thunk';
 import { GraphQLFieldConfig, GraphQLFieldConfigMap } from 'graphql';
-import { FieldConfigMap, FieldResolver } from '../fields';
-import { graphQLOutputTypeForWrapper } from '../wrappers/Wrapper';
+import { FieldConfig, FieldConfigMap, FieldResolver } from '../fields';
 import { getFieldConfig, getImplements, getSavedFieldConfigMap } from '../metadata';
 import { FieldResolverMethod } from '../decorators/Field';
 import { getConstructorChain } from './utils';
 import { mapValues } from 'lodash';
 import getArgs from './getArgs';
+import { getOutputType } from '../typeHelpers';
 
 const getDefaultFieldResolver = (prototype: ObjectLiteral, key: string): FieldResolver<any, any, any> | null => {
   if (typeof prototype[key] === 'function') {
+    console.log(key);
     const resolverMethod = prototype[key] as FieldResolverMethod<any, any, any>;
     return (source: any, ...args) => resolverMethod.apply(source, args);
   }
   return null;
 }
 
-export default (source: Constructor<any>): Thunk<GraphQLFieldConfigMap<any, any>> => {
+export const buildFieldConfigMap = <TSource, TContext>(
+  map: FieldConfigMap<TSource, TContext>,
+): GraphQLFieldConfigMap<TSource, TContext> => {
+  return mapValues(map, (config) => ({
+    ...config,
+    type: getOutputType(config.type, true),
+    args: config.args ? resolveThunk(getArgs(config.args)) : undefined,
+  }))
+};
+
+export default (source: AnyConstructor<any>): Thunk<GraphQLFieldConfigMap<any, any>> => {
   return () => {
     const interfaces = getImplements(source) || [];
     const chain = [...getConstructorChain(source), ...interfaces];
@@ -35,16 +46,16 @@ export default (source: Constructor<any>): Thunk<GraphQLFieldConfigMap<any, any>
       .map(resolveThunk)
       .reduce((obj, config) => ({ ...obj, ...config }), {});
 
-    const merged = {
+    const merged: FieldConfigMap<any, any> = {
       ...allMaps,
       ...allFields,
     };
 
-    return mapValues(merged, ((config, key) => ({
-      type: graphQLOutputTypeForWrapper(config.type),
-      ...config.args && { args: getArgs(config.args) },
-      description: config.description,
+    const addDefaultResolver = (config: FieldConfig<any, any, any>, key: string) => ({
+      ...config,
       resolve: config.resolve || getDefaultFieldResolver(source.prototype, key) || undefined,
-    } as GraphQLFieldConfig<any, any>)));
+    })
+
+    return buildFieldConfigMap(mapValues(merged, addDefaultResolver));
   };
 };

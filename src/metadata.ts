@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Constructor, Maybe, ObjectLiteral, SimpleConstructor } from './types';
+import { AnyConstructor, Maybe, ObjectLiteral, EmptyConstructor } from './types';
 import { FieldConfig, FieldConfigMap } from './fields';
 import { Thunk } from './utils/thunk';
 import { InputFieldConfig } from './decorators/InputField';
@@ -25,41 +25,41 @@ const implementsKey = Symbol('implements');
 const implementersKey = Symbol('implementers');
 const interfaceKey = Symbol('interface');
 
-export const storeIsInputObjectType = (target: Constructor<any>) => {
+export const storeIsInputObjectType = (target: AnyConstructor<any>) => {
   Reflect.defineMetadata(isInputObjectTypeKey, true, target);
 }
 
-export const isInputObjectType = (target: Constructor<any>) => {
+export const isInputObjectType = (target: AnyConstructor<any>) => {
   return Reflect.getMetadata(isInputObjectTypeKey, target);
 }
 
-export const storeIsObjectType = (target: Constructor<any>) => {
+export const storeIsObjectType = (target: AnyConstructor<any>) => {
   Reflect.defineMetadata(isObjectTypeKey, true, target);
 }
 
-export const isObjectType = (target: Constructor<any>) => {
+export const isObjectType = (target: AnyConstructor<any>) => {
   return Reflect.getMetadata(isObjectTypeKey, target);
 }
 
-export const getObjectTypeConfig = (target: Constructor<any>): Maybe<StoredObjectTypeConfig> => {
+export const getObjectTypeConfig = (target: AnyConstructor<any>): Maybe<StoredObjectTypeConfig> => {
   return Reflect.getMetadata(objectTypeKey, target);
 };
 
-export const hasObjectTypeConfig = (target: Constructor<any>) => !!getObjectTypeConfig(target);
+export const hasObjectTypeConfig = (target: AnyConstructor<any>) => !!getObjectTypeConfig(target);
 
-export const storeObjectTypeConfig = (target: Constructor<any>, config: StoredObjectTypeConfig) => {
+export const storeObjectTypeConfig = (target: AnyConstructor<any>, config: StoredObjectTypeConfig) => {
   Reflect.defineMetadata(objectTypeKey, config, target);
 };
 
-export const getFieldConfig = (target: Constructor<any>): Maybe<StoredFieldConfig> =>
+export const getFieldConfig = (target: AnyConstructor<any>): Maybe<StoredFieldConfig> =>
   Reflect.getMetadata(fieldKey, target.prototype);
 
-export const hasFieldConfig = (target: Constructor<any>) => !!getFieldConfig(target);
+export const hasFieldConfig = (target: AnyConstructor<any>) => !!getFieldConfig(target);
 
-export const getSavedFieldConfigMap = (target: Constructor<any>): Maybe<Thunk<FieldConfigMap<any, any>>> =>
+export const getSavedFieldConfigMap = (target: AnyConstructor<any>): Maybe<Thunk<FieldConfigMap<any, any>>> =>
   Reflect.getMetadata(fieldMapKey, target);
 
-export const hasSavedFieldConfigMap = (target: Constructor<any>) => !!getSavedFieldConfigMap(target);
+export const hasSavedFieldConfigMap = (target: AnyConstructor<any>) => !!getSavedFieldConfigMap(target);
 
 export const storeFieldConfig = (prototype: ObjectLiteral, name: string, config: Thunk<FieldConfig<any, any, any, any>>) => {
   const currentFields = Reflect.getMetadata(fieldKey, prototype);
@@ -67,17 +67,17 @@ export const storeFieldConfig = (prototype: ObjectLiteral, name: string, config:
 };
 
 export const storeFieldConfigMap = (
-  target: Constructor<any>,
+  target: AnyConstructor<any>,
   configMap: Thunk<FieldConfigMap<any, any>>,
 ) => {
   Reflect.defineMetadata(fieldMapKey, configMap, target);
 };
 
-export const getInputFieldConfig = (target: Constructor<any>): Maybe<{ [key: string]: InputFieldConfig<any> }> => {
+export const getInputFieldConfig = (target: AnyConstructor<any>): Maybe<{ [key: string]: InputFieldConfig<any> }> => {
   return Reflect.getMetadata(inputFieldKey, target.prototype);
 };
 
-export const hasInputFieldConfig = (target: Constructor<any>) => !!getInputFieldConfig(target);
+export const hasInputFieldConfig = (target: AnyConstructor<any>) => !!getInputFieldConfig(target);
 
 export const storeInputFieldConfig = (
   prototype: ObjectLiteral,
@@ -88,37 +88,37 @@ export const storeInputFieldConfig = (
   Reflect.defineMetadata(inputFieldKey, { ...currentFields, [name]: config }, prototype);
 };
 
-export const isArgs = (target: SimpleConstructor<any>) => {
+export const isArgs = (target: EmptyConstructor<any>) => {
   return !!Reflect.getMetadata(isArgsKey, target);
 };
 
-export const storeIsArgs = (target: SimpleConstructor<any>) => {
+export const storeIsArgs = (target: EmptyConstructor<any>) => {
   Reflect.defineMetadata(isArgsKey, true, target);
 };
 
-export const getImplements = (target: Constructor<any>): Maybe<Array<Constructor<any>>> => {
+export const getImplements = (target: AnyConstructor<any>): Maybe<Array<AnyConstructor<any>>> => {
   return Reflect.getMetadata(implementsKey, target);
 };
 
-export const getImplementers = (iface: Constructor<any>): Maybe<Array<Constructor<any>>> => {
+export const getImplementers = (iface: AnyConstructor<any>): Maybe<Array<AnyConstructor<any>>> => {
   return Reflect.getMetadata(implementersKey, iface);
 }
 
-export const storeImplements = (target: Constructor<any>, iface: Constructor<any>) => {
+export const storeImplements = (target: AnyConstructor<any>, iface: AnyConstructor<any>) => {
   const currentImplements = getImplements(target) || [];
   const currentImplementers = getImplementers(iface) || [];
   Reflect.defineMetadata(implementsKey, [...currentImplements, iface], target);
   Reflect.defineMetadata(implementersKey, [...currentImplementers, target], iface);
 };
 
-export const getInterfaceTypeConfig = (target: Constructor<any>) => {
+export const getInterfaceTypeConfig = (target: AnyConstructor<any>) => {
   return Reflect.getMetadata(interfaceKey, target);
 };
 
-export const isInterfaceType = (target: Constructor<any>) => {
+export const isInterfaceType = (target: AnyConstructor<any>) => {
   return !!getInterfaceTypeConfig(target);
 };
 
-export const storeInterfaceTypeConfig = (target: Constructor<any>, config: InterfaceTypeConfig) => {
+export const storeInterfaceTypeConfig = (target: AnyConstructor<any>, config: InterfaceTypeConfig) => {
   Reflect.defineMetadata(interfaceKey, config, target);
 };

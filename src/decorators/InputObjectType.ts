@@ -1,5 +1,5 @@
 import { storeIsInputObjectType, storeObjectTypeConfig } from '../metadata';
-import { Constructor } from '../types';
+import { AnyConstructor } from '../types';
 
 export type InputObjectTypeConfig<TSource, TContext> = {
   name?: string,
@@ -7,7 +7,7 @@ export type InputObjectTypeConfig<TSource, TContext> = {
 }
 
 export default <TSource, TContext>(config: InputObjectTypeConfig<TSource, TContext> = {}) =>
-  (target: Constructor<TSource>) => {
+  (target: AnyConstructor<TSource>) => {
     storeIsInputObjectType(target);
     storeObjectTypeConfig(target, {
       ...config,

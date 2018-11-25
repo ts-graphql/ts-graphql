@@ -1,11 +1,12 @@
 import { GraphQLInterfaceType } from 'graphql';
 import { getImplementers, getInterfaceTypeConfig, isInterfaceType } from '../metadata';
-import { Constructor } from '../types';
+import { AnyConstructor } from '../types';
 import getFieldConfigMap from './getFieldConfigMap';
 import getObjectType from './getObjectType';
 import findConstructor from '../utils/findConstructor';
+import { memoize } from 'lodash';
 
-export default (source: Constructor<any>): GraphQLInterfaceType => {
+export default memoize((source: AnyConstructor<any>): GraphQLInterfaceType => {
   const config = getInterfaceTypeConfig(source);
   if (!config || !isInterfaceType(source)) {
     throw new Error(`Interface type config not found for ${source.name}`);
@@ -25,4 +26,4 @@ export default (source: Constructor<any>): GraphQLInterfaceType => {
       return getObjectType(type);
     },
   });
-};
+});

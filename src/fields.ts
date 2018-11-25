@@ -1,15 +1,17 @@
 import { WrapperOrType } from './wrappers/Wrapper';
-import { Constructor, Promiseable, SimpleConstructor } from './types';
-import { GraphQLResolveInfo } from 'graphql';
+import { AnyConstructor, MaybePromise, EmptyConstructor } from './types';
+import { GraphQLOutputType, GraphQLResolveInfo } from 'graphql';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
-  type: WrapperOrType<TReturn>,
+  type: WrapperOrType<TReturn, GraphQLOutputType>,
   description?: string,
-  args?: SimpleConstructor<TArgs>,
+  args?: EmptyConstructor<TArgs>,
+  isDeprecated?: boolean,
+  deprecationReason?: string,
 };
 
 export type FieldResolver<TSource, TContext, TReturn, TArgs = {}> =
-  (source: TSource, args: TArgs, context: TContext, info: GraphQLResolveInfo) => Promiseable<TReturn>;
+  (source: TSource, args: TArgs, context: TContext, info: GraphQLResolveInfo) => MaybePromise<TReturn>;
 
 export type FieldConfig<TSource, TContext, TReturn, TArgs = {}> = FieldCreatorConfig<TReturn, TArgs> & {
   resolve?: FieldResolver<TSource, TContext, TReturn, TArgs>,
@@ -29,13 +31,13 @@ export type FieldCreator<TSource, TContext> = <
 ) => FieldConfig<TSource, TContext, TReturn, TArgs>;
 
 export type FieldsConfig<TSource, TContext = {}> = {
-  source: Constructor<TSource>,
-  context?: Constructor<TContext>
+  source: AnyConstructor<TSource>,
+  context?: AnyConstructor<TContext>
 };
 
 export const fieldCreatorFor = <TSource, TContext = {}>(
-  source: Constructor<TSource>,
-  context?: Constructor<TContext>,
+  source: AnyConstructor<TSource>,
+  context?: AnyConstructor<TContext>,
 ): FieldCreator<TSource, TContext> => (options, resolve) => {
   return {
     ...options,

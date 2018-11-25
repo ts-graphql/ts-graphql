@@ -1,54 +1,50 @@
-import { Constructor } from '../types';
+import { AnyConstructor } from '../types';
 import {
   GraphQLNonNull,
-  GraphQLOutputType,
   GraphQLScalarLiteralParser,
   GraphQLScalarType,
   GraphQLScalarValueParser,
   GraphQLType,
+  isNonNullType,
 } from 'graphql';
-import getObjectType from '../builders/getObjectType';
-import getInputObjectType from '../builders/getInputObjectType';
-import getType from '../builders/getType';
 
-export type Wrapper<T> = {
-    graphQLType: any,
-    type: T,
+export type Wrapper<T, G extends GraphQLType = GraphQLType> = {
+  graphQLType: G,
+  type: T,
+  nullable?: boolean,
 };
 
-export type WrapperOrType<T> = Wrapper<T> | Constructor<T>;
-
-export const isWrapper = (x: any): x is Wrapper<any> => {
-  return 'graphQLType' in x && 'type' in x;
-}
-
-export const graphQLTypeForWrapper = (type: WrapperOrType<any>): GraphQLType => isWrapper(type)
-  ? type.graphQLType
-  : getType(type);
-
-export const graphQLOutputTypeForWrapper = (type: WrapperOrType<any>): GraphQLOutputType => isWrapper(type)
-  ? type.graphQLType
-  : getObjectType(type);
-
-export const graphQLInputTypeForWrapper = (type: WrapperOrType<any>): GraphQLOutputType => isWrapper(type)
-  ? type.graphQLType
-  : getInputObjectType(type);
+export type WrapperOrType<T, G extends GraphQLType = GraphQLType> = Wrapper<T, G> | AnyConstructor<T>;
 
 export interface TypedGraphQLScalar<TInternal> extends GraphQLScalarType {
   parseValue: GraphQLScalarValueParser<TInternal>;
   parseLiteral: GraphQLScalarLiteralParser<TInternal>;
 }
 
-export const wrapScalar = <T>(scalar: TypedGraphQLScalar<T>): Wrapper<T> => {
+export const isWrapper = <T, G extends GraphQLType>(x: WrapperOrType<T, G>): x is Wrapper<T, G> => {
+  return 'graphQLType' in x && 'type' in x;
+};
+
+export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>, dontWrap: true): G;
+export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>, dontWrap: false): G | GraphQLNonNull<G>;
+export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>): G | GraphQLNonNull<G>;
+export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>, dontWrap?: boolean): G | GraphQLNonNull<G> {
+  const type = wrapper.graphQLType;
+  return (wrapper.nullable || dontWrap)
+    ? type
+    : new GraphQLNonNull(type);
+}
+
+export const wrapScalar = <T>(scalar: TypedGraphQLScalar<T>): Wrapper<T, GraphQLScalarType> => {
   return {
-    graphQLType: new GraphQLNonNull(scalar),
+    graphQLType: scalar,
     type: (null as any) as T,
   };
 };
 
-export const unsafeWrapType = (type: GraphQLType): Wrapper<any> => {
+export const unsafeWrapType = <T extends GraphQLType>(type: T): Wrapper<any, T> => {
   return {
-    graphQLType: new GraphQLNonNull(type),
+    graphQLType: type,
     type: null as any,
   };
 };

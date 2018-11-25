@@ -1,6 +1,6 @@
-import { SimpleConstructor } from '../types';
+import { EmptyConstructor } from '../types';
 import { storeIsArgs } from '../metadata';
 
-export default (target: SimpleConstructor<any>) => {
+export default () => (target: EmptyConstructor<any>) => {
   storeIsArgs(target);
 }

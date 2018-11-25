@@ -1,10 +1,12 @@
-import { graphQLTypeForWrapper, Wrapper, WrapperOrType } from './Wrapper';
-import { GraphQLList, GraphQLNonNull } from 'graphql';
+import { Wrapper, WrapperOrType } from './Wrapper';
+import { GraphQLList } from 'graphql';
+import { getType } from '../typeHelpers';
 
-export default function list<T>(type: WrapperOrType<T>): Wrapper<T[]> {
-  const currentType = graphQLTypeForWrapper(type);
+// See note re. any in nullable.ts
+export default function list<T>(type: WrapperOrType<T>): Wrapper<T[], GraphQLList<any>> {
+  const currentType = getType(type, true);
   return {
-    graphQLType: new GraphQLNonNull(new GraphQLList(currentType)),
+    graphQLType: new GraphQLList(currentType),
     type: [],
   }
 }

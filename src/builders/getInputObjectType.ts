@@ -1,9 +1,10 @@
-import { GraphQLInputObjectType, isInputObjectType } from 'graphql';
-import { getObjectTypeConfig } from '../metadata';
-import { Constructor } from '../types';
+import { GraphQLInputObjectType } from 'graphql';
+import { getObjectTypeConfig, isInputObjectType } from '../metadata';
+import { AnyConstructor } from '../types';
 import getInputFieldConfigMap from './getInputFieldConfigMap';
+import { memoize } from 'lodash';
 
-export default (source: Constructor<any>): GraphQLInputObjectType => {
+export default memoize((source: AnyConstructor<any>): GraphQLInputObjectType => {
   const config = getObjectTypeConfig(source);
   if (!config || !isInputObjectType(source)) {
     throw new Error(`Input object type config not found for ${source.name}`);
@@ -14,4 +15,4 @@ export default (source: Constructor<any>): GraphQLInputObjectType => {
     fields: getInputFieldConfigMap(source),
     description,
   });
-};
+});
