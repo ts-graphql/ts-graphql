@@ -1,4 +1,4 @@
-# ts-graphql
+# ts-graphql [![CircleCI](https://circleci.com/gh/stephentuso/ts-graphql.svg?style=svg)](https://circleci.com/gh/stephentuso/ts-graphql)
 
 A TypeScript library for building GraphQL APIs in an efficient and
 type safe way. 
