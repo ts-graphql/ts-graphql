@@ -12,7 +12,7 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
           name: Install dependencies
-          command: yarn
+          command: yarn --frozen-lockfile
       - save_cache:
           key: yarn-cache-{{ .Branch }}
           paths:
