@@ -1,4 +1,4 @@
-# ts-graphql [![CircleCI](https://circleci.com/gh/stephentuso/ts-graphql.svg?style=svg)](https://circleci.com/gh/stephentuso/ts-graphql) [![Coverage Status](https://coveralls.io/repos/github/stephentuso/ts-graphql/badge.svg?branch=dev)](https://coveralls.io/github/stephentuso/ts-graphql?branch=dev)
+# ts-graphql [![CircleCI](https://circleci.com/gh/stephentuso/ts-graphql.svg?style=svg)](https://circleci.com/gh/stephentuso/ts-graphql) [![Coverage Status](https://coveralls.io/repos/github/stephentuso/ts-graphql/badge.svg?branch=dev)](https://coveralls.io/github/stephentuso/ts-graphql?branch=dev) [![Known Vulnerabilities](https://snyk.io/test/github/stephentuso/ts-graphql/badge.svg?targetFile=package.json)](https://snyk.io/test/github/stephentuso/ts-graphql?targetFile=package.json)
 
 A TypeScript library for building GraphQL APIs in an efficient and
 type safe way. 
