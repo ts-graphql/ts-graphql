@@ -5,7 +5,7 @@ import getFieldConfigMap from '../getFieldConfigMap';
 import InterfaceType from '../../decorators/InterfaceType';
 import Implements from '../../decorators/Implements';
 import { fields } from '../../fields';
-import { ObjectType, TSGraphQLString } from '../../index';
+import { ObjectType, TSGraphQLInt, TSGraphQLString } from '../../index';
 
 class Simple {
   @Field()
@@ -56,7 +56,7 @@ class Employee extends User {
 }
 
 @ObjectType({
-  fields: () => someFields,
+  fields: () => [someFields, moreFields],
 })
 class Foo {
   @Field()
@@ -67,6 +67,13 @@ const someFields = fields({ source: Foo }, (field) => ({
   bar: field(
     { type: TSGraphQLString },
     () => 'bar',
+  ),
+}));
+
+const moreFields = fields({ source: Foo }, (field) => ({
+  baz: field(
+    { type: TSGraphQLInt },
+    () => 4,
   ),
 }));
 
@@ -103,5 +110,6 @@ describe('getFieldConfigMap', () => {
     const config = resolveThunk(getFieldConfigMap(Foo));
     expect(config).toHaveProperty('foo');
     expect(config).toHaveProperty('bar');
+    expect(config).toHaveProperty('baz');
   });
 });

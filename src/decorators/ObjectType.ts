@@ -5,13 +5,13 @@ import {
 } from '../metadata';
 import { AnyConstructor, MaybeArray } from '../types';
 import { FieldConfigMap } from '../fields';
-import { mergeThunks } from '../utils/thunk';
+import { mergeThunks, resolveThunk } from '../utils/thunk';
 import { isArray } from 'lodash';
 
 export type ObjectTypeConfig<TSource, TContext> = {
   name?: string,
   description?: string,
-  fields?: MaybeArray<Thunk<FieldConfigMap<TSource, TContext>>>
+  fields?: MaybeArray<Thunk<MaybeArray<FieldConfigMap<TSource, TContext>>>>
 }
 
 export default <TSource, TContext>(config: ObjectTypeConfig<TSource, TContext> = {}) =>
@@ -19,7 +19,13 @@ export default <TSource, TContext>(config: ObjectTypeConfig<TSource, TContext> =
     const { name, fields, description } = config;
     if (fields) {
       const fieldsThunk = isArray(fields) ? mergeThunks(...fields) : fields;
-      storeFieldConfigMap(source, fieldsThunk);
+      const finalThunk = () => {
+        const config = resolveThunk(fieldsThunk);
+        return isArray(config)
+          ? Object.assign({}, ...config)
+          : config;
+      }
+      storeFieldConfigMap(source, finalThunk);
     }
     storeIsObjectType(source);
     storeObjectTypeConfig(source, {
