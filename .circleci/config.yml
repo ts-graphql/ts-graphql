@@ -27,3 +27,6 @@ jobs:
       - run:
           name: Test
           command: yarn run test
+      - run:
+          name: Semantic release
+          command: $(npm bin)/semantic-relase
