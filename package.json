@@ -12,6 +12,7 @@
     "build": "rimraf ./lib && tsc",
     "prepublishOnly": "npm run build",
     "test": "jest",
+    "test:ci": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "lint": "tslint src/**/*.ts",
     "lint:fix": "tslint --fix src/**/*.ts"
   },
@@ -26,6 +27,7 @@
     "@types/lodash": "^4.14.118",
     "@types/node": "^10.12.10",
     "@types/pify": "^3.0.2",
+    "coveralls": "^3.0.2",
     "express": "^4.16.4",
     "express-graphql": "^0.7.1",
     "graphql": "^14.0.2",

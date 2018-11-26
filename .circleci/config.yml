@@ -26,7 +26,7 @@ jobs:
           command: yarn build
       - run:
           name: Test
-          command: yarn run test
+          command: yarn run test:ci
       - run:
           name: Semantic release
           command: $(npm bin)/semantic-release
