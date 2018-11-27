@@ -55,7 +55,7 @@ The goal is to keep this simple and unopinionated. The only patterns required ar
 
 TODO
 
-See [example](https://github.com/stephentuso/ts-graphql/blob/master/examples/everything/index.ts) for now.
+See [examples](https://github.com/stephentuso/ts-graphql/blob/master/examples) for now.
 
 ## Caveats
 
