@@ -9,7 +9,7 @@ import { FieldConfigMap } from '../fields';
 import { mergeThunks, resolveThunk } from '../utils/thunk';
 import { isArray } from 'lodash';
 import { getConstructorChain } from '../builders/utils';
-import { flatMap, uniq } from 'lodash';
+import { flatMap, uniq, identity } from 'lodash';
 
 export type ObjectTypeConfig<TSource, TContext> = {
   name?: string,
@@ -22,7 +22,7 @@ export default <TSource, TContext>(config: ObjectTypeConfig<TSource, TContext> =
     const { name, fields, description } = config;
 
     const chain = getConstructorChain(source);
-    const interfaces = flatMap(chain, getImplements) as unknown as Array<Constructor<any>>;
+    const interfaces = uniq(flatMap(chain, getImplements)).filter(identity) as unknown as Array<Constructor<any>>;
 
     for (const iface of interfaces) {
       storeImplements(source, iface);
