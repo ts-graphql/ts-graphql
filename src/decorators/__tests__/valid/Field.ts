@@ -1,5 +1,6 @@
 import Field from '../../Field';
-import { nullable, TSGraphQLID } from '../../..';
+import { nullable, TSGraphQLID, TSGraphQLInt } from '../../..';
+import { Maybe } from '../../../types';
 
 class Data {
   value!: string;
@@ -25,35 +26,8 @@ class SomeType {
   @Field()
   number!: number;
 
-  @Field()
-  stringMethod(): string {
-    return '';
-  }
-
-  @Field()
-  booleanMethod(): boolean {
-    return false;
-  }
-
-  @Field()
-  numberMethod(): number {
-    return 42;
-  }
-
-  @Field({ args: SomeArgs })
-  trMethodArgs({ a }: SomeArgs) {
-    return a;
-  }
-
-  @Field({ args: SomeArgs })
-  boolMethodArgs({ b }: SomeArgs) {
-    return b;
-  }
-
-  @Field({ args: SomeArgs })
-  numMethodArgs({ c }: SomeArgs) {
-    return c;
-  }
+  @Field({ type: nullable(TSGraphQLInt) })
+  nullableInt: Maybe<number>;
 
   @Field({ type: TSGraphQLID })
   id!: Promise<string | number>;

@@ -23,7 +23,7 @@ abstract class Fruit {
 @ObjectType()
 @Implements(Fruit)
 class Apple {
-  name = Promise.resolve('Apple');
+  name = 'Apple';
 
   @Field()
   variety: string;

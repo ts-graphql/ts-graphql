@@ -81,7 +81,7 @@ const UserRoleEnumType = new TSGraphQLEnumType(UserRole, { name: 'UserRole' });
 @Implements(Node)
 class User {
 
-  // If a property is a string, number, or bool (or synchronous method that returns one of those),
+  // If a property is an explicitly typed string, number, or bool,
   // you can leave out the type option
   @Field()
   name: string;

@@ -30,7 +30,7 @@ export const resolveType = <T, G extends GraphQLType>(
   const type = wrapperForPrimitive(fieldType) as any;
   if (!type) {
     const name = prototype.constructor ? prototype.constructor.name : '';
-    throw new Error(`Type option not supplied and ${name}#${key} is not retrievable by reflection`);
+    throw new Error(`Type option not supplied and type of ${name}#${key} is not retrievable by reflection`);
   }
   return type;
 }
