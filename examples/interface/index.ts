@@ -23,7 +23,7 @@ abstract class Fruit {
 @ObjectType()
 @Implements(Fruit)
 class Apple {
-  name = 'Apple';
+  name = Promise.resolve('Apple');
 
   @Field()
   variety: string;
@@ -46,7 +46,7 @@ class Orange {
 @ObjectType()
 class Query {
   @Field({ type: Fruit })
-  randomFruit() {
+  async randomFruit() {
     return !!random(1, false)
       ? new Orange()
       : new Apple('Red', 'Red Delicious');

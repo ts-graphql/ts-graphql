@@ -55,12 +55,25 @@ class Employee extends User {
   company!: string;
 }
 
+@InterfaceType()
+abstract class HasAvatar {
+  @Field()
+  avatarURL!: string;
+}
+
+@Implements(HasAvatar)
+class EmployeeWithPicture extends Employee {
+  avatarURL!: string;
+}
+
 @ObjectType({
   fields: () => [someFields, moreFields],
 })
 class Foo {
   @Field()
-  foo!: string;
+  foo(): string {
+    return '';
+  }
 }
 
 const someFields = fields({ source: Foo }, (field) => ({
@@ -106,10 +119,31 @@ describe('getFieldConfigMap', () => {
     expect(config).toHaveProperty('company');
   });
 
+  it('should inherit fields from interfaces on superclass and interfaces on itself', () => {
+    const config = resolveThunk(getFieldConfigMap(EmployeeWithPicture));
+    expect(config).toHaveProperty('id');
+    expect(config).toHaveProperty('email');
+    expect(config).toHaveProperty('displayName');
+    expect(config).toHaveProperty('company');
+    expect(config).toHaveProperty('avatarURL');
+  });
+
   it('should merge decorator fields with config fields', () => {
     const config = resolveThunk(getFieldConfigMap(Foo));
     expect(config).toHaveProperty('foo');
     expect(config).toHaveProperty('bar');
     expect(config).toHaveProperty('baz');
+  });
+
+  it('should create resolver from instance method', () => {
+    const config = resolveThunk(getFieldConfigMap(Foo));
+    expect(config).toHaveProperty('foo');
+    expect(typeof config.foo.resolve).toEqual('function');
+  });
+
+  it('should use default resolver for plain fields', () => {
+    const config = resolveThunk(getFieldConfigMap(Simple));
+    expect(config).toHaveProperty('str');
+    expect(config.str.resolve).toBeFalsy();
   });
 });

@@ -41,7 +41,7 @@ class SomeType {
   }
 
   @Field({ args: SomeArgs })
-  strMethodArgs({ a }: SomeArgs) {
+  trMethodArgs({ a }: SomeArgs) {
     return a;
   }
 
@@ -56,10 +56,12 @@ class SomeType {
   }
 
   @Field({ type: TSGraphQLID })
-  id!: string | number;
+  id!: Promise<string | number>;
 
   @Field({ type: Data })
-  data!: Data;
+  async data() {
+    return new Data();
+  }
 
   @Field({
     type: nullable(Data),

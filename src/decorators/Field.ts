@@ -5,9 +5,10 @@ import { storeFieldConfig } from '../metadata';
 import { MaybePromise } from '../types';
 import { resolveThunk } from '../utils/thunk';
 import { resolveType } from './utils';
+import { InterfaceImplementation } from './Implements';
 
 export type FieldResolverMethod<TContext, TReturn, TArgs> =
-  (args: TArgs, context: TContext, info: GraphQLResolveInfo) => TReturn;
+  (args: TArgs, context: TContext, info: GraphQLResolveInfo) => TReturn | InterfaceImplementation<TReturn>;
 
 export type FieldProperty<TContext, TReturn, TArgs> =
   TReturn | FieldResolverMethod<TContext, TReturn, TArgs>;
