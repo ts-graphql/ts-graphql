@@ -72,7 +72,7 @@ class EmployeeWithPicture extends Employee {
   fields: () => [someFields, moreFields],
 })
 class Foo {
-  @Field()
+  @Field({ type: TSGraphQLString })
   foo(): string {
     return '';
   }
@@ -160,7 +160,7 @@ describe('getFieldConfigMap', () => {
       fields: () => argsFields,
     })
     class ArgsTest {
-      @Field({ args: SomeArgs })
+      @Field({ type: TSGraphQLString, args: SomeArgs })
       methodTest(args: SomeArgs): string {
         expect(args instanceof SomeArgs).toBeTruthy();
         return args.foo;
