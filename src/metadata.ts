@@ -3,9 +3,8 @@ import { AnyConstructor, Maybe, ObjectLiteral, EmptyConstructor } from './types'
 import { FieldConfig, FieldConfigMap } from './fields';
 import { Thunk } from './utils/thunk';
 import { InputFieldConfig } from './decorators/InputField';
-import getArgs from './builders/getArgs';
 import { InterfaceTypeConfig } from './decorators/InterfaceType';
-import { FieldResolverMethod } from './decorators/Field';
+import { uniq } from 'lodash';
 
 export type StoredObjectTypeConfig = {
   name?: string,
@@ -107,8 +106,8 @@ export const getImplementers = (iface: AnyConstructor<any>): Maybe<Array<AnyCons
 export const storeImplements = (target: AnyConstructor<any>, iface: AnyConstructor<any>) => {
   const currentImplements = getImplements(target) || [];
   const currentImplementers = getImplementers(iface) || [];
-  Reflect.defineMetadata(implementsKey, [...currentImplements, iface], target);
-  Reflect.defineMetadata(implementersKey, [...currentImplementers, target], iface);
+  Reflect.defineMetadata(implementsKey, uniq([...currentImplements, iface]), target);
+  Reflect.defineMetadata(implementersKey, uniq([...currentImplementers, target]), iface);
 };
 
 export const getInterfaceTypeConfig = (target: AnyConstructor<any>) => {

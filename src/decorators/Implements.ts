@@ -2,7 +2,7 @@ import { AnyConstructor, MaybePromise } from '../types';
 import { FieldProperty } from './Field';
 import { storeImplements } from '../metadata';
 
-type InterfaceImplementation<T> = {
+export type InterfaceImplementation<T> = {
   [key in keyof T]: FieldProperty<any, MaybePromise<T[key]>, any>
 }
 
