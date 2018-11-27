@@ -1,4 +1,4 @@
-import { AnyConstructor, ObjectLiteral } from '../types';
+import { AnyConstructor, EmptyConstructor, ObjectLiteral } from '../types';
 import { resolveThunk, Thunk } from '../utils/thunk';
 import { GraphQLFieldConfigMap } from 'graphql';
 import { FieldConfig, FieldConfigMap, FieldResolver } from '../fields';
@@ -8,13 +8,31 @@ import { getConstructorChain } from './utils';
 import { mapValues } from 'lodash';
 import getArgs from './getArgs';
 import { getOutputType } from '../typeHelpers';
+import { flow } from 'lodash/fp';
 
-const getDefaultFieldResolver = (prototype: ObjectLiteral, key: string): FieldResolver<any, any, any> | null => {
+const convertResolverMethod = (prototype: ObjectLiteral, key: string, Args?: EmptyConstructor<any>): FieldResolver<any, any, any> | null => {
   if (typeof prototype[key] === 'function') {
     const resolverMethod = prototype[key] as FieldResolverMethod<any, any, any>;
-    return (source: any, ...args) => resolverMethod.apply(source, args);
+    return (source: any, args: ObjectLiteral, ...rest) => resolverMethod.apply(source, [
+      Args ? Object.assign(new Args(), args) : args,
+      rest,
+    ]);
   }
   return null;
+}
+
+const wrapResolver = <TArgs>(
+  config: FieldConfig<any, any, TArgs>
+): FieldConfig<any, any, any> => {
+  const { resolve, args: Args } = config;
+  if (resolve && Args) {
+    return {
+      ...config,
+      resolve: (source: any, args: ObjectLiteral, ...rest) =>
+        resolve(source, Object.assign(new Args(), args), ...rest),
+    }
+  }
+  return config;
 }
 
 export const buildFieldConfigMap = <TSource, TContext>(
@@ -48,13 +66,13 @@ export default (source: AnyConstructor<any>): Thunk<GraphQLFieldConfigMap<any, a
 
     const addDefaultResolver = (config: FieldConfig<any, any, any>, key: string) => ({
       ...config,
-      resolve: config.resolve || getDefaultFieldResolver(source.prototype, key) || undefined,
+      resolve: config.resolve || convertResolverMethod(source.prototype, key, config.args) || undefined,
     });
 
     const merged = mapValues<FieldConfigMap<any, any>, FieldConfig<any, any, any>>({
       ...allMaps,
       ...allFields,
-    }, addDefaultResolver);
+    }, flow(addDefaultResolver, wrapResolver));
 
     return buildFieldConfigMap(merged);
   };

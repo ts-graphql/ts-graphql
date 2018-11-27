@@ -1,5 +1,6 @@
 import Field from '../../Field';
-import { nullable, TSGraphQLID } from '../../..';
+import { nullable, TSGraphQLID, TSGraphQLInt } from '../../..';
+import { Maybe } from '../../../types';
 
 class Data {
   value!: string;
@@ -39,6 +40,9 @@ class SomeType {
   numberMethod(): number {
     return 42;
   }
+
+  @Field({ type: nullable(TSGraphQLInt) })
+  nullableInt: Maybe<number>;
 
   @Field({ args: SomeArgs })
   trMethodArgs({ a }: SomeArgs) {

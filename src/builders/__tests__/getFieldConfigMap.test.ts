@@ -6,6 +6,8 @@ import InterfaceType from '../../decorators/InterfaceType';
 import Implements from '../../decorators/Implements';
 import { fields } from '../../fields';
 import { ObjectType, TSGraphQLInt, TSGraphQLString } from '../../index';
+import Args from '../../decorators/Args';
+import Arg from '../../decorators/Arg';
 
 class Simple {
   @Field()
@@ -145,5 +147,42 @@ describe('getFieldConfigMap', () => {
     const config = resolveThunk(getFieldConfigMap(Simple));
     expect(config).toHaveProperty('str');
     expect(config.str.resolve).toBeFalsy();
+  });
+
+  it('should instantiate args class in resolvers', () => {
+    @Args()
+    class SomeArgs {
+      @Arg()
+      foo!: string;
+    }
+
+    @ObjectType({
+      fields: () => argsFields,
+    })
+    class ArgsTest {
+      @Field({ args: SomeArgs })
+      methodTest(args: SomeArgs): string {
+        expect(args instanceof SomeArgs).toBeTruthy();
+        return args.foo;
+      }
+    }
+
+    const argsFields = fields({ source: ArgsTest }, (field) => ({
+      configTest: field(
+        { type: TSGraphQLString, args: SomeArgs },
+        (root, args) => {
+          expect(args instanceof SomeArgs).toBeTruthy();
+          return args.foo;
+        }
+      )
+    }));
+
+    const config = resolveThunk(getFieldConfigMap(ArgsTest));
+    expect(config).toHaveProperty('configTest');
+    expect(config).toHaveProperty('methodTest');
+    expect(typeof config.configTest.resolve).toEqual('function');
+    expect(typeof config.methodTest.resolve).toEqual('function');
+    config.configTest.resolve!(new ArgsTest(), { foo: 'test' }, null, null as any);
+    config.methodTest.resolve!(new ArgsTest(), { foo: 'test' }, null, null as any);
   });
 });

@@ -10,6 +10,7 @@ import { GraphQLSchema } from 'graphql';
 import { random } from 'lodash';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
+import { TSGraphQLString } from '../../lib';
 
 @InterfaceType()
 abstract class Fruit {
@@ -23,7 +24,7 @@ abstract class Fruit {
 @ObjectType()
 @Implements(Fruit)
 class Apple {
-  name = Promise.resolve('Apple');
+  name = 'Apple';
 
   @Field()
   variety: string;
