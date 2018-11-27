@@ -12,6 +12,7 @@ export type StoredObjectTypeConfig = {
 };
 
 type StoredFieldConfig = { [key: string]: Thunk<FieldConfig<any, any, any>> };
+type StoredInputFieldConfig = { [key: string]: Thunk<InputFieldConfig<any>> };
 
 const isInputObjectTypeKey = Symbol('is-input-object-type');
 const isObjectTypeKey = Symbol('is-object-type');
@@ -72,11 +73,15 @@ export const storeFieldConfigMap = (
   Reflect.defineMetadata(fieldMapKey, configMap, target);
 };
 
-export const getInputFieldConfig = (target: AnyConstructor<any>): Maybe<{ [key: string]: InputFieldConfig<any> }> => {
+export const getInputFieldConfig = (target: AnyConstructor<any>): Maybe<StoredInputFieldConfig> => {
   return Reflect.getMetadata(inputFieldKey, target.prototype);
 };
 
 export const hasInputFieldConfig = (target: AnyConstructor<any>) => !!getInputFieldConfig(target);
+
+export const getArgsConfig = getInputFieldConfig;
+
+export const hasArgsConfig = hasInputFieldConfig;
 
 export const storeInputFieldConfig = (
   prototype: ObjectLiteral,

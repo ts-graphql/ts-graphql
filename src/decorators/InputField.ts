@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 import {
-  GraphQLInputType, GraphQLOutputType,
+  GraphQLInputType,
   Thunk,
 } from 'graphql';
 import { storeInputFieldConfig } from '../metadata';
 import { WrapperOrType } from '../wrappers/Wrapper';
 import { resolveThunk } from '../utils/thunk';
-import { isFunction } from 'lodash';
 import { resolveType } from './utils';
+import { AnyConstructor, Constructor, EmptyConstructor } from '../types';
 
 export type InputFieldConfig<TValue> = {
   type: WrapperOrType<TValue, GraphQLInputType>,
@@ -32,15 +32,25 @@ type InputFieldOverloads = {
   ): <TName extends string>(prototype: Record<TName, TValue>, key: TName) => void;
 }
 
+const getDefaultValueFromPrototype = (prototype: Record<any, any>, key: string) => {
+  const Args = prototype.constructor as Constructor<any>;
+  if (!Args || typeof Args !== 'function' || Args.length > 0) {
+    return undefined;
+  }
+  return new Args()[key];
+}
+
 const InputField = <TValue>(config?: Thunk<Partial<InputFieldConfig<TValue>>>) =>
   <TName extends string>(prototype: Record<TName, TValue>, key: TName) =>
     storeInputFieldConfig(prototype, key, () => {
-      const resolved = config && resolveThunk(config);
-      const type = resolveType(resolved && resolved.type, prototype, key);
+      const resolved = config && resolveThunk(config) || {};
+      const defaultValue = resolved.defaultValue || getDefaultValueFromPrototype(prototype, key);
+      const type = resolveType(resolved.type, prototype, key);
       return {
         ...resolved,
+        defaultValue,
         type,
-      };
+      } as InputFieldConfig<any>;
     });
 
 export default InputField as InputFieldOverloads;
