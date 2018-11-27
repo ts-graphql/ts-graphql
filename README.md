@@ -3,6 +3,8 @@
 A TypeScript library for building GraphQL APIs in an efficient and
 type safe way. 
 
+<img src="https://raw.githubusercontent.com/stephentuso/ts-graphql/example.gif">
+
 Project goals:
 
  - As close to 100% type safety between GraphQL schema and code as possible;
