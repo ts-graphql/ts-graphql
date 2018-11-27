@@ -26,38 +26,8 @@ class SomeType {
   @Field()
   number!: number;
 
-  @Field()
-  stringMethod(): string {
-    return '';
-  }
-
-  @Field()
-  booleanMethod(): boolean {
-    return false;
-  }
-
-  @Field()
-  numberMethod(): number {
-    return 42;
-  }
-
   @Field({ type: nullable(TSGraphQLInt) })
   nullableInt: Maybe<number>;
-
-  @Field({ args: SomeArgs })
-  trMethodArgs({ a }: SomeArgs) {
-    return a;
-  }
-
-  @Field({ args: SomeArgs })
-  boolMethodArgs({ b }: SomeArgs) {
-    return b;
-  }
-
-  @Field({ args: SomeArgs })
-  numMethodArgs({ c }: SomeArgs) {
-    return c;
-  }
 
   @Field({ type: TSGraphQLID })
   id!: Promise<string | number>;

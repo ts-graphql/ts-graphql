@@ -21,10 +21,7 @@ type FieldPropertyDecorator<TReturn, TArgs> = <TName extends string, TSource, TC
 type FieldOverloads = {
   <TArgs>(config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>):
     <TName extends string, TSource, TContext, TRArgs extends TArgs = TArgs>(
-      prototype:
-        Record<TName, FieldProperty<TContext, string, TArgs>> |
-        Record<TName, FieldProperty<TContext, boolean, TArgs>> |
-        Record<TName, FieldProperty<TContext, number, TArgs>>,
+      prototype: Record<TName, string> | Record<TName, boolean> | Record<TName, number>,
       key: TName,
     ) => void;
   <TReturn, TArgs>(

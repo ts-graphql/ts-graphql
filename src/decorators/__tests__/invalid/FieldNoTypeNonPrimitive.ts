@@ -1,6 +1,6 @@
 import Field from '../../Field';
 
-class Args {
+class Foo {
   @Field()
   foo!: {};
 }
