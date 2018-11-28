@@ -3,7 +3,8 @@
     "node_modules",
     "./examples",
     "./lib",
-    "./**/__tests__/"
+    "./**/__tests__/",
+    "./typeChecking.ts"
   ],
   "compilerOptions": {
     "target": "es5",

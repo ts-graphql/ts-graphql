@@ -8,6 +8,12 @@ import { fields } from '../../fields';
 import { ObjectType, TSGraphQLInt, TSGraphQLString } from '../../index';
 import Args from '../../decorators/Args';
 import Arg from '../../decorators/Arg';
+import list from '../../wrappers/list';
+import nullable from '../../wrappers/nullable';
+import enumType, { EnumTypeCase } from '../../wrappers/enumType';
+import { Maybe } from '../../types';
+import { Wrapper } from '../../wrappers/Wrapper';
+import { GraphQLEnumType } from 'graphql';
 
 class Simple {
   @Field()
@@ -184,5 +190,26 @@ describe('getFieldConfigMap', () => {
     expect(typeof config.methodTest.resolve).toEqual('function');
     config.configTest.resolve!(new ArgsTest(), { foo: 'test' }, null, null as any);
     config.methodTest.resolve!(new ArgsTest(), { foo: 'test' }, null, null as any);
+  });
+
+  it('should correctly run wrapper transformers', () => {
+    enum AnEnum {
+      Foo,
+      Bar,
+    }
+
+    const AnEnumType = enumType(AnEnum, { name: 'AnEnum', changeCase: EnumTypeCase.Constant });
+
+    @ObjectType()
+    class Foo {
+      @Field({ type: list(nullable(AnEnumType)) })
+      foo() {
+        return [AnEnum.Foo, AnEnum.Bar, null];
+      }
+    }
+
+    const config = resolveThunk(getFieldConfigMap(Foo));
+    expect(config).toHaveProperty('foo');
+    expect(config.foo!.resolve!(null, null as any, null, null as any)).toEqual(['FOO', 'BAR', null]);
   });
 });

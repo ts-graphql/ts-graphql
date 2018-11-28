@@ -7,9 +7,9 @@ import {
   Args,
   Implements,
   list,
-  TSGraphQLEnumType,
+  enumType,
   TSGraphQLString,
-  TSGraphQLUnionType,
+  unionType,
   TSGraphQLInt,
   nullable,
   buildFields,
@@ -75,7 +75,7 @@ enum UserRole {
   GUEST = 'GUEST',
 }
 
-const UserRoleEnumType = new TSGraphQLEnumType(UserRole, { name: 'UserRole' });
+const UserRoleEnumType = enumType(UserRole, { name: 'UserRole' });
 
 @ObjectType()
 @Implements(Node)
@@ -163,7 +163,7 @@ const recordMutationFields = fields({}, (field) => ({
 
 // -- Search --
 
-const SearchResult = new TSGraphQLUnionType<User | Record>({
+const SearchResult = unionType<User | Record>({
   name: 'SearchResult',
   types: [User, Record]
 });

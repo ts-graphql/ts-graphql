@@ -4,40 +4,23 @@ import {
   GraphQLNamedType,
   GraphQLNonNull,
   GraphQLOutputType,
-  GraphQLType,
+  GraphQLType, isInputType, isNamedType, isOutputType,
 } from 'graphql';
 import { isInputObjectType, isInterfaceType, isObjectType } from './metadata';
 import getInputObjectType from './builders/getInputObjectType';
 import getObjectType from './builders/getObjectType';
 import getInterfaceType from './builders/getInterfaceType';
+import { Constructor } from './types';
 
-export const getNamedType = (target: WrapperOrType<any, GraphQLNamedType>): GraphQLNamedType => {
+export function getType(target: WrapperOrType<any, GraphQLType>, nonNull?: false): GraphQLType;
+export function getType(target: WrapperOrType<any, GraphQLType>, nonNull: true): GraphQLNonNull<GraphQLType>;
+export function getType(target: WrapperOrType<any, GraphQLType>, nonNull?: boolean): GraphQLType | GraphQLNonNull<GraphQLType>;
+export function getType(
+  target: WrapperOrType<any, GraphQLType>,
+  nonNull?: boolean,
+): GraphQLType | GraphQLNonNull<GraphQLType> {
   if (isWrapper(target)) {
-    return resolveWrapper(target, true);
-  }
-
-  if (isInputObjectType(target)) {
-    return getInputObjectType(target);
-  }
-
-  if (isObjectType(target)) {
-    return getObjectType(target);
-  }
-
-  if (isInterfaceType(target)) {
-    return getInterfaceType(target);
-  }
-
-  throw new Error(`Named type not found for ${target.name}`);
-}
-
-export const getNamedTypes = (targets: Array<WrapperOrType<any, GraphQLNamedType>>): GraphQLNamedType[] => {
-  return targets.map(getNamedType);
-}
-
-export function getType(target: WrapperOrType<any, GraphQLType>, nonNull?: boolean): GraphQLType {
-  if (isWrapper(target)) {
-    return resolveWrapper(target);
+    return resolveWrapper(target, nonNull);
   }
 
   let type;
@@ -60,40 +43,30 @@ export function getType(target: WrapperOrType<any, GraphQLType>, nonNull?: boole
   throw new Error(`Type not found for ${target.name}`);
 }
 
+export const getNamedType = (target: WrapperOrType<any, GraphQLNamedType>): GraphQLNamedType => {
+  const type = getType(target);
+  if (!type || !isNamedType(type)) {
+    throw new Error(`Named type not found for ${(target as Constructor<any>).name}`);
+  }
+  return type;
+}
+
+export const getNamedTypes = (targets: Array<WrapperOrType<any, GraphQLNamedType>>): GraphQLNamedType[] => {
+  return targets.map(getNamedType);
+}
+
 export const getOutputType = (target: WrapperOrType<any, GraphQLOutputType>, nonNull?: boolean): GraphQLOutputType => {
-  if (isWrapper(target)) {
-    return resolveWrapper(target);
+  const type = getType(target, nonNull);
+  if (!type || !isOutputType(type)) {
+    throw new Error(`Output type not found for ${(target as Constructor<any>).name}`);
   }
-
-  let type;
-  if (isObjectType(target)) {
-    type = getObjectType(target);
-  }
-
-  if (isInterfaceType(target)) {
-    type = getInterfaceType(target);
-  }
-
-  if (type) {
-    return nonNull ? new GraphQLNonNull(type) : type;
-  }
-
-  throw new Error(`Output type not found for ${target.name}`);
+  return type;
 }
 
 export const getInputType = (target: WrapperOrType<any, GraphQLInputType>, nonNull?: boolean): GraphQLInputType => {
-  if (isWrapper(target)) {
-    return resolveWrapper(target);
+  const type = getType(target, nonNull);
+  if (!type || !isInputType(type)) {
+    throw new Error(`Input type not found for ${(target as Constructor<any>).name}`);
   }
-
-  let type;
-  if (isInputObjectType(target)) {
-    type = getInputObjectType(target);
-  }
-
-  if (type) {
-    return nonNull ? new GraphQLNonNull(type) : type;
-  }
-
-  throw new Error(`Input type not found for ${target.name}`);
+  return type;
 }
