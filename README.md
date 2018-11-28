@@ -55,9 +55,216 @@ The goal is to keep this simple and unopinionated. The only patterns required ar
 
 ### Guide
 
-TODO
+To quickly try out the library, you can clone it and run the [examples](https://github.com/stephentuso/ts-graphql/blob/master/examples).
+E.g. `npx ts-node examples/interface/index.ts`
 
-See [examples](https://github.com/stephentuso/ts-graphql/blob/master/examples) for now.
+Most decorators/functions for creating types accept all the same options as their counterparts in
+`graphql-js`, but with a differently typed `type` option. For specifics, see the type definitions.
+
+Lets start from the bottom:
+
+### Standard Scalars
+
+TS GraphQL provides wrapped versions of all the built-in scalars:
+
+```typescript
+import {
+  TSGraphQLBoolean, 
+  TSGraphQLFloat, 
+  TSGraphQLID, 
+  TSGraphQLInt, 
+  TSGraphQLString,
+} from 'ts-graphql';
+```
+
+### Object Types
+
+Object types use the decorators `ObjectType` and `Field`. You can also define fields
+separately from the source class, see [Modular Fields](#modular-fields).
+
+> For `Field`, `InputField`, and `Arg`, you can leave out the `type` option
+for properties explicitly typed as `string`, `number`, or `boolean`. 
+For methods and other types it is required (this is enforced with TS types). 
+It is best to explicitly set the type though - see [implicit type caveat](#implicit-types)
+
+```typescript
+import {
+  ObjectType,
+  Field,
+  TSGraphQLInt,
+} from 'ts-graphql';
+
+@ObjectType()
+class Vehicle {
+  @Field({ description: 'Make of the vehicle' })
+  make: string;
+  
+  @Field({ description: 'Model of the vehicle' })
+  model: string;
+  
+  @Field({
+    type: TSGraphQLInt,
+    description: 'Year the vehicle was produced'
+  })
+  year: number;
+  
+  //...
+}
+```
+
+### Input Object Types
+
+Input objects have different decorators from output objects: `InputObjectType` and `InputField`. 
+
+```typescript
+import {
+  InputObjectType,
+  InputField,
+  TSGraphQLID,
+} from 'ts-graphql';
+
+@InputObjectType()
+class ServiceRequestInput {
+  @InputField({ type: TSGraphQLID })
+  vehicleID!: string | number;
+}
+```
+
+### Args
+
+```typescript
+import {
+  Args,
+  Arg,
+} from 'ts-graphql';
+
+@Args()
+class ServiceRequestArgs {
+  @Arg({ type: ServiceRequestInput })
+  input!: ServiceRequestInput;
+}
+```
+
+#### Root Types
+
+There aren't any special functions for the root types, they are 
+just object types. 
+
+However, if you create them as classes, type safety is a little off as you won't have 
+access to instances of those classes - resolver methods will be bound to whatever the 
+root value is.
+
+The best thing to do is use [modular fields](#modular-fields) 
+with the source set to the type of your root value (if `undefined`, can leave it out) 
+and then use `buildFields` to create a `GraphQLObjectType`:
+
+```typescript
+import { GraphQLObjectType } from 'graphql';
+import { buildFields } from 'ts-graphql';
+import fooQueryFields from './foo';
+import barQueryFields from './bar';
+// ...
+
+const Query = new GraphQLObjectType({
+  name: 'Query',
+  fields: () => buildFields([
+    nodeQueryFields,
+    searchQueryFields,
+  ]),
+});
+``` 
+
+#### Schema
+
+`ts-graphql` doesn't provide its own method for building a schema. What it
+provides are methods for generating types that the `GraphQLSchema` constructor
+can accept:
+
+```typescript
+import { getObjectType, getNamedTypes } from 'ts-graphql';
+import { GraphQLSchema } from 'graphql'
+// ...
+
+const schema = new GraphQLSchema({
+  query: getObjectType(Query), // or if you followed whats above, just `Query`
+  mutation: getObjectType(Mutation),
+  types: getNamedTypes([
+    Foo,
+    Bar,
+  ]),
+}); 
+```
+
+### Modular Fields 
+
+You can use the `fields` method to define fields separately from your object type source, 
+and split them up if you want. This works well for the root types.
+
+```typescript
+
+// Foo.ts
+import { ObjectType } from 'ts-graphql';
+import { fooFieldsA } from './features/a.ts'
+import { fooFieldsB } from './features/b.ts'
+
+@ObjectType({
+  fields: () => [fooFieldsA, fooFieldsB],
+})
+export default class Foo {
+  data: string; 
+  // ...
+}
+
+// features/a.ts
+import { fields, TSGraphQLString } from 'ts-graphql';
+import Foo from '../Foo.ts';
+
+export const fooFieldsA = fields({ source: Foo }, (field) => ({
+  data: field(
+    { type: TSGraphQLString },
+    (source) => source.data,
+  ),
+}));
+
+// features/b.ts
+import { fields, TSGraphQLInt } from 'ts-graphql';
+import Foo from '../Foo.ts';
+
+export const fooFieldsA = fields({ source: Foo }, (field) => ({
+  dataLength: field(
+    { type: TSGraphQLInt },
+    (source) => source.data.length,
+  ),
+}));
+```
+
+### Custom Scalars
+
+For your own scalars you can use `scalarType`:
+
+```typescript
+import { scalarType } from 'ts-graphql';
+
+// ...
+
+const Date = scalarType({
+  name: 'Date',
+  description: 'ISO-8601 string',
+  serialize,
+  parseValue,
+  parseLiteral,
+});
+```
+
+Or, you can wrap custom scalars, providing the TS type to associate:
+
+```typescript
+import { wrapScalar } from 'ts-graphql';
+import SomeScalar from 'some-scalar';
+
+const SomeScalarTyped = wrapScalar<SomeType>(SomeScalar);
+```
+
 
 ## Caveats
 
@@ -76,14 +283,16 @@ Input types used where an output type is expected and vice versa
 won't show an error at compile time, they will immediately throw a runtime
 error though.
 
-###### Literal Types
+###### Implicit Types
 
-Omitting the type option on a literal type won't throw a compile time error,
-but will immediately throw at runtime. For example
-(contrived, would make more sense to use enum):
+Leaving out the field type for properties implicitly typed as primitives 
+won't throw a compile time error, but will immediately throw at runtime. For example:
 ```typescript
 @Field()
 shape: 'circle' | 'square';
+
+@Field()
+color = 'red';
 ```
 
 ###### Matching object types

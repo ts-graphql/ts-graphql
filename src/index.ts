@@ -17,6 +17,7 @@ import getObjectType from './builders/getObjectType';
 import { getInputType, getNamedType, getNamedTypes, getOutputType, getType } from './typeHelpers';
 import { buildFields, fields } from './fields';
 import { TSGraphQLBoolean, TSGraphQLFloat, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from './wrappers/scalars';
+import scalarType from './wrappers/scalarType';
 
 export {
   Arg,
@@ -27,14 +28,15 @@ export {
   InputObjectType,
   InterfaceType,
   ObjectType,
+  enumType,
   list,
   nullable,
   TSGraphQLBoolean,
-  enumType,
   TSGraphQLFloat,
   TSGraphQLID,
   TSGraphQLInt,
   TSGraphQLString,
+  scalarType,
   unionType,
   unsafeWrapType,
   wrapScalar,
