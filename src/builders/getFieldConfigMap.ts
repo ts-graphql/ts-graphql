@@ -1,6 +1,6 @@
 import { AnyConstructor, EmptyConstructor, ObjectLiteral } from '../types';
 import { resolveThunk, Thunk } from '../utils/thunk';
-import { GraphQLFieldConfigMap } from 'graphql';
+import { GraphQLFieldConfigMap, GraphQLFieldResolver } from 'graphql';
 import { FieldConfig, FieldConfigMap, FieldResolver } from '../fields';
 import { getFieldConfig, getImplements, getSavedFieldConfigMap } from '../metadata';
 import { FieldResolverMethod } from '../decorators/Field';
@@ -8,7 +8,7 @@ import { getConstructorChain } from './utils';
 import { mapValues } from 'lodash';
 import getArgs from './getArgs';
 import { getOutputType } from '../typeHelpers';
-import { flow } from 'lodash/fp';
+import { isWrapper } from '../wrappers/Wrapper';
 
 const convertResolverMethod = (prototype: ObjectLiteral, key: string, Args?: EmptyConstructor<any>): FieldResolver<any, any, any> | null => {
   if (typeof prototype[key] === 'function') {
@@ -24,12 +24,17 @@ const convertResolverMethod = (prototype: ObjectLiteral, key: string, Args?: Emp
 const wrapResolver = <TArgs>(
   config: FieldConfig<any, any, TArgs>
 ): FieldConfig<any, any, any> => {
-  const { resolve, args: Args } = config;
-  if (resolve && Args) {
+  const { resolve, type, args: Args } = config;
+  const transformOutput = isWrapper(type) && type.transformOutput;
+  if (resolve) {
+    const wrapped: GraphQLFieldResolver<any, any> = Args
+      ? (source: any, args: ObjectLiteral, ...rest) => resolve(source, Object.assign(new Args(), args), ...rest)
+      : resolve;
     return {
       ...config,
-      resolve: (source: any, args: ObjectLiteral, ...rest) =>
-        resolve(source, Object.assign(new Args(), args), ...rest),
+      resolve: transformOutput
+        ? (...args) => transformOutput(wrapped(...args))
+        : wrapped,
     }
   }
   return config;
@@ -72,7 +77,7 @@ export default (source: AnyConstructor<any>): Thunk<GraphQLFieldConfigMap<any, a
     const merged = mapValues<FieldConfigMap<any, any>, FieldConfig<any, any, any>>({
       ...allMaps,
       ...allFields,
-    }, flow(addDefaultResolver, wrapResolver));
+    }, (value, key) => wrapResolver(addDefaultResolver(value, key)));
 
     return buildFieldConfigMap(merged);
   };
