@@ -8,8 +8,8 @@ import InterfaceType from './decorators/InterfaceType';
 import ObjectType from './decorators/ObjectType';
 import list from './wrappers/list';
 import nullable from './wrappers/nullable';
-import TSGraphQLEnumType from './wrappers/TSGraphQLEnumType';
-import TSGraphQLUnionType from './wrappers/TSGraphQLUnionType';
+import enumType from './wrappers/enumType';
+import unionType from './wrappers/unionType';
 import { unsafeWrapType, wrapScalar } from './wrappers/Wrapper';
 import getInputObjectType from './builders/getInputObjectType';
 import getInterfaceType from './builders/getInterfaceType';
@@ -30,12 +30,12 @@ export {
   list,
   nullable,
   TSGraphQLBoolean,
-  TSGraphQLEnumType,
+  enumType,
   TSGraphQLFloat,
   TSGraphQLID,
   TSGraphQLInt,
   TSGraphQLString,
-  TSGraphQLUnionType,
+  unionType,
   unsafeWrapType,
   wrapScalar,
   getInputObjectType,

@@ -17,8 +17,8 @@ import {
 } from 'graphql';
 import { getType } from '../typeHelpers';
 import list from '../wrappers/list';
-import TSGraphQLEnumType from '../wrappers/TSGraphQLEnumType';
-import TSGraphQLUnionType from '../wrappers/TSGraphQLUnionType';
+import enumType from '../wrappers/enumType';
+import unionType from '../wrappers/unionType';
 
 @ObjectType()
 class AnObjectType {
@@ -48,9 +48,9 @@ enum AnEnum {
   Foo,
 }
 
-const AnEnumType = new TSGraphQLEnumType(AnEnum, { name: 'AnEnumType' })
+const AnEnumType = enumType(AnEnum, { name: 'AnEnumType' })
 
-const AUnionType = new TSGraphQLUnionType<AnObjectType | AnotherObjectType>({
+const AUnionType = unionType<AnObjectType | AnotherObjectType>({
   name: 'AUnionType',
   types: [AnObjectType, AnotherObjectType]
 })

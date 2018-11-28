@@ -10,7 +10,7 @@ import Args from '../../decorators/Args';
 import Arg from '../../decorators/Arg';
 import list from '../../wrappers/list';
 import nullable from '../../wrappers/nullable';
-import TSGraphQLEnumType, { TSGraphQLEnumCase } from '../../wrappers/TSGraphQLEnumType';
+import enumType, { EnumTypeCase } from '../../wrappers/enumType';
 import { Maybe } from '../../types';
 import { Wrapper } from '../../wrappers/Wrapper';
 import { GraphQLEnumType } from 'graphql';
@@ -198,7 +198,7 @@ describe('getFieldConfigMap', () => {
       Bar,
     }
 
-    const AnEnumType = new TSGraphQLEnumType(AnEnum, { name: 'AnEnum', changeCase: TSGraphQLEnumCase.Constant });
+    const AnEnumType = enumType(AnEnum, { name: 'AnEnum', changeCase: EnumTypeCase.Constant });
 
     @ObjectType()
     class Foo {
