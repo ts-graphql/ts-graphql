@@ -62,7 +62,7 @@ Most decorators/functions for creating types accept all the same options as thei
 
 Lets start from the bottom:
 
-### Standard Scalars
+#### Standard Scalars
 
 TS GraphQL provides wrapped versions of all the built-in scalars:
 
@@ -76,7 +76,7 @@ import {
 } from 'ts-graphql';
 ```
 
-### Object Types
+#### Object Types
 
 Object types use the decorators `ObjectType` and `Field`. You can also define fields
 separately from the source class, see [Modular Fields](#modular-fields).
@@ -120,7 +120,7 @@ class Vehicle {
 }
 ```
 
-### Input Object Types
+#### Input Object Types
 
 Input objects have different decorators from output objects: `InputObjectType` and `InputField`. 
 
@@ -138,7 +138,7 @@ class ServiceRequestInput {
 }
 ```
 
-### Args
+#### Args
 
 ```typescript
 import {
@@ -218,7 +218,7 @@ const schema = new GraphQLSchema({
 }); 
 ```
 
-### Modular Fields 
+#### Modular Fields 
 
 You can use the `fields` method to define fields separately from your object type source, 
 and split them up if you want. This works well for the root types.
@@ -261,7 +261,7 @@ export const fooFieldsA = fields({ source: Foo }, (field) => ({
 }));
 ```
 
-### Custom Scalars
+#### Custom Scalars
 
 For your own scalars you can use `scalarType`:
 
