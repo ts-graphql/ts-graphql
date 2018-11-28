@@ -200,8 +200,8 @@ const Query = new GraphQLObjectType({
 
 #### Schema
 
-`ts-graphql` doesn't provide its own method for building a schema. What it
-provides are methods for generating types that the `GraphQLSchema` constructor
+`ts-graphql` doesn't provide its own way of building a schema. What it
+provides are functions for generating types that the `GraphQLSchema` constructor
 can accept:
 
 ```typescript
