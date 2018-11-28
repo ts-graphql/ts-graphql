@@ -87,11 +87,15 @@ for properties explicitly typed as `string`, `number`, or `boolean`.
 For methods and other types it is required (this is enforced with TS types). 
 It is best to explicitly set the type though - see [implicit type caveat](#implicit-types)
 
+The `Field` decorator can be applied to a property or a method. The method takes
+parameters `args`, `context` and `info`. `source` is left out as it is available as `this`.
+
 ```typescript
 import {
   ObjectType,
   Field,
   TSGraphQLInt,
+  TSGraphQLString,
 } from 'ts-graphql';
 
 @ObjectType()
@@ -107,6 +111,11 @@ class Vehicle {
     description: 'Year the vehicle was produced'
   })
   year: number;
+  
+  @Field({ type: TSGraphQLString })
+  title() {
+    return `${this.year} ${this.make} ${this.model}`;
+  }
   
   //...
 }
@@ -136,12 +145,27 @@ class ServiceRequestInput {
 import {
   Args,
   Arg,
+  ObjectType,
+  Field,
 } from 'ts-graphql';
 
 @Args()
 class ServiceRequestArgs {
   @Arg({ type: ServiceRequestInput })
   input!: ServiceRequestInput;
+}
+
+// ...
+
+// Usage
+
+@ObjectType()
+class Mutation {
+  @Field({ type: ServiceRequestPayload, args: ServiceRequestArgs })
+  requestService({ input }, context) {
+    const { vehicleID } = input;
+    // ...
+  }
 }
 ```
 
@@ -168,8 +192,8 @@ import barQueryFields from './bar';
 const Query = new GraphQLObjectType({
   name: 'Query',
   fields: () => buildFields([
-    nodeQueryFields,
-    searchQueryFields,
+    fooQueryFields,
+    barQueryFields,
   ]),
 });
 ``` 
