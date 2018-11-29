@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { AnyConstructor, Maybe, ObjectLiteral, EmptyConstructor } from './types';
 import { FieldConfig, FieldConfigMap } from './fields';
-import { Thunk } from './utils/thunk';
+import { resolveThunk, Thunk } from './utils/thunk';
 import { InputFieldConfig } from './decorators/InputField';
 import { InterfaceTypeConfig } from './decorators/InterfaceType';
 import { uniq } from 'lodash';
@@ -88,7 +88,7 @@ export const storeInputFieldConfig = (
   name: string,
   config: Thunk<InputFieldConfig<any>>,
 ) => {
-  const currentFields = Reflect.get(prototype, inputFieldKey);
+  const currentFields = Reflect.getMetadata(inputFieldKey, prototype);
   Reflect.defineMetadata(inputFieldKey, { ...currentFields, [name]: config }, prototype);
 };
 
