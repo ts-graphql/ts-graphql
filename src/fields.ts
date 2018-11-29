@@ -3,7 +3,7 @@ import { MaybePromise, EmptyConstructor, MaybeArray, AnyConstructor } from './ty
 import { GraphQLOutputType, GraphQLResolveInfo } from 'graphql';
 import { mergeThunks, resolveThunk, Thunk } from './utils/thunk';
 import { isArray } from 'lodash';
-import { buildFieldConfigMap } from './builders/getFieldConfigMap';
+import { buildFieldConfigMap } from './builders/buildFieldConfigMap';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
   type: WrapperOrType<TReturn, GraphQLOutputType>,

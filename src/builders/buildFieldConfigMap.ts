@@ -13,7 +13,7 @@ import {
 import { FieldResolverMethod } from '../decorators/Field';
 import { getConstructorChain } from './utils';
 import { mapValues } from 'lodash';
-import getArgs from './getArgs';
+import getArgs from './buildArgs';
 import { getOutputType } from '../typeHelpers';
 import { isWrapper } from '../wrappers/Wrapper';
 

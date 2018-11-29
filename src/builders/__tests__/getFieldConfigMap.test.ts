@@ -1,7 +1,7 @@
 import 'jest';
 import Field from '../../decorators/Field';
 import { resolveThunk } from '../../utils/thunk';
-import getFieldConfigMap from '../getFieldConfigMap';
+import getFieldConfigMap from '../buildFieldConfigMap';
 import InterfaceType from '../../decorators/InterfaceType';
 import Implements from '../../decorators/Implements';
 import { fields } from '../../fields';

@@ -1,7 +1,7 @@
 import 'jest';
 import Arg from '../../decorators/Arg';
 import Args from '../../decorators/Args';
-import getArgs from '../getArgs';
+import getArgs from '../buildArgs';
 import { resolveThunk } from '../../utils/thunk';
 
 class WithoutDecorator {

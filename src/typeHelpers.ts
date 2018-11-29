@@ -7,9 +7,9 @@ import {
   GraphQLType, isInputType, isNamedType, isOutputType,
 } from 'graphql';
 import { isInputObjectType, isInterfaceType, isObjectType } from './metadata';
-import getInputObjectType from './builders/getInputObjectType';
-import getObjectType from './builders/getObjectType';
-import getInterfaceType from './builders/getInterfaceType';
+import getInputObjectType from './builders/buildInputObjectType';
+import getObjectType from './builders/buildObjectType';
+import getInterfaceType from './builders/buildInterfaceType';
 import { Constructor } from './types';
 
 export function getType(target: WrapperOrType<any, GraphQLType>, nonNull?: false): GraphQLType;

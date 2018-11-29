@@ -267,19 +267,19 @@ const Query = new GraphQLObjectType({
 
 ### Schema
 
-`ts-graphql` doesn't provide its own way of building a schema. What it
+`ts-graphql` doesn't currently provide its own way of building a schema. What it
 provides are functions for generating types that the `GraphQLSchema` constructor
 can accept:
 
 ```typescript
-import { getObjectType, getNamedTypes } from 'ts-graphql';
+import { buildObjectType, buildNamedTypes } from 'ts-graphql';
 import { GraphQLSchema } from 'graphql'
 // ...
 
 const schema = new GraphQLSchema({
-  query: getObjectType(Query), // or if you followed whats above, just `Query`
-  mutation: getObjectType(Mutation),
-  types: getNamedTypes([
+  query: buildObjectType(Query), // or if you followed whats above, just `Query`
+  mutation: buildObjectType(Mutation),
+  types: buildNamedTypes([
     Foo,
     Bar,
   ]),
