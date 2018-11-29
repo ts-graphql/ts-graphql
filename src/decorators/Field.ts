@@ -2,10 +2,15 @@ import 'reflect-metadata';
 import { FieldCreatorConfig } from '../fields';
 import { GraphQLResolveInfo, Thunk } from 'graphql';
 import { storeFieldConfig } from '../metadata';
-import { MaybePromise } from '../types';
+import { AnyConstructor, MaybePromise } from '../types';
 import { resolveThunk } from '../utils/thunk';
 import { resolveType } from './utils';
 import { InterfaceImplementation } from './Implements';
+import { TSGraphQLInt } from '../index';
+
+export type FieldDecoratorConfig<TReturn, TArgs = {}, TContext = any> = FieldCreatorConfig<TReturn, TArgs> & {
+  context?: AnyConstructor<TContext>
+}
 
 export type FieldResolverMethod<TContext, TReturn, TArgs> =
   (args: TArgs, context: TContext, info: GraphQLResolveInfo) => TReturn | InterfaceImplementation<TReturn>;
@@ -29,10 +34,14 @@ type FieldOverloads = {
   ): FieldPropertyDecorator<MaybePromise<TReturn>, TArgs>
 }
 
-const Field = <TReturn, TArgs>(
-  config?: Thunk<Partial<FieldCreatorConfig<TReturn, TArgs>>>
+export const fieldDecoratorForContext = <TContext>(context: AnyConstructor<TContext>) =>
+  <TReturn, TArgs>(config?: Thunk<Partial<FieldCreatorConfig<TReturn, TArgs>>>) =>
+    Field<TReturn, TArgs, TContext>({ ...config, context, });
+
+const Field = <TReturn, TArgs, TContext>(
+  config?: Thunk<Partial<FieldDecoratorConfig<TReturn, TArgs, TContext>>>
 ) =>
-  <TName extends string, TSource, TContext, TRArgs extends TArgs = TArgs>(
+  <TName extends string, TSource, TRArgs extends TArgs = TArgs>(
     prototype: Record<TName, FieldProperty<TContext, TReturn, TRArgs>>,
     key: TName,
   ) => {

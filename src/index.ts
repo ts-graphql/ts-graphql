@@ -1,6 +1,6 @@
 import Arg from './decorators/Arg';
 import Args from './decorators/Args';
-import Field from './decorators/Field';
+import Field, { fieldDecoratorForContext } from './decorators/Field';
 import Implements from './decorators/Implements';
 import InputField from './decorators/InputField';
 import InputObjectType from './decorators/InputObjectType';
@@ -50,4 +50,5 @@ export {
   getType,
   fields,
   buildFields,
+  fieldDecoratorForContext,
 };

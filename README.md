@@ -25,6 +25,7 @@ Project goals:
   * [Union Types](#union-types)
   * [Root Types](#root-types)
   * [Schema](#schema)
+  * [Context](#context)
   * [Modular Fields](#modular-fields)
   * [Custom Scalars](#custom-scalars)
 * [Why?](#why)
@@ -52,7 +53,7 @@ see the type definitions.
 The only special patterns needed are:
 
  - 1:1 mapping between GraphQL types and TS types
- - For it to be typed, Context has to be a class (might be able to fix this)
+ - For it to be typed, Context has to be a class (see [context](#context)
 
 ### Standard Scalars
 
@@ -285,6 +286,50 @@ const schema = new GraphQLSchema({
   ]),
 }); 
 ```
+
+### Context
+
+For context to be type checked, it must be an instance of a class.
+
+```typescript
+class Context {
+  constructor (public viewerId: string) {}
+}
+```
+
+For resolver methods, you can pass the context option:
+```typescript
+@ObjectType()
+class Foo { 
+  @Field({
+    type: TSGraphQLString ,
+    context: Context,
+  })
+  bar(args: {}, context: Context) {
+    return 'foobar';
+  }
+}
+```
+
+However, you'll most likely want your context type to be the
+same in every resolver. You can create a field decorator bound
+to your context type and use that instead of `Field` from `ts-graphql`:
+
+```typescript
+// Field.ts
+import Context from './Context';
+import { fieldDecoratorForContext } from 'ts-graphql';
+
+export default fieldDecoratorForContext(Context);
+
+// Elsewhere
+import Field from './Field';
+// And use normally
+```
+
+For modular fields, pass the `context` option to `fields` and it
+will be typed in your resolvers. Note that all fields you pass to an
+`ObjectType` must have the same `Context` type.
 
 ### Modular Fields 
 
