@@ -11,58 +11,50 @@ Project goals:
  - Single source of truth for both schema types and TS types
  - Lightweight wrapper around [graphql-js](https://github.com/graphql/graphql-js) -
    stay flexible and easy to comprehend
+  
+## Table of Contents 
+
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Patterns](#patterns)
+  * [Standard Scalars](#standard-scalars)
+  * [Object Types](#object-types)
+  * [Input Object Types](#input-object-types)
+  * [Args](#args)
+  * [Enums](#enums)
+  * [Union Types](#union-types)
+  * [Root Types](#root-types)
+  * [Schema](#schema)
+  * [Modular Fields](#modular-fields)
+  * [Custom Scalars](#custom-scalars)
+* [Why?](#why)
+* [Caveats](#caveats)
    
-If you are looking for more of a full framework  - currently without as much type safety -
-checkout [type-graphql](https://github.com/19majkel94/type-graphql).
-
-## Why?
-
-This library is the result of experiencing many frustrations while working with
-GraphQL and TypeScript, whether that was programmatically with graphql-js, or 
-writing schemas in the SDL and using something like graphql-cli to generate types from them. 
-
-The main issues:
-
- - Either way, you have to write types twice. Even worse, since the SDL is either 
-strings or text files, you can't use features of the language to DRY up common
-args and types.
-
- - There is a disconnect between return values of resolvers and the field types
-of the schema. For example, the resolver can return null, but the schema has it marked
-as non null. This is a runtime error, and one that can't be caught immediately,
-so unless you have every single field tested with every possible condition, 
-the error won't be thrown until some point later in the QA cycle, 
-potentially even after deployment.
-
-This library solves both of those:
-
- - Every component of the schema has a single source of truth and support
-   using `extends` to inherit fields/args.
- - Type mismatch errors for all schema components are enforced by TS types
-   and shown at compile time
+## Installation
+ 
+```
+yarn add ts-graphql
+# or
+npm i ts-graphql
+```
 
 ## Usage
- 
-Install with `yarn add ts-graphql`
-
-### Patterns
-
-The goal is to keep this simple and unopinionated. The only patterns required are:
-
- - 1:1 mapping between GraphQL types and TS types
- - Context type has to be a class
-
-### Guide
 
 To quickly try out the library, you can clone it and run the [examples](https://github.com/stephentuso/ts-graphql/blob/master/examples).
 E.g. `npx ts-node examples/interface/index.ts`
 
-Most decorators/functions for creating types accept all the same options as their counterparts in
-`graphql-js`, but with a differently typed `type` option. For specifics, see the type definitions.
+### Patterns
 
-Lets start from the bottom:
+The goal is to keep this simple and unopinionated. Most decorators/functions for creating types accept all the same 
+options as their counterparts in `graphql-js`, but with a differently typed `type` option. For specifics, 
+see the type definitions.
 
-#### Standard Scalars
+The only special patterns needed are:
+
+ - 1:1 mapping between GraphQL types and TS types
+ - For it to be typed, Context has to be a class (might be able to fix this)
+
+### Standard Scalars
 
 TS GraphQL provides wrapped versions of all the built-in scalars:
 
@@ -76,7 +68,7 @@ import {
 } from 'ts-graphql';
 ```
 
-#### Object Types
+### Object Types
 
 Object types use the decorators `ObjectType` and `Field`. You can also define fields
 separately from the source class, see [Modular Fields](#modular-fields).
@@ -120,7 +112,7 @@ class Vehicle {
 }
 ```
 
-#### Input Object Types
+### Input Object Types
 
 Input objects have different decorators from output objects: `InputObjectType` and `InputField`. 
 
@@ -135,10 +127,25 @@ import {
 class ServiceRequestInput {
   @InputField({ type: TSGraphQLID })
   vehicleID!: string | number;
+  
+  // You can use property initializers to specify the default value
+  @InputField()
+  description: string = '';
+ 
+  // Or the config option defaultValue
+  @InputField({ 
+    type: TSGraphQLInt,
+    defaultValue: 55, 
+  })
+  code!: string;
 }
 ```
 
-#### Args
+### Args
+
+Args have the same config options and behavior as input object types. Arg and input
+object type classes will be instantiated, so if you want to you can add methods, 
+getters/setters, etc.
 
 ```typescript
 import {
@@ -161,14 +168,75 @@ class ServiceRequestArgs {
 @ObjectType()
 class Mutation {
   @Field({ type: ServiceRequestPayload, args: ServiceRequestArgs })
-  requestService({ input }, context) {
+  requestService(args, context) {
+    // args instanceof ServiceRequestArgs === true
+    const { input } = args;
+    // input instanceof ServiceRequestInput === true
     const { vehicleID } = input;
     // ...
   }
 }
 ```
 
-#### Root Types
+### Enums
+
+You can use TS enums in your code, and create a type for TS GraphQL to use.
+
+```typescript
+import { enumType, EnumTypeCase, Field } from 'ts-graphql';
+
+enum Shape {
+  Square,
+  Circle,
+  Triangle,
+}
+
+// In schema will be: Square, Circle, Triangle
+const ShapeType = enumType(Shape); 
+// Or if you want constant case in schema (SQUARE, CIRCLE, TRIANGLE)
+const ShapeType = enumType(Shape, { 
+  changeCase: EnumTypeCase.Constant,
+});
+
+// In an object type...
+@Field({ type: ShapeType })
+shape() {
+  return Shape.Circle;
+}
+```
+
+### Union Types
+
+Union types are a little verbose, but there isn't really a way
+around it:
+
+```typescript
+import {
+  ObjectType,
+  Field,
+  unionType,
+  
+} from 'ts-graphql';
+
+@ObjectType()
+class A {
+  @Field()
+  a!: string;
+}
+
+@ObjectType()
+class B {
+  @Field()
+  b!: string;
+}
+
+const AOrB = unionType<A | B>({
+  name: 'AOrB',
+  types: [A, B],
+});
+```
+
+### Root Types
 
 There aren't any special functions for the root types, they are 
 just object types. 
@@ -197,7 +265,7 @@ const Query = new GraphQLObjectType({
 });
 ``` 
 
-#### Schema
+### Schema
 
 `ts-graphql` doesn't provide its own way of building a schema. What it
 provides are functions for generating types that the `GraphQLSchema` constructor
@@ -218,7 +286,7 @@ const schema = new GraphQLSchema({
 }); 
 ```
 
-#### Modular Fields 
+### Modular Fields 
 
 You can use the `fields` method to define fields separately from your object type source, 
 and split them up if you want. This works well for the root types.
@@ -261,7 +329,7 @@ export const fooFieldsA = fields({ source: Foo }, (field) => ({
 }));
 ```
 
-#### Custom Scalars
+### Custom Scalars
 
 For your own scalars you can use `scalarType`:
 
@@ -288,6 +356,31 @@ import SomeScalar from 'some-scalar';
 const SomeScalarTyped = wrapScalar<SomeType>(SomeScalar);
 ```
 
+## Why?
+
+This library is the result of experiencing many frustrations while working with
+GraphQL and TypeScript, whether that was programmatically with graphql-js, or 
+writing schemas in the SDL and using something like graphql-cli to generate types from them. 
+
+The main issues:
+
+ - Either way, you have to write types twice. Even worse, since the SDL is either 
+strings or text files, you can't use features of the language to DRY up common
+args and types.
+
+ - There is a disconnect between return values of resolvers and the field types
+of the schema. For example, the resolver can return null, but the schema has it marked
+as non null. This is a runtime error, and one that can't be caught immediately,
+so unless you have every single field tested with every possible condition, 
+the error won't be thrown until some point later in the QA cycle, 
+potentially even after deployment.
+
+This library solves both of those:
+
+ - Every component of the schema has a single source of truth and support
+   using `extends` to inherit fields/args.
+ - Type mismatch errors for all schema components are enforced by TS types
+   and shown at compile time
 
 ## Caveats
 

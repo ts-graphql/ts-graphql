@@ -11,9 +11,6 @@ import Arg from '../../decorators/Arg';
 import list from '../../wrappers/list';
 import nullable from '../../wrappers/nullable';
 import enumType, { EnumTypeCase } from '../../wrappers/enumType';
-import { Maybe } from '../../types';
-import { Wrapper } from '../../wrappers/Wrapper';
-import { GraphQLEnumType } from 'graphql';
 import InputObjectType from '../../decorators/InputObjectType';
 import InputField from '../../decorators/InputField';
 
@@ -233,10 +230,15 @@ describe('getFieldConfigMap', () => {
       foo() {
         return [AnEnum.Foo, AnEnum.Bar, null];
       }
+
+      @Field({ type: AnEnumType })
+      bar = AnEnum.Bar;
     }
 
     const config = resolveThunk(getFieldConfigMap(Foo));
     expect(config).toHaveProperty('foo');
-    expect(config.foo!.resolve!(null, null as any, null, null as any)).toEqual(['FOO', 'BAR', null]);
+    expect(config).toHaveProperty('bar');
+    expect(config.foo!.resolve!(null, {}, null, null as any)).toEqual(['FOO', 'BAR', null]);
+    expect(config.bar!.resolve!(new Foo(), {}, null, null as any)).toEqual('BAR');
   });
 });
