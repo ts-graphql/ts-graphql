@@ -1,6 +1,6 @@
 import Arg from './decorators/Arg';
 import Args from './decorators/Args';
-import Field from './decorators/Field';
+import Field, { fieldDecoratorForContext } from './decorators/Field';
 import Implements from './decorators/Implements';
 import InputField from './decorators/InputField';
 import InputObjectType from './decorators/InputObjectType';
@@ -11,9 +11,9 @@ import nullable from './wrappers/nullable';
 import enumType from './wrappers/enumType';
 import unionType from './wrappers/unionType';
 import { unsafeWrapType, wrapScalar } from './wrappers/Wrapper';
-import getInputObjectType from './builders/getInputObjectType';
-import getInterfaceType from './builders/getInterfaceType';
-import getObjectType from './builders/getObjectType';
+import getInputObjectType from './builders/buildInputObjectType';
+import getInterfaceType from './builders/buildInterfaceType';
+import getObjectType from './builders/buildObjectType';
 import { getInputType, getNamedType, getNamedTypes, getOutputType, getType } from './typeHelpers';
 import { buildFields, fields } from './fields';
 import { TSGraphQLBoolean, TSGraphQLFloat, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from './wrappers/scalars';
@@ -50,4 +50,5 @@ export {
   getType,
   fields,
   buildFields,
+  fieldDecoratorForContext,
 };

@@ -1,8 +1,8 @@
 import { GraphQLInterfaceType } from 'graphql';
 import { getImplementers, getInterfaceTypeConfig, isInterfaceType } from '../metadata';
 import { AnyConstructor } from '../types';
-import getFieldConfigMap from './getFieldConfigMap';
-import getObjectType from './getObjectType';
+import getFieldConfigMap from './buildFieldConfigMap';
+import getObjectType from './buildObjectType';
 import findConstructor from '../utils/findConstructor';
 import { memoize } from 'lodash';
 

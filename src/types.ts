@@ -17,6 +17,10 @@ export type EmptyConstructor<T> = {
   new (): T;
 };
 
+export const isEmptyConstructor = <T>(ctor: AnyConstructor<T>): ctor is EmptyConstructor<T> => {
+  return ctor.length === 0;
+}
+
 export type ObjectLiteral = {
   [key: string]: any;
 }

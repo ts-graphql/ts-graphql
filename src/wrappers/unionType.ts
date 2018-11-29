@@ -1,7 +1,7 @@
 import { GraphQLNonNull, GraphQLType, GraphQLUnionType } from 'graphql';
 import { Wrapper } from './Wrapper';
 import { AnyConstructor } from '../types';
-import getObjectType from '../builders/getObjectType';
+import getObjectType from '../builders/buildObjectType';
 import findConstructor from '../utils/findConstructor';
 
 export type UnionTypeConfig<T> = {
