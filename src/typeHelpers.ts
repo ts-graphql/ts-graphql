@@ -12,10 +12,10 @@ import getObjectType from './builders/buildObjectType';
 import getInterfaceType from './builders/buildInterfaceType';
 import { Constructor } from './types';
 
-export function getType(target: WrapperOrType<any, GraphQLType>, nonNull?: false): GraphQLType;
-export function getType(target: WrapperOrType<any, GraphQLType>, nonNull: true): GraphQLNonNull<GraphQLType>;
-export function getType(target: WrapperOrType<any, GraphQLType>, nonNull?: boolean): GraphQLType | GraphQLNonNull<GraphQLType>;
-export function getType(
+export function buildType(target: WrapperOrType<any, GraphQLType>, nonNull?: false): GraphQLType;
+export function buildType(target: WrapperOrType<any, GraphQLType>, nonNull: true): GraphQLNonNull<GraphQLType>;
+export function buildType(target: WrapperOrType<any, GraphQLType>, nonNull?: boolean): GraphQLType | GraphQLNonNull<GraphQLType>;
+export function buildType(
   target: WrapperOrType<any, GraphQLType>,
   nonNull?: boolean,
 ): GraphQLType | GraphQLNonNull<GraphQLType> {
@@ -43,28 +43,28 @@ export function getType(
   throw new Error(`Type not found for ${target.name}`);
 }
 
-export const getNamedType = (target: WrapperOrType<any, GraphQLNamedType>): GraphQLNamedType => {
-  const type = getType(target);
+export const buildNamedType = (target: WrapperOrType<any, GraphQLNamedType>): GraphQLNamedType => {
+  const type = buildType(target);
   if (!type || !isNamedType(type)) {
     throw new Error(`Named type not found for ${(target as Constructor<any>).name}`);
   }
   return type;
 }
 
-export const getNamedTypes = (targets: Array<WrapperOrType<any, GraphQLNamedType>>): GraphQLNamedType[] => {
-  return targets.map(getNamedType);
+export const buildNamedTypes = (targets: Array<WrapperOrType<any, GraphQLNamedType>>): GraphQLNamedType[] => {
+  return targets.map(buildNamedType);
 }
 
-export const getOutputType = (target: WrapperOrType<any, GraphQLOutputType>, nonNull?: boolean): GraphQLOutputType => {
-  const type = getType(target, nonNull);
+export const buildOutputType = (target: WrapperOrType<any, GraphQLOutputType>, nonNull?: boolean): GraphQLOutputType => {
+  const type = buildType(target, nonNull);
   if (!type || !isOutputType(type)) {
     throw new Error(`Output type not found for ${(target as Constructor<any>).name}`);
   }
   return type;
 }
 
-export const getInputType = (target: WrapperOrType<any, GraphQLInputType>, nonNull?: boolean): GraphQLInputType => {
-  const type = getType(target, nonNull);
+export const buildInputType = (target: WrapperOrType<any, GraphQLInputType>, nonNull?: boolean): GraphQLInputType => {
+  const type = buildType(target, nonNull);
   if (!type || !isInputType(type)) {
     throw new Error(`Input type not found for ${(target as Constructor<any>).name}`);
   }

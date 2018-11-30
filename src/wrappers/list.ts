@@ -1,9 +1,9 @@
 import { isWrapper, Wrapper, WrapperOrType } from './Wrapper';
 import { GraphQLList } from 'graphql';
-import { getType } from '../typeHelpers';
+import { buildType } from '../typeHelpers';
 
 export default function list<T>(type: WrapperOrType<T>): Wrapper<T[], GraphQLList<any>> {
-  const currentType = getType(type, true);
+  const currentType = buildType(type, true);
   const transformOutput = isWrapper(type) && type.transformOutput;
   return {
     graphQLType: new GraphQLList(currentType),

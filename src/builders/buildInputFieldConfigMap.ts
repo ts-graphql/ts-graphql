@@ -5,7 +5,7 @@ import { InputFieldConfig } from '../decorators/InputField';
 import { getConstructorChain } from './utils';
 import { getInputFieldConfig } from '../metadata';
 import { mapValues } from 'lodash';
-import { getInputType } from '../typeHelpers';
+import { buildInputType } from '../typeHelpers';
 
 export default (source: AnyConstructor<any>): Thunk<GraphQLInputFieldConfigMap> => {
   return () => {
@@ -17,7 +17,7 @@ export default (source: AnyConstructor<any>): Thunk<GraphQLInputFieldConfigMap> 
       .reduce((obj, config) => ({ ...obj, ...config }), {});
 
     return mapValues(allFields, ((config) => ({
-      type: getInputType(config.type, true),
+      type: buildInputType(config.type, true),
       description: config.description,
       defaultValue: config.defaultValue,
     } as GraphQLInputFieldConfig)));

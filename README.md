@@ -366,7 +366,7 @@ export const fooFieldsA = fields({ source: Foo }, (field) => ({
 import { fields, TSGraphQLInt } from 'ts-graphql';
 import Foo from '../Foo.ts';
 
-export const fooFieldsA = fields({ source: Foo }, (field) => ({
+export const fooFieldsB = fields({ source: Foo }, (field) => ({
   dataLength: field(
     { type: TSGraphQLInt },
     (source) => source.data.length,
