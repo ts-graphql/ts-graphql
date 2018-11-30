@@ -206,6 +206,16 @@ shape() {
 }
 ```
 
+You can set `description` and `deprecationReason` for enum values with `additional`:
+
+```typescript
+const ShapeType = enumType(Shape, {
+  additional: {
+    Square: { description: '4 sides, all of equal length' },
+  },
+});
+```
+
 ### Union Types
 
 Union types are a little verbose, but there isn't really a way
