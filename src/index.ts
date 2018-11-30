@@ -8,13 +8,13 @@ import InterfaceType from './decorators/InterfaceType';
 import ObjectType from './decorators/ObjectType';
 import list from './wrappers/list';
 import nullable from './wrappers/nullable';
-import enumType from './wrappers/enumType';
+import enumType, { EnumTypeCase } from './wrappers/enumType';
 import unionType from './wrappers/unionType';
 import { unsafeWrapType, wrapScalar } from './wrappers/Wrapper';
-import getInputObjectType from './builders/buildInputObjectType';
-import getInterfaceType from './builders/buildInterfaceType';
-import getObjectType from './builders/buildObjectType';
-import { getInputType, getNamedType, getNamedTypes, getOutputType, getType } from './typeHelpers';
+import buildInputObjectType from './builders/buildInputObjectType';
+import buildInterfaceType from './builders/buildInterfaceType';
+import buildObjectType from './builders/buildObjectType';
+import { buildInputType, buildNamedType, buildNamedTypes, buildOutputType, buildType } from './typeHelpers';
 import { buildFields, fields } from './fields';
 import { TSGraphQLBoolean, TSGraphQLFloat, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from './wrappers/scalars';
 import scalarType from './wrappers/scalarType';
@@ -29,6 +29,7 @@ export {
   InterfaceType,
   ObjectType,
   enumType,
+  EnumTypeCase,
   list,
   nullable,
   TSGraphQLBoolean,
@@ -40,14 +41,14 @@ export {
   unionType,
   unsafeWrapType,
   wrapScalar,
-  getInputObjectType,
-  getInterfaceType,
-  getObjectType,
-  getInputType,
-  getNamedType,
-  getNamedTypes,
-  getOutputType,
-  getType,
+  buildInputObjectType,
+  buildInterfaceType,
+  buildObjectType,
+  buildInputType,
+  buildNamedType,
+  buildNamedTypes,
+  buildOutputType,
+  buildType,
   fields,
   buildFields,
   fieldDecoratorForContext,

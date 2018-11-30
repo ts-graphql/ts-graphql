@@ -14,7 +14,7 @@ import { FieldResolverMethod } from '../decorators/Field';
 import { getConstructorChain } from './utils';
 import { mapValues } from 'lodash';
 import getArgs from './buildArgs';
-import { getOutputType } from '../typeHelpers';
+import { buildOutputType } from '../typeHelpers';
 import { isWrapper } from '../wrappers/Wrapper';
 
 const convertResolverMethod = (prototype: ObjectLiteral, key: string): FieldResolver<any, any, any> | null => {
@@ -100,7 +100,7 @@ export const buildFieldConfigMap = <TSource, TContext>(
 ): GraphQLFieldConfigMap<TSource, TContext> => {
   return mapValues(map, (config) => ({
     ...config,
-    type: getOutputType(config.type, true),
+    type: buildOutputType(config.type, true),
     args: config.args ? resolveThunk(getArgs(config.args)) : undefined,
   }));
 };

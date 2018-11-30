@@ -3,8 +3,8 @@ import {
   InterfaceType,
   Field,
   Implements,
-  getObjectType,
-  getNamedTypes,
+  buildObjectType,
+  buildNamedTypes,
 } from '../../src/index';
 import { GraphQLSchema } from 'graphql';
 import { random } from 'lodash';
@@ -54,8 +54,8 @@ class Query {
 }
 
 const schema = new GraphQLSchema({
-  query: getObjectType(Query),
-  types: getNamedTypes([
+  query: buildObjectType(Query),
+  types: buildNamedTypes([
     Apple,
     Orange,
   ]),
