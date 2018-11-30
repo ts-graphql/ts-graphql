@@ -55,7 +55,7 @@ see the type definitions.
 The only special patterns needed are:
 
  - 1:1 mapping between GraphQL types and TS types
- - For it to be typed, Context has to be a class (see [context](#context)
+ - For it to be typed, Context has to be a class (see [context](#context))
 
 ### Standard Scalars
 
@@ -140,7 +140,7 @@ class ServiceRequestInput {
     type: TSGraphQLInt,
     defaultValue: 55, 
   })
-  code!: string;
+  code!: number;
 }
 ```
 
