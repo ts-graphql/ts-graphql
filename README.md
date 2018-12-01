@@ -4,7 +4,7 @@ A TypeScript library for building GraphQL APIs efficiently with type safe decora
 
 <img src="https://raw.githubusercontent.com/stephentuso/ts-graphql/dev/example.gif">
 
-[Live Demo](https://stackblitz.com/edit/ts-graphql-demo)
+[Live Demo](https://stackblitz.com/edit/ts-graphql-demo?embed=1&file=schema.ts&hideExplorer=1)
 
 Project goals:
 
@@ -23,6 +23,7 @@ Project goals:
   * [Object Types](#object-types)
   * [Input Object Types](#input-object-types)
   * [Args](#args)
+  * [Nullable and Lists](#nullable-and-lists)
   * [Enums](#enums)
   * [Union Types](#union-types)
   * [Root Types](#root-types)
