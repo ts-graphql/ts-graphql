@@ -4,6 +4,8 @@ A TypeScript library for building GraphQL APIs efficiently with type safe decora
 
 <img src="https://raw.githubusercontent.com/stephentuso/ts-graphql/dev/example.gif">
 
+[Live Demo](https://stackblitz.com/edit/ts-graphql-demo)
+
 Project goals:
 
  - As close to 100% type safety between GraphQL schema and code as possible;
@@ -29,6 +31,7 @@ Project goals:
   * [Modular Fields](#modular-fields)
   * [Custom Scalars](#custom-scalars)
 * [Why?](#why)
+* [VS TypeGrapQL](#vs-typegraphql)
 * [Caveats](#caveats)
    
 ## Installation
@@ -53,7 +56,7 @@ see the type definitions.
 The only special patterns needed are:
 
  - 1:1 mapping between GraphQL types and TS types
- - For it to be typed, Context has to be a class (see [context](#context)
+ - For it to be typed, Context has to be a class (see [context](#context))
 
 ### Standard Scalars
 
@@ -138,7 +141,7 @@ class ServiceRequestInput {
     type: TSGraphQLInt,
     defaultValue: 55, 
   })
-  code!: string;
+  code!: number;
 }
 ```
 
@@ -179,6 +182,28 @@ class Mutation {
 }
 ```
 
+### Nullable and Lists
+
+Fields/args are non null by default as that matches how TypeScript works, unlike graphql-js where everything is nullable
+by default. To make a field nullable, call `nullable` with the type, for lists, use `list`:
+
+```typescript
+import { 
+  nullable,
+  list,
+  //...
+} from 'ts-graphql';
+
+@Field({ type: nullable(TSGraphQLString) })
+nullableString!: string | null;
+
+@Field({ type: list(TSGraphQLInt) })
+integerList!: number[];
+
+@Field({ type: nullable(list(nullable(Foo))) })
+maybeListOfMaybeFoo: Array<Foo | null> | null;
+```
+
 ### Enums
 
 You can use TS enums in your code, and create a type for TS GraphQL to use.
@@ -204,6 +229,16 @@ const ShapeType = enumType(Shape, {
 shape() {
   return Shape.Circle;
 }
+```
+
+You can set `description` and `deprecationReason` for enum values with `additional`:
+
+```typescript
+const ShapeType = enumType(Shape, {
+  additional: {
+    Square: { description: '4 sides, all of equal length' },
+  },
+});
 ```
 
 ### Union Types
