@@ -31,6 +31,7 @@ Project goals:
   * [Modular Fields](#modular-fields)
   * [Custom Scalars](#custom-scalars)
 * [Why?](#why)
+* [VS TypeGrapQL](#vs-typegraphql)
 * [Caveats](#caveats)
    
 ## Installation
@@ -179,6 +180,28 @@ class Mutation {
     // ...
   }
 }
+```
+
+### Nullable and Lists
+
+Fields/args are non null by default as that matches how TypeScript works, unlike graphql-js where everything is nullable
+by default. To make a field nullable, call `nullable` with the type, for lists, use `list`:
+
+```typescript
+import { 
+  nullable,
+  list,
+  //...
+} from 'ts-graphql';
+
+@Field({ type: nullable(TSGraphQLString) })
+nullableString!: string | null;
+
+@Field({ type: list(TSGraphQLInt) })
+integerList!: number[];
+
+@Field({ type: nullable(list(nullable(Foo))) })
+maybeListOfMaybeFoo: Array<Foo | null> | null;
 ```
 
 ### Enums

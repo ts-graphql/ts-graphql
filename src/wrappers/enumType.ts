@@ -40,11 +40,6 @@ const enumType = <K extends string, TEnum extends string | number>(
 
   const getKey = (key: string) => changeCase ? performChangeCase(changeCase, key) : key;
 
-  const valueToOutputMap: Record<TEnum, K> = Object.keys(enumObject).reduce((map, key) => ({
-    ...map as any,
-    [enumObject[key as K]]: getKey(key),
-  }), {} as Record<TEnum, K>);
-
   const graphQLType = new GraphQLEnumType({
     ...config,
     values: Object.keys(enumObject).reduce((map: GraphQLEnumValueConfigMap, key) => {
@@ -64,9 +59,6 @@ const enumType = <K extends string, TEnum extends string | number>(
   return {
     graphQLType,
     type: null as any as TEnum,
-    transformOutput(value: TEnum) {
-      return valueToOutputMap[value] as any;
-    }
   }
 }
 
