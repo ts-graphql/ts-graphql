@@ -45,6 +45,8 @@ npm i ts-graphql
 
 ## Usage
 
+> This guide assumes familiarity with [GraphQL](https://graphql.org/learn/).
+
 To quickly try out the library, you can clone it and run the [examples](https://github.com/stephentuso/ts-graphql/blob/master/examples).
 E.g. `npx ts-node examples/interface/index.ts`
 
