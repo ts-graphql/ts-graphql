@@ -1,7 +1,7 @@
 import 'jest';
 import Field from '../../decorators/Field';
 import { resolveThunk } from '../../utils/thunk';
-import getFieldConfigMap from '../buildFieldConfigMap';
+import buildFieldConfigMap from '../buildFieldConfigMap';
 import InterfaceType from '../../decorators/InterfaceType';
 import Implements from '../../decorators/Implements';
 import { fields } from '../../fields';
@@ -10,7 +10,6 @@ import Args from '../../decorators/Args';
 import Arg from '../../decorators/Arg';
 import list from '../../wrappers/list';
 import nullable from '../../wrappers/nullable';
-import enumType, { EnumTypeCase } from '../../wrappers/enumType';
 import InputObjectType from '../../decorators/InputObjectType';
 import InputField from '../../decorators/InputField';
 
@@ -99,27 +98,27 @@ const moreFields = fields({ source: Foo }, (field) => ({
 
 describe('getFieldConfigMap', () => {
   it('should properly get fields for simple class', () => {
-    const config = resolveThunk(getFieldConfigMap(Simple));
+    const config = resolveThunk(buildFieldConfigMap(Simple));
     for (const property in Object.keys(Simple.prototype)) {
       expect(config).toHaveProperty(property);
     }
   });
 
   it('should inherit fields from superclasses', () => {
-    const config = resolveThunk(getFieldConfigMap(B));
+    const config = resolveThunk(buildFieldConfigMap(B));
     expect(config).toHaveProperty('a');
     expect(config).toHaveProperty('b');
   });
 
   it('should inherit fields from interfaces', () => {
-    const config = resolveThunk(getFieldConfigMap(User));
+    const config = resolveThunk(buildFieldConfigMap(User));
     expect(config).toHaveProperty('id');
     expect(config).toHaveProperty('email');
     expect(config).toHaveProperty('displayName');
   });
 
   it('should inherit fields from interfaces on superclasses', () => {
-    const config = resolveThunk(getFieldConfigMap(Employee));
+    const config = resolveThunk(buildFieldConfigMap(Employee));
     expect(config).toHaveProperty('id');
     expect(config).toHaveProperty('email');
     expect(config).toHaveProperty('displayName');
@@ -127,7 +126,7 @@ describe('getFieldConfigMap', () => {
   });
 
   it('should inherit fields from interfaces on superclass and interfaces on itself', () => {
-    const config = resolveThunk(getFieldConfigMap(EmployeeWithPicture));
+    const config = resolveThunk(buildFieldConfigMap(EmployeeWithPicture));
     expect(config).toHaveProperty('id');
     expect(config).toHaveProperty('email');
     expect(config).toHaveProperty('displayName');
@@ -136,24 +135,40 @@ describe('getFieldConfigMap', () => {
   });
 
   it('should merge decorator fields with config fields', () => {
-    const config = resolveThunk(getFieldConfigMap(Foo));
+    const config = resolveThunk(buildFieldConfigMap(Foo));
     expect(config).toHaveProperty('foo');
     expect(config).toHaveProperty('bar');
     expect(config).toHaveProperty('baz');
   });
 
   it('should create resolver from instance method', () => {
-    const config = resolveThunk(getFieldConfigMap(Foo));
+    const config = resolveThunk(buildFieldConfigMap(Foo));
     expect(config).toHaveProperty('foo');
     expect(typeof config.foo.resolve).toEqual('function');
     expect(config.foo.resolve!(null, {}, null, null as any)).toEqual(new Foo().foo());
   });
 
   it('should use default resolver for plain fields', () => {
-    const config = resolveThunk(getFieldConfigMap(Simple));
+    const config = resolveThunk(buildFieldConfigMap(Simple));
     expect(config).toHaveProperty('str');
     expect(config.str.resolve!({ str: 'foo' }, {}, null, null as any)).toEqual('foo');
   });
+
+  it('should wrap property initializers', () => {
+    const test = (...args: any[]) => {
+      expect(args.length).toEqual(3);
+      return '';
+    }
+
+    @ObjectType()
+    class Foo {
+      @Field({ type: TSGraphQLString })
+      foo = test;
+    }
+
+    const foo = resolveThunk(buildFieldConfigMap(Foo));
+    foo.foo.resolve!(new Foo(), {}, {}, null as any);
+  })
 
   it('should instantiate args and input object classes in resolvers', () => {
     @InputObjectType()
@@ -197,7 +212,7 @@ describe('getFieldConfigMap', () => {
       ),
     }));
 
-    const config = resolveThunk(getFieldConfigMap(ArgsTest));
+    const config = resolveThunk(buildFieldConfigMap(ArgsTest));
     expect(config).toHaveProperty('configTest');
     expect(config).toHaveProperty('initializerTest');
     expect(config).toHaveProperty('methodTest');
@@ -217,28 +232,25 @@ describe('getFieldConfigMap', () => {
   });
 
   it('should correctly run wrapper transformers', () => {
-    enum AnEnum {
-      Foo,
-      Bar,
-    }
+    const transformOutput = jest.fn(() => 'FOO');
 
-    const AnEnumType = enumType(AnEnum, { name: 'AnEnum', changeCase: EnumTypeCase.Constant });
+    const someType = {
+      ...TSGraphQLString,
+      transformOutput,
+    }
 
     @ObjectType()
     class Foo {
-      @Field({ type: list(nullable(AnEnumType)) })
+      @Field({ type: list(nullable(someType)) })
       foo() {
-        return [AnEnum.Foo, AnEnum.Bar, null];
+        return ['', null];
       }
-
-      @Field({ type: AnEnumType })
-      bar = AnEnum.Bar;
     }
 
-    const config = resolveThunk(getFieldConfigMap(Foo));
+    const config = resolveThunk(buildFieldConfigMap(Foo));
     expect(config).toHaveProperty('foo');
-    expect(config).toHaveProperty('bar');
-    expect(config.foo!.resolve!(null, {}, null, null as any)).toEqual(['FOO', 'BAR', null]);
-    expect(config.bar!.resolve!(new Foo(), {}, null, null as any)).toEqual('BAR');
+    expect(config.foo!.resolve!(null, {}, null, null as any)).toEqual(['FOO', null]);
+
+    expect(transformOutput).toHaveBeenCalledTimes(1);
   });
 });

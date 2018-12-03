@@ -464,6 +464,15 @@ This library solves both of those:
    using `extends` to inherit fields/args.
  - Type mismatch errors for all schema components are enforced by TS types
    and shown at compile time
+   
+## Similar Libraries
+
+There are some good libraries that are very similar, however, I was looking for something that aligned
+with the goals outlined at the top and there didn't seem to be a good path towards that for them.
+
+ - [type-graphql](https://github.com/19majkel94/type-graphql)
+ - [typegql](https://github.com/prismake/typegql)
+ 
 
 ## Caveats
 

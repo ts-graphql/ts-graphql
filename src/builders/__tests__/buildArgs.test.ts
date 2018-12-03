@@ -15,10 +15,19 @@ class WithDecorator {
   foo!: string;
 }
 
+@Args()
+class NoArg {
+  foo!: string;
+}
+
 describe('getArgs', () => {
   it('should throw on class without Args decorator', () => {
     expect(() => getArgs(WithoutDecorator)).toThrow();
   });
+
+  it('should throw if no Arg decorators', () => {
+    expect(() => getArgs(NoArg)).toThrow();
+  })
 
   it('should get args for class with Args decorator', () => {
     const args = resolveThunk(getArgs(WithDecorator));
