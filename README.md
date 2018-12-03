@@ -31,8 +31,7 @@ Project goals:
   * [Context](#context)
   * [Modular Fields](#modular-fields)
   * [Custom Scalars](#custom-scalars)
-* [Why?](#why)
-* [VS TypeGrapQL](#vs-typegraphql)
+* [Similar Libraries](#similar-libraries)
 * [Caveats](#caveats)
    
 ## Installation
