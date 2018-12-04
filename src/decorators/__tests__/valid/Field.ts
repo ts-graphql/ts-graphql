@@ -1,6 +1,7 @@
 import Field from '../../Field';
 import { nullable, TSGraphQLID, TSGraphQLInt } from '../../..';
 import { Maybe } from '../../../types';
+import { GraphQLResolveInfo } from 'graphql';
 
 class Data {
   value!: string;
@@ -37,12 +38,23 @@ class SomeType {
     return new Data();
   }
 
+  @Field({ type: Data, context: Context })
+  async dataWithContext() {
+    return new Data();
+  }
+
+  @Field({ type: Data })
+  async dataNoContext(args: {}, context: undefined, info: GraphQLResolveInfo) {
+
+  }
+
   @Field({
     type: nullable(Data),
     args: SomeArgs,
     description: 'some data',
     isDeprecated: true,
     deprecationReason: 'old',
+    context: Context,
   })
   async oldData(args: SomeArgs, context: Context) {
     return null;
