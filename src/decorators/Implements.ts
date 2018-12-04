@@ -3,7 +3,7 @@ import { FieldProperty } from './Field';
 import { storeImplements } from '../metadata';
 
 export type InterfaceImplementation<T> = {
-  [key in keyof T]: FieldProperty<any, MaybePromise<T[key]>, any>
+  [key in keyof T]: FieldProperty<any, T[key], any>
 }
 
 export default <TIface>(iface: AnyConstructor<TIface>) =>
