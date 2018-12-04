@@ -6,7 +6,6 @@ import { AnyConstructor, MaybePromise } from '../types';
 import { resolveThunk } from '../utils/thunk';
 import { resolveType } from './utils';
 import { InterfaceImplementation } from './Implements';
-import { TSGraphQLInt } from '../index';
 
 export type FieldDecoratorConfig<TReturn, TArgs = {}, TContext = any> = FieldCreatorConfig<TReturn, TArgs> & {
   context?: AnyConstructor<TContext>
@@ -18,7 +17,7 @@ export type FieldResolverMethod<TContext, TReturn, TArgs> =
 export type FieldProperty<TContext, TReturn, TArgs> =
   TReturn | FieldResolverMethod<TContext, TReturn, TArgs>;
 
-type FieldPropertyDecorator<TReturn, TArgs> = <TName extends string, TSource, TContext, TRArgs extends TArgs = TArgs>(
+type FieldPropertyDecorator<TReturn, TArgs, TContext = undefined> = <TName extends string, TSource, TRArgs extends TArgs = TArgs>(
   prototype: Record<TName, FieldProperty<TContext, TReturn, TArgs>>,
   key: TName,
 ) => void;
@@ -29,9 +28,9 @@ type FieldOverloads = {
       prototype: Record<TName, string> | Record<TName, boolean> | Record<TName, number>,
       key: TName,
     ) => void;
-  <TReturn, TArgs>(
-    config: Thunk<FieldCreatorConfig<TReturn, TArgs>>
-  ): FieldPropertyDecorator<MaybePromise<TReturn>, TArgs>
+  <TReturn, TArgs, TContext = undefined>(
+    config: Thunk<FieldDecoratorConfig<TReturn, TArgs, TContext>>
+  ): FieldPropertyDecorator<MaybePromise<TReturn>, TArgs, TContext>
 }
 
 export const fieldDecoratorForContext = <TContext>(context: AnyConstructor<TContext>) =>
