@@ -2,6 +2,4 @@
 
 set -e
 
-output=$(npx jest --coverage --coverageReporters=text-lcov)
-
-echo "${output}" | npx coveralls
+npx jest --coverage --coverageReporters=text-lcov | npx coveralls
