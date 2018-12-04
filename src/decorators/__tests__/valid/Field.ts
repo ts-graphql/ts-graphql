@@ -1,5 +1,5 @@
-import Field from '../../Field';
-import { nullable, TSGraphQLID, TSGraphQLInt } from '../../..';
+import Field, { fieldDecoratorForContext } from '../../Field';
+import { nullable, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../..';
 import { Maybe } from '../../../types';
 import { GraphQLResolveInfo } from 'graphql';
 
@@ -16,6 +16,8 @@ class SomeArgs {
 class Context {
   isAuthorized!: boolean;
 }
+
+const ScopedField = fieldDecoratorForContext(Context);
 
 class SomeType {
   @Field()
@@ -44,8 +46,13 @@ class SomeType {
   }
 
   @Field({ type: Data })
-  async dataNoContext(args: {}, context: undefined, info: GraphQLResolveInfo) {
+  dataNoContext(args: {}, context: undefined, info: GraphQLResolveInfo) {
+    return new Data();
+  }
 
+  @ScopedField({ type: TSGraphQLString })
+  async scoped(args: {}, context: Context) {
+    return '';
   }
 
   @Field({
