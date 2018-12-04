@@ -4,7 +4,7 @@ A TypeScript library for building GraphQL APIs efficiently with type safe decora
 
 <img src="https://raw.githubusercontent.com/stephentuso/ts-graphql/dev/example.gif">
 
-[Live Demo](https://stackblitz.com/edit/ts-graphql-demo)
+[Live Demo](https://stackblitz.com/edit/ts-graphql-demo?embed=1&file=schema.ts&hideExplorer=1)
 
 Project goals:
 
@@ -23,6 +23,7 @@ Project goals:
   * [Object Types](#object-types)
   * [Input Object Types](#input-object-types)
   * [Args](#args)
+  * [Nullable and Lists](#nullable-and-lists)
   * [Enums](#enums)
   * [Union Types](#union-types)
   * [Root Types](#root-types)
@@ -30,8 +31,7 @@ Project goals:
   * [Context](#context)
   * [Modular Fields](#modular-fields)
   * [Custom Scalars](#custom-scalars)
-* [Why?](#why)
-* [VS TypeGrapQL](#vs-typegraphql)
+* [Similar Libraries](#similar-libraries)
 * [Caveats](#caveats)
    
 ## Installation
@@ -43,6 +43,8 @@ npm i ts-graphql
 ```
 
 ## Usage
+
+> This guide assumes familiarity with [GraphQL](https://graphql.org/learn/).
 
 To quickly try out the library, you can clone it and run the [examples](https://github.com/stephentuso/ts-graphql/blob/master/examples).
 E.g. `npx ts-node examples/interface/index.ts`
@@ -461,6 +463,15 @@ This library solves both of those:
    using `extends` to inherit fields/args.
  - Type mismatch errors for all schema components are enforced by TS types
    and shown at compile time
+   
+## Similar Libraries
+
+There are some good libraries that are very similar, however, I was looking for something that aligned
+with the goals outlined at the top and there didn't seem to be a good path towards that for them.
+
+ - [type-graphql](https://github.com/19majkel94/type-graphql)
+ - [typegql](https://github.com/prismake/typegql)
+ 
 
 ## Caveats
 

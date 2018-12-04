@@ -1,13 +1,10 @@
 import 'reflect-metadata';
-import {
-  GraphQLInputType,
-  Thunk,
-} from 'graphql';
+import { GraphQLInputType, Thunk } from 'graphql';
 import { storeInputFieldConfig } from '../metadata';
 import { WrapperOrType } from '../wrappers/Wrapper';
 import { resolveThunk } from '../utils/thunk';
 import { resolveType } from './utils';
-import { AnyConstructor, Constructor, EmptyConstructor } from '../types';
+import { Constructor } from '../types';
 
 export type InputFieldConfig<TValue> = {
   type: WrapperOrType<TValue, GraphQLInputType>,
