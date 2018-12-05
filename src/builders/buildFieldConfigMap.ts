@@ -116,7 +116,7 @@ const defaultResolver = (key: string) => (source: ObjectLiteral, ...rest: any[])
 export default (source: AnyConstructor<any>): Thunk<GraphQLFieldConfigMap<any, any>> => {
   return () => {
     const interfaces = getImplements(source) || [];
-    const chain = [...getConstructorChain(source), ...interfaces];
+    const chain = [...getConstructorChain(source), ...interfaces].reverse();
 
     const allFields: FieldConfigMap<any, any> = chain
       .map(getFieldConfig)
