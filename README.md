@@ -31,6 +31,7 @@ Project goals:
   * [Context](#context)
   * [Modular Fields](#modular-fields)
   * [Custom Scalars](#custom-scalars)
+* [Why?](#why)
 * [Similar Libraries](#similar-libraries)
 * [Caveats](#caveats)
    
