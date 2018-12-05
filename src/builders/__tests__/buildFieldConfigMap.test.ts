@@ -5,13 +5,14 @@ import buildFieldConfigMap from '../buildFieldConfigMap';
 import InterfaceType from '../../decorators/InterfaceType';
 import Implements from '../../decorators/Implements';
 import { fields } from '../../fields';
-import { ObjectType, TSGraphQLInt, TSGraphQLString } from '../../index';
+import { ObjectType, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../index';
 import Args from '../../decorators/Args';
 import Arg from '../../decorators/Arg';
 import list from '../../wrappers/list';
 import nullable from '../../wrappers/nullable';
 import InputObjectType from '../../decorators/InputObjectType';
 import InputField from '../../decorators/InputField';
+import { GraphQLID } from 'graphql';
 
 class Simple {
   @Field()
@@ -123,6 +124,24 @@ describe('getFieldConfigMap', () => {
     expect(config).toHaveProperty('email');
     expect(config).toHaveProperty('displayName');
     expect(config).toHaveProperty('company');
+  });
+
+  it('should override fields with same name from interface', () => {
+    class OverrideTest extends User {
+      @Field({ type: nullable(TSGraphQLID) })
+      id!: string;
+    }
+    const config = resolveThunk(buildFieldConfigMap(OverrideTest));
+    expect(config.id.type).toEqual(GraphQLID);
+  });
+
+  it('should override fields with same name on superclass', () => {
+    class OverrideTest extends Simple {
+      @Field({ type: nullable(TSGraphQLID) })
+      str!: string;
+    }
+    const config = resolveThunk(buildFieldConfigMap(OverrideTest));
+    expect(config.str.type).toEqual(GraphQLID);
   });
 
   it('should inherit fields from interfaces on superclass and interfaces on itself', () => {
