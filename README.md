@@ -25,6 +25,7 @@ Project goals:
   * [Args](#args)
   * [Nullable and Lists](#nullable-and-lists)
   * [Enums](#enums)
+  * [Interfaces](#interfaces)
   * [Union Types](#union-types)
   * [Root Types](#root-types)
   * [Schema](#schema)
