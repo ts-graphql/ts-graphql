@@ -1,10 +1,9 @@
 import { WrapperOrType } from './wrappers/Wrapper';
 import { MaybePromise, EmptyConstructor, MaybeArray, AnyConstructor } from './types';
-import { GraphQLOutputType, GraphQLResolveInfo, subscribe } from 'graphql';
+import { GraphQLOutputType, GraphQLResolveInfo } from 'graphql';
 import { mergeThunks, resolveThunk, Thunk } from './utils/thunk';
 import { isArray } from 'lodash';
 import { buildFieldConfigMap, buildSubscriptionFieldConfigMap } from './builders/buildFieldConfigMap';
-import Field from './decorators/Field';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
   type: WrapperOrType<TReturn, GraphQLOutputType>,
