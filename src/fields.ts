@@ -3,7 +3,7 @@ import { MaybePromise, EmptyConstructor, MaybeArray, AnyConstructor } from './ty
 import { GraphQLOutputType, GraphQLResolveInfo, subscribe } from 'graphql';
 import { mergeThunks, resolveThunk, Thunk } from './utils/thunk';
 import { isArray } from 'lodash';
-import { buildFieldConfigMap } from './builders/buildFieldConfigMap';
+import { buildFieldConfigMap, buildSubscriptionFieldConfigMap } from './builders/buildFieldConfigMap';
 import Field from './decorators/Field';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
@@ -18,7 +18,7 @@ export type FieldResolver<TSource, TContext, TReturn, TArgs = {}> =
   (source: TSource, args: TArgs, context: TContext, info: GraphQLResolveInfo) => MaybePromise<TReturn>;
 
 export type FieldSubscriber<TSource, TContext, TReturn, TArgs = {}> =
-  (source: TSource, args: TArgs, context: TContext, info: GraphQLResolveInfo) => AsyncIterator<TReturn>;
+  (source: TSource, args: TArgs, context: TContext, info: GraphQLResolveInfo) => AsyncIterable<TReturn>;
 
 export type FieldConfig<TSource, TContext, TReturn, TArgs = {}> = FieldCreatorConfig<TReturn, TArgs> & {
   resolve?: FieldResolver<TSource, TContext, TReturn, TArgs>,
@@ -30,7 +30,7 @@ type SubscriptionFieldConfigSimple<
   TReturn,
   TArgs = {},
 > = FieldConfig<TSource, TContext, TReturn, TArgs> & {
-  subscribe?: FieldSubscriber<TSource, TContext, TReturn, TArgs>,
+  subscribe: FieldSubscriber<TSource, TContext, TReturn, TArgs>,
 };
 
 type SubscriptionFieldConfigWithResolver<
@@ -41,7 +41,7 @@ type SubscriptionFieldConfigWithResolver<
   TArgs = {},
 > = FieldConfig<TSource, TContext, TReturn, TArgs> & {
   resolve?: FieldResolver<TSubReturn, TContext, TReturn, TArgs>,
-  subscribe?: FieldSubscriber<TSource, TContext, TSubReturn, TArgs>,
+  subscribe: FieldSubscriber<TSource, TContext, TSubReturn, TArgs>,
 };
 
 export type SubscriptionFieldConfig<TSource, TContext, TReturn, TSubReturn, TArgs = {}> =
@@ -124,13 +124,13 @@ export const subscriptionFields = <TSource = undefined, TContext = undefined>(
 };
 
 export const buildFields = <TSource, TContext>(fields: MaybeArray<Thunk<FieldConfigMap<TSource, TContext>>>) => {
-  let thunk = isArray(fields) ? mergeThunks(...fields) : fields;
+  const thunk = isArray(fields) ? mergeThunks(...fields) : fields;
   const configMap = resolveThunk(thunk);
   return buildFieldConfigMap(configMap);
 }
 
 export const buildSubscriptionFields = <TSource, TContext>(fields: MaybeArray<Thunk<SubscriptionFieldConfigMap<TSource, TContext>>>) => {
-  let thunk = isArray(fields) ? mergeThunks(...fields) : fields;
+  const thunk = isArray(fields) ? mergeThunks(...fields) : fields;
   const configMap = resolveThunk(thunk);
-  // TODO
+  return buildSubscriptionFieldConfigMap(configMap);
 };

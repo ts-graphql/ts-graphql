@@ -1,7 +1,7 @@
 import { AnyConstructor, EmptyConstructor, isEmptyConstructor, Maybe, ObjectLiteral } from '../types';
 import { resolveThunk, Thunk } from '../utils/thunk';
 import { GraphQLFieldConfigMap, GraphQLFieldResolver } from 'graphql';
-import { FieldConfig, FieldConfigMap, FieldResolver } from '../fields';
+import { FieldConfig, FieldConfigMap, FieldResolver, FieldSubscriber, SubscriptionFieldConfigMap } from '../fields';
 import {
   getArgsConfig,
   getFieldConfig,
@@ -32,6 +32,13 @@ type InputConstructorChildren = {
 type InputConstructorNode<T> = {
   constructor: EmptyConstructor<T>,
   children: InputConstructorChildren,
+}
+
+const isInSubscribe = Symbol();
+
+type WrappedSubscribePayload<T> = {
+  [isInSubscribe]: true,
+  value: T,
 }
 
 const buildInputConstructorTree = <T>(InputClass: EmptyConstructor<T>): Maybe<InputConstructorNode<T>> => {
@@ -104,6 +111,48 @@ export const buildFieldConfigMap = <TSource, TContext>(
     args: config.args ? resolveThunk(getArgs(config.args)) : undefined,
   }));
 };
+
+const wrapSubscribe = <TSource, TContext, TReturn, TArgs>(
+  subscribe: FieldSubscriber<TSource, TContext, TReturn, TArgs>,
+): FieldSubscriber<TSource, TContext, WrappedSubscribePayload<TReturn>, TArgs> => {
+  return async function * (...args) {
+    const iterator = subscribe(...args);
+    for await (const value of iterator) {
+      yield {
+        [isInSubscribe]: true,
+        value,
+      }
+    }
+  }
+}
+
+function wrapSubscriptionResolve<TSource, TContext, TReturn, TArgs>(
+  resolve?: FieldResolver<TSource, TContext, TReturn, TArgs>,
+): FieldResolver<WrappedSubscribePayload<TSource>, TContext, TReturn | TSource, TArgs> {
+  return (root, ...args) => {
+    if (!root[isInSubscribe]) {
+      throw new Error('Subscription field resolve called without subscribe');
+    }
+
+    if (!resolve) {
+      return root.value;
+    }
+
+    return resolve(root.value, ...args);
+  }
+}
+
+export const buildSubscriptionFieldConfigMap = <TSource, TContext>(
+  map: SubscriptionFieldConfigMap<TSource, TContext>,
+): GraphQLFieldConfigMap<any, TContext> => {
+  return mapValues(map, (config) => ({
+    ...config,
+    resolve: wrapSubscriptionResolve(config.resolve),
+    subscribe: wrapSubscribe(config.subscribe),
+    type: buildOutputType(config.type, true),
+    args: config.args ? resolveThunk(getArgs(config.args)) : undefined,
+  }));
+}
 
 const defaultResolver = (key: string) => (source: ObjectLiteral, ...rest: any[]) => {
   const resolve = convertResolverMethod(source, key);
