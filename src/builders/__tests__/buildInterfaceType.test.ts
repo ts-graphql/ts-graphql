@@ -34,5 +34,24 @@ describe('buildInterfaceType', () => {
       class C {}
       expect(() => iface.resolveType!(new C(), {}, null as any)).toThrow();
     });
+
+    it('should work with multiple inheritance', () => {
+      @InterfaceType()
+      class IfaceA {}
+
+      @InterfaceType()
+      class IfaceB {}
+
+      @ObjectType()
+      @Implements(IfaceA)
+      @Implements(IfaceB)
+      class Bar {}
+
+      const ifaceA = buildInterfaceType(IfaceA);
+      const ifaceB = buildInterfaceType(IfaceB);
+
+      expect(ifaceA.resolveType!(new Bar(), {}, null as any)).toEqual(buildObjectType(Bar));
+      expect(ifaceB.resolveType!(new Bar(), {}, null as any)).toEqual(buildObjectType(Bar));
+    })
   })
 });
