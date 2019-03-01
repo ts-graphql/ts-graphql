@@ -187,7 +187,7 @@ class Mutation {
 
 ### Nullable and Lists
 
-Fields/args are non null by default as that matches how TypeScript works, unlike graphql-js where everything is nullable
+Fields/args are non null by default as that aligns with TypeScript, unlike graphql-js where everything is nullable
 by default. To make a field nullable, call `nullable` with the type, for lists, use `list`:
 
 ```typescript
@@ -244,6 +244,59 @@ const ShapeType = enumType(Shape, {
 });
 ```
 
+### Interfaces
+
+Interfaces are created with the `InterfaceType` decorator,
+and implemented with the `Implements` decorator. Multiple inheritance 
+is supported.
+
+> TypeScript interfaces weren't used as they don't support decorators or multiple
+> inheritance
+
+```typescript
+import { 
+  InterfaceType,
+  Implements,
+  ObjectType,
+  Field,
+  TSGraphQLString,
+} from 'ts-graphql';
+
+@InterfaceType()
+abstract class Node {
+  @Field({ type: TSGraphQLString })
+  id!: string;
+}
+
+@InterfaceType()
+abstract class Event {
+  @Field({ type: TSGraphQLString })
+  name!: string
+  
+  @Field({ type: TSGraphQLString })
+  date!: string;
+}
+
+@ObjectType()
+@Implements(Node)
+@Implements(Event)
+class Concert {
+  // fields from interfaces are inherited and enforced by typings,
+  // don't need to use Field decorators again
+  name() {
+    return 'Foo';
+  }
+  
+  id() {
+    return 'abcd'
+  }
+  
+  date() {
+    return new Date().toISOString();
+  }
+}
+```
+
 ### Union Types
 
 Union types are a little verbose, but there isn't really a way
@@ -254,7 +307,6 @@ import {
   ObjectType,
   Field,
   unionType,
-  
 } from 'ts-graphql';
 
 @ObjectType()
