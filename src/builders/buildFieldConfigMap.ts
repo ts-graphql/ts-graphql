@@ -130,7 +130,7 @@ function wrapSubscriptionResolve<TSource, TContext, TReturn, TArgs>(
   resolve?: FieldResolver<TSource, TContext, TReturn, TArgs>,
 ): FieldResolver<WrappedSubscribePayload<TSource>, TContext, TReturn | TSource, TArgs> {
   return (root, ...args) => {
-    if (!root[isInSubscribe]) {
+    if (!root || !root[isInSubscribe]) {
       throw new Error('Subscription field resolve called without subscribe');
     }
 
