@@ -39,7 +39,7 @@ type SubscriptionFieldConfigWithResolver<
   TSubReturn,
   TArgs = {},
 > = FieldConfig<TSource, TContext, TReturn, TArgs> & {
-  resolve?: FieldResolver<TSubReturn, TContext, TReturn, TArgs>,
+  resolve: FieldResolver<TSubReturn, TContext, TReturn, TArgs>,
   subscribe: FieldSubscriber<TSource, TContext, TSubReturn, TArgs>,
 };
 
@@ -72,7 +72,7 @@ export interface SubscriptionFieldCreator<TSource, TContext> {
   <TReturn, TSubReturn, TArgs = {}>(
     options: FieldCreatorConfig<TReturn, TArgs>,
     subscribe: FieldSubscriber<TSource, TContext, TSubReturn, TArgs>,
-    resolve?: FieldResolver<TSubReturn, TContext, TReturn, TArgs>,
+    resolve: FieldResolver<TSubReturn, TContext, TReturn, TArgs>,
   ): SubscriptionFieldConfig<TSource, TContext, TReturn, TSubReturn, TArgs>;
 }
 
