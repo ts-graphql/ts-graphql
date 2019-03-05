@@ -8,20 +8,28 @@ import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
+import { PubSub } from 'graphql-subscriptions';
 
 const delay = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
+
+const pubSub = new PubSub();
+
+const SOME_TOPIC = 'foobar';
 
 const subFields = subscriptionFields({}, (field) => ({
   date: field(
     { type: TSGraphQLString },
-    async function* () {
-      while (true) {
-        await delay(1000);
-        yield new Date().toISOString();
-      }
-    }
+    // https://github.com/apollographql/graphql-subscriptions/issues/192
+    () => pubSub.asyncIterator(SOME_TOPIC) as unknown as AsyncIterable<string>,
   ),
 }));
+
+(async function () {
+  while (true) {
+    await delay(1000);
+    await pubSub.publish(SOME_TOPIC, new Date().toISOString());
+  }
+})();
 
 const queryFields = fields({}, (field) => ({
   version: field({ type: TSGraphQLString }, () => '1.0.0'),
