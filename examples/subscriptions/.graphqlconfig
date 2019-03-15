@@ -1,0 +1,12 @@
+{
+  "extensions": {
+    "endpoints": {
+      "dev": {
+        "url": "http://localhost:4000/graphql",
+        "subscription": {
+          "url": "ws://localhost:5000/graphql"
+        }
+      }
+    }
+  }
+}
