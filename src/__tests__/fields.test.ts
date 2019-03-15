@@ -3,7 +3,14 @@ import { SubscriptionFieldConfigMap } from '../fields';
 if (Symbol["asyncIterator"] === undefined) ((Symbol as any)["asyncIterator"]) = Symbol.for("asyncIterator");
 
 import 'jest';
-import { buildFields, fields, buildSubscriptionFields, subscriptionFields, TSGraphQLString } from '../index';
+import {
+  buildFields,
+  fields,
+  buildSubscriptionFields,
+  subscriptionFields,
+  TSGraphQLString,
+  TSGraphQLInt,
+} from '../index';
 import { GraphQLObjectType, GraphQLSchema, subscribe, parse, graphql } from 'graphql';
 
 const schemaForSubscriptionFields = (subFields: SubscriptionFieldConfigMap<any, any>) => {
@@ -58,6 +65,32 @@ describe('fields', () => {
       }
 
       expect(values).toEqual(['A', 'B']);
+    });
+
+    it('should call resolver with yielded values', async () => {
+      const subFields = subscriptionFields({}, (field) => ({
+        test: field(
+          { type: TSGraphQLInt },
+          async function* () {
+            yield 1;
+            yield 2;
+          },
+          (num) => num * 2,
+        ),
+      }));
+
+      const result = await querySubscriptionFields(subFields, `
+        subscription {
+          test
+        }
+      `);
+
+      const values = [];
+      for await (const value of result as any) {
+        values.push(value.data.test);
+      }
+
+      expect(values).toEqual([2, 4]);
     });
 
     it('should return error if subscription queried incorrectly', async () => {

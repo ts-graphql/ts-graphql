@@ -276,7 +276,9 @@ const AOrB = unionType<A | B>({
 
 ### Root Types
 
-There aren't any special functions for the root types, they are 
+#### Query/Mutation
+
+There aren't any special functions for the query and mutation types, they are 
 just object types. 
 
 However, if you create them as classes, type safety is a little off as you won't have 
@@ -301,7 +303,45 @@ const Query = new GraphQLObjectType({
     barQueryFields,
   ]),
 });
-``` 
+```
+
+#### Subscription
+
+There are functions `subscriptionFields`/`buildSubscriptionFields` that
+are similar to `fields`/`buildFields` shown in  [modular fields](#modular-fields).
+
+Your `subscribe` function must return an `AsyncIterable`. You can either have 
+`subscribe` directly yield the field value, or use `resolve` to transform or
+perform further actions with the yielded value.
+
+See the [subscription example](https://github.com/stephentuso/ts-graphql/tree/master/examples/subscriptions)
+for a complete example.
+
+```typescript
+import { TSGraphQLInt, subscriptionFields, buildSubscriptionFields } from 'ts-graphql';
+import { GraphQLObjectType } from 'graphql'; 
+
+const subFields = subscriptionFields({}, (field) => ({
+  withResolve: field(
+    { type: TSGraphQLInt },
+    async function* () {
+      yield 'foo';
+    },
+    (value) => value.length,
+  ),
+  onlySubscribe: field(
+    { type: TSGraphQLInt },
+    async function* () {
+      yield 42;
+    }, 
+  ),
+}));
+
+const subscription = new GraphQLObjectType({
+  name: 'Subscription',
+  fields: buildSubscriptionFields(subFields),
+});
+```
 
 ### Schema
 

@@ -11,14 +11,16 @@ subscriptionFields({}, (field) => ({
   string: field(
     { type: TSGraphQLString },
     async function* () {
-      yield 'foo';
+      yield 1;
     },
+    (num) => `${num}`,
   ),
   int: field(
     { type: TSGraphQLInt },
     async function* () {
-      yield 42;
+      yield 21;
     },
+    (num) => num * 2,
   ),
   boolean: field(
     { type: TSGraphQLBoolean },
