@@ -27,6 +27,8 @@ Project goals:
   * [Enums](#enums)
   * [Union Types](#union-types)
   * [Root Types](#root-types)
+    * [Query/Mutation](#querymutation)
+    * [Subscription](#subscription)
   * [Schema](#schema)
   * [Context](#context)
   * [Modular Fields](#modular-fields)
