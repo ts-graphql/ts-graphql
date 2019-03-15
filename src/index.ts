@@ -15,7 +15,7 @@ import buildInputObjectType from './builders/buildInputObjectType';
 import buildInterfaceType from './builders/buildInterfaceType';
 import buildObjectType from './builders/buildObjectType';
 import { buildInputType, buildNamedType, buildNamedTypes, buildOutputType, buildType } from './typeHelpers';
-import { buildFields, fields } from './fields';
+import { buildFields, buildSubscriptionFields, fields, subscriptionFields } from './fields';
 import { TSGraphQLBoolean, TSGraphQLFloat, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from './wrappers/scalars';
 import scalarType from './wrappers/scalarType';
 
@@ -51,5 +51,7 @@ export {
   buildType,
   fields,
   buildFields,
+  subscriptionFields,
+  buildSubscriptionFields,
   fieldDecoratorForContext,
 };

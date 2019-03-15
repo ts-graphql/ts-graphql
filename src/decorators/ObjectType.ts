@@ -14,7 +14,7 @@ import { flatMap, uniq, identity } from 'lodash';
 export type ObjectTypeConfig<TSource, TContext> = {
   name?: string,
   description?: string,
-  fields?: MaybeArray<Thunk<MaybeArray<FieldConfigMap<TSource, TContext>>>>
+  fields?: MaybeArray<Thunk<MaybeArray<FieldConfigMap<TSource, TContext>>>>,
 }
 
 export default <TSource, TContext>(config: ObjectTypeConfig<TSource, TContext> = {}) =>
