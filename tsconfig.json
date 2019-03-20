@@ -9,7 +9,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "lib": ["es5", "es6", "es7", "esnext"],
+    "lib": ["esnext"],
     "declaration": true,
     "sourceMap": false,
     "outDir": "./lib",
@@ -17,10 +17,6 @@
     "strict": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "typeRoots": [
-      "../node_modules/@types"
-    ],
-    "types": ["node"],
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
