@@ -9,7 +9,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "lib": ["esnext"],
+    "lib": ["es5", "es6", "es7", "esnext"],
     "declaration": true,
     "sourceMap": false,
     "outDir": "./lib",
