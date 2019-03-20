@@ -11,9 +11,7 @@
   "scripts": {
     "build": "rimraf ./lib && tsc",
     "prepublishOnly": "npm run build",
-    "test": "jest",
-    "lint": "tslint src/**/*.ts",
-    "lint:fix": "tslint --fix src/**/*.ts"
+    "test": "jest"
   },
   "publishConfig": {
     "access": "public"
