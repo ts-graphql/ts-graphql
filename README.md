@@ -62,6 +62,7 @@ see the type definitions.
 The only special patterns needed are:
 
  - 1:1 mapping between GraphQL types and TS types
+ - GraphQL type sources must be classes
  - For it to be typed, Context has to be a class (see [context](#context))
 
 ### Standard Scalars
