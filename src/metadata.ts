@@ -26,6 +26,7 @@ const implementsKey = Symbol('implements');
 const implementersKey = Symbol('implementers');
 const interfaceKey = Symbol('interface');
 const extendsKey = Symbol('extends');
+const extensionsKey = Symbol('extensions');
 
 export const storeIsInputObjectType = (target: AnyConstructor<any>) => {
   Reflect.defineMetadata(isInputObjectTypeKey, true, target);
@@ -145,7 +146,13 @@ export const storeInterfaceTypeConfig = (target: AnyConstructor<any>, config: In
 };
 
 export const storeExtends = (target: AnyConstructor<any>, extnds: AnyConstructor<any>) => {
+  const currentExtensions = getExtensions(extnds) || [];
   Reflect.defineMetadata(extendsKey, extnds, target);
+  Reflect.defineMetadata(extensionsKey, uniq([...currentExtensions, target]), extnds);
+}
+
+export const getExtensions = (target: AnyConstructor<any>) => {
+  return Reflect.getMetadata(extensionsKey, target);
 }
 
 export const getExtends = (target: AnyConstructor<any>) => {

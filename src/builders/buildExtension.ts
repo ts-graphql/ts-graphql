@@ -24,6 +24,12 @@ export const getExtensionFieldConfigMap = memoize((source: AnyConstructor<any>):
   }));
 });
 
-export default memoize((source: AnyConstructor<any>): GraphQLFieldConfigMap<any, any> => {
+const buildExtension = memoize((source: AnyConstructor<any>): GraphQLFieldConfigMap<any, any> => {
   return buildFieldConfigMap(getExtensionFieldConfigMap(source));
 });
+
+export const buildExtensions = (sources: Array<AnyConstructor<any>>): GraphQLFieldConfigMap<any, any> => {
+  return Object.assign({}, ...sources.map(buildExtension));
+};
+
+export default buildExtension;

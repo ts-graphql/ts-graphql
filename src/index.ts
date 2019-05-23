@@ -21,6 +21,8 @@ import scalarType from './wrappers/scalarType';
 import { Extension } from './Extension';
 import ExtensionField from './decorators/ExtensionField';
 import Extends from './decorators/Extends';
+import { buildExtensions } from './builders/buildExtension';
+import { getExtensions } from './metadata';
 
 export {
   Arg,
@@ -47,6 +49,8 @@ export {
   unionType,
   unsafeWrapType,
   wrapScalar,
+  getExtensions,
+  buildExtensions,
   buildInputObjectType,
   buildInterfaceType,
   buildObjectType,

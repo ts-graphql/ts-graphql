@@ -22,9 +22,9 @@ type ExtensionFieldPropertyDecorator<TReturn, TArgs> =
   ) => void;
 
 type ExtensionFieldOverloads = {
-  <TSource, TArgs>(config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>):
+  <TArgs>(config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>):
     <TName extends string>(
-      ctor: ExtensionClassInferredProp<TSource, any, TName>,
+      ctor: ExtensionClassInferredProp<any, any, TName>,
       key: TName,
     ) => void;
   <TSource, TReturn, TArgs, TContext>(

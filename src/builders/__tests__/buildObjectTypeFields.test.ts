@@ -5,7 +5,7 @@ import buildObjectTypeFields from '../buildObjectTypeFields';
 import InterfaceType from '../../decorators/InterfaceType';
 import Implements from '../../decorators/Implements';
 import { fields } from '../../fields';
-import { ObjectType, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../index';
+import { getExtensions, ObjectType, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../index';
 import Args from '../../decorators/Args';
 import Arg from '../../decorators/Arg';
 import list from '../../wrappers/list';
@@ -278,7 +278,7 @@ describe('buildObjectTypeFields', () => {
 
   it('should correctly include extension fields', () => {
     @ObjectType({
-      extensions: () => [FooExtension],
+      extensions: () => getExtensions(Foo),
     })
     class Foo {
       @Field({ type: TSGraphQLString })
@@ -286,9 +286,9 @@ describe('buildObjectTypeFields', () => {
     }
 
     @Extends(Foo)
-    class FooExtension extends Extension<Foo> {
+    class FooExtensionA extends Extension<Foo> {
       @ExtensionField()
-      static baz: string = 'baz';
+      static baz: number = 4;
 
       @ExtensionField({ type: TSGraphQLString })
       static blah() {
@@ -296,12 +296,20 @@ describe('buildObjectTypeFields', () => {
       }
     }
 
+    @Extends(Foo)
+    class FooExtensionsB extends Extension<Foo> {
+      @ExtensionField()
+      static something: string = 'something';
+    }
+
     const config = resolveThunk(buildObjectTypeFields(Foo));
     expect(config).toHaveProperty('bar');
     expect(config).toHaveProperty('baz');
     expect(config).toHaveProperty('blah');
+    expect(config).toHaveProperty('something');
 
-    expect(config.baz!.resolve!(null, {}, null, null as any)).toEqual('baz');
+    expect(config.baz!.resolve!(null, {}, null, null as any)).toEqual(4);
     expect(config.blah!.resolve!(null, {}, null, null as any)).toEqual('blah');
+    expect(config.something!.resolve!(null, {}, null, null as any)).toEqual('something');
   });
 });

@@ -487,19 +487,17 @@ Extend an object type by:
 Fields must be static because the extension classes will not be instantiated,
 methods will be passed an instance of the base type.
 
-To stay unopinionated, the library does not automatically extend the 
+To stay unopinionated, by default the library does not automatically extend the 
 base type when a class is imported - they must be passed in to the config
-of the base type.
+of the base type. However, you can use `getExtensions` to accomplish this:
 
 ```typescript
 // Foo.ts
-import { ObjectType } from 'ts-graphql';
-import { FooFieldsA } from './features/a.ts';
-import { FooFieldsB } from './features/b.ts';
+import { ObjectType, getExtensions } from 'ts-graphql';
+import './features/a.ts';
+import './features/b.ts';
 
-@ObjectType({
-  fields: () => [fooFieldsA, fooFieldsB],
-})
+@ObjectType({ extensions: () => getExtensions(Foo) })
 export default class Foo {
   data: string; 
   // ...
@@ -510,7 +508,7 @@ import { Extension, Extends, ExtensionField, TSGraphQLString } from 'ts-graphql'
 import Foo from '../Foo.ts';
 
 @Extends(Foo)
-export class FooFieldsA extends Extension<Foo> {
+class FooFieldsA extends Extension<Foo> {
   @ExtensionField({ type: TSGraphQLString })
   static data(source: Foo) {
     return source.data;
@@ -522,7 +520,7 @@ import { Extension, Extends, ExtensionField, TSGraphQLInt } from 'ts-graphql';
 import Foo from '../Foo.ts';
 
 @Extends(Foo)
-export class FooFieldsB extends Extension<Foo> {
+class FooFieldsB extends Extension<Foo> {
   @ExtensionField({ type: TSGraphQLInt })
   static dataLength(source: Foo) {
     return source.data.length;
