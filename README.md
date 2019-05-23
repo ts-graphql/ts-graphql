@@ -479,13 +479,15 @@ There are two ways:
  
 #### Decorators
 
+Intended to mirror the [SDL `extend` keyword](https://www.apollographql.com/docs/graphql-tools/generate-schema#extend-types).
+
 Extend an object type by:
  1. Add `@Extends` decorator to class
  2. Make class extend `Extension`
  3. Add static methods/properties and decorate with `@ExtensionField`
 
 Fields must be static because the extension classes will not be instantiated,
-methods will be passed an instance of the base type.
+methods will be passed an instance of the source class.
 
 To stay unopinionated, by default the library does not automatically extend the 
 base type when a class is imported - they must be passed in to the config
@@ -535,8 +537,9 @@ class FooFieldsA extends Extension<Foo, Context> {
 
 #### `fields`
 
-```typescript
+The other option is the `fields` function:
 
+```typescript
 // Foo.ts
 import { ObjectType } from 'ts-graphql';
 import { fooFieldsA } from './features/a.ts'
