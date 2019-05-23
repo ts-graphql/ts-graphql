@@ -35,7 +35,7 @@ describe('buildInterfaceType', () => {
       expect(() => iface.resolveType!(new C(), {}, null as any)).toThrow();
     });
 
-    it('should work with multiple inheritance', () => {
+    it('should support multiple inheritance', () => {
       @InterfaceType()
       class IfaceA {}
 

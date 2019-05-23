@@ -18,6 +18,9 @@ import { buildInputType, buildNamedType, buildNamedTypes, buildOutputType, build
 import { buildFields, buildSubscriptionFields, fields, subscriptionFields } from './fields';
 import { TSGraphQLBoolean, TSGraphQLFloat, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from './wrappers/scalars';
 import scalarType from './wrappers/scalarType';
+import { Extension } from './Extension';
+import ExtensionField from './decorators/ExtensionField';
+import Extends from './decorators/Extends';
 
 export {
   Arg,
@@ -28,6 +31,9 @@ export {
   InputObjectType,
   InterfaceType,
   ObjectType,
+  Extends,
+  Extension,
+  ExtensionField,
   enumType,
   EnumTypeCase,
   list,

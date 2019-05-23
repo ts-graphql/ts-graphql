@@ -9,7 +9,7 @@ import { InterfaceImplementation } from './Implements';
 
 export type FieldDecoratorConfig<TReturn, TArgs = {}, TContext = any> = FieldCreatorConfig<TReturn, TArgs> & {
   context?: AnyConstructor<TContext>
-}
+};
 
 export type FieldResolverMethod<TContext, TReturn, TArgs> =
   (args: TArgs, context: TContext, info: GraphQLResolveInfo) => MaybePromise<TReturn | InterfaceImplementation<TReturn>>;
@@ -31,7 +31,7 @@ type FieldOverloads = {
   <TReturn, TArgs, TContext = undefined>(
     config: Thunk<FieldDecoratorConfig<TReturn, TArgs, TContext>>
   ): FieldPropertyDecorator<TReturn, TArgs, TContext>
-}
+};
 
 export const fieldDecoratorForContext = <TContext>(context: AnyConstructor<TContext>) =>
   <TReturn, TArgs>(config?: Thunk<Partial<FieldCreatorConfig<TReturn, TArgs>>>) =>
@@ -53,6 +53,6 @@ const Field = <TReturn, TArgs, TContext>(
         type,
       };
     });
-  }
+  };
 
 export default Field as FieldOverloads;

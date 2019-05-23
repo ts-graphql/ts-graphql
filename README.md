@@ -214,6 +214,9 @@ maybeListOfMaybeFoo: Array<Foo | null> | null;
 
 You can use TS enums in your code, and create a type for TS GraphQL to use.
 
+> Note: For 100% type safety, use string enums. `number` is 
+> assignable to numeric enums (explained in [this issue](https://github.com/microsoft/TypeScript/issues/17734))
+
 ```typescript
 import { enumType, EnumTypeCase, Field } from 'ts-graphql';
 
@@ -466,8 +469,73 @@ will be typed in your resolvers. Note that all fields you pass to an
 
 ### Modular Fields 
 
-You can use the `fields` method to define fields separately from your object type source, 
+You can define fields separately from your object type source, 
 and split them up if you want. This works well for the root types.
+
+There are two ways:
+ - Decorators, which are similar to the rest of the library but are more verbose
+ - `fields` function, which uses plain functions and objects,
+   but is more concise and supports type inference
+ 
+#### Decorators
+
+Extend an object type by:
+ 1. Add `@Extends` decorator to class
+ 2. Make class extend `Extension`
+ 3. Add static methods/properties and decorate with `@ExtensionField`
+
+Fields must be static because the extension classes will not be instantiated,
+methods will be passed an instance of the base type.
+
+To stay unopinionated, the library does not automatically extend the 
+base type when a class is imported - they must be passed in to the config
+of the base type.
+
+```typescript
+// Foo.ts
+import { ObjectType } from 'ts-graphql';
+import { FooFieldsA } from './features/a.ts';
+import { FooFieldsB } from './features/b.ts';
+
+@ObjectType({
+  fields: () => [fooFieldsA, fooFieldsB],
+})
+export default class Foo {
+  data: string; 
+  // ...
+}
+
+// features/a.ts
+import { Extension, Extends, ExtensionField, TSGraphQLString } from 'ts-graphql';
+import Foo from '../Foo.ts';
+
+@Extends(Foo)
+export class FooFieldsA extends Extension<Foo> {
+  @ExtensionField({ type: TSGraphQLString })
+  static data(source: Foo) {
+    return source.data;
+  }
+}
+
+// features/b.ts
+import { Extension, Extends, ExtensionField, TSGraphQLInt } from 'ts-graphql';
+import Foo from '../Foo.ts';
+
+@Extends(Foo)
+export class FooFieldsB extends Extension<Foo> {
+  @ExtensionField({ type: TSGraphQLInt })
+  static dataLength(source: Foo) {
+    return source.data.length;
+  }
+}
+```
+
+The context type is the second type variable of `Extension`: 
+```typescript
+class FooFieldsA extends Extension<Foo, Context> {
+```
+
+#### `fields`
 
 ```typescript
 
@@ -505,6 +573,11 @@ export const fooFieldsB = fields({ source: Foo }, (field) => ({
     (source) => source.data.length,
   ),
 }));
+```
+
+To use context pass the class to `fields`:
+```typescript
+fields({ source: Foo, context: Context }, (field) => ({
 ```
 
 ### Custom Scalars

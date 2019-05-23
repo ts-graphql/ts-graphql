@@ -9,6 +9,6 @@ export const resolveThunk = <T>(thunk: Thunk<T>): T => {
 export const mergeThunks = <T extends ObjectLiteral>(...thunks: Array<Thunk<T>>): Thunk<T> => {
   return () => thunks.map(resolveThunk).reduce((merged, value) => ({
     ...merged,
-    ...value as any,
-  }), {});
+    ...value,
+  }), {} as T);
 }

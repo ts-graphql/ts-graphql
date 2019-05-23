@@ -1,7 +1,7 @@
 import { EmptyConstructor } from '../types';
 import { Thunk } from '../utils/thunk';
 import { GraphQLFieldConfigArgumentMap } from 'graphql';
-import getInputFieldConfigMap from './buildInputFieldConfigMap';
+import getInputFieldConfigMap from './buildInputObjectTypeFields';
 import { hasArgsConfig, isArgs } from '../metadata';
 
 export default (target: EmptyConstructor<any>): Thunk<GraphQLFieldConfigArgumentMap> => {
