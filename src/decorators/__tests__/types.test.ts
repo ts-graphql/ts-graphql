@@ -5,10 +5,10 @@ describe('Decorator type validation', () => {
   it('passes for valid files', async () => {
     const validFiles = await getFilesInDir(__dirname, 'valid');
     await typeCheckFiles(validFiles);
-  }, 60000);
+  }, 120000);
 
   it('fails for invalid files', async () => {
     const invalidFiles = await getFilesInDir(__dirname, 'invalid');
     await typeCheckFiles(invalidFiles, true);
-  }, 60000);
+  }, 120000);
 });
