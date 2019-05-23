@@ -5,10 +5,10 @@ describe('Root files type validation', () => {
   it('passes for valid files', async () => {
     const validFiles = await getFilesInDir(__dirname, 'valid');
     await typeCheckFiles(validFiles);
-  }, 30000);
+  }, 60000);
 
   it('fails for invalid files', async () => {
     const invalidFiles = await getFilesInDir(__dirname, 'invalid');
     await typeCheckFiles(invalidFiles, true);
-  }, 30000);
+  }, 60000);
 });
