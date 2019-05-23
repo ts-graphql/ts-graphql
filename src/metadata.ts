@@ -145,10 +145,12 @@ export const storeInterfaceTypeConfig = (target: AnyConstructor<any>, config: In
   Reflect.defineMetadata(interfaceKey, config, target);
 };
 
-export const storeExtends = (target: AnyConstructor<any>, extnds: AnyConstructor<any>) => {
-  const currentExtensions = getExtensions(extnds) || [];
-  Reflect.defineMetadata(extendsKey, extnds, target);
-  Reflect.defineMetadata(extensionsKey, uniq([...currentExtensions, target]), extnds);
+export const storeExtends = (target: AnyConstructor<any>, extnds?: Maybe<AnyConstructor<any>>) => {
+  if (extnds) {
+    const currentExtensions = getExtensions(extnds) || [];
+    Reflect.defineMetadata(extensionsKey, uniq([...currentExtensions, target]), extnds);
+  }
+  Reflect.defineMetadata(extendsKey, extnds || true, target);
 }
 
 export const getExtensions = (target: AnyConstructor<any>) => {
