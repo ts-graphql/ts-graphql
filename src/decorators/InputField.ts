@@ -13,7 +13,7 @@ export type InputFieldConfig<TValue> = {
 }
 
 export type PrimitiveInputFieldConfig<TValue> =
-  Exclude<InputFieldConfig<TValue>, { type: WrapperOrType<TValue, GraphQLInputType> }>
+  Exclude<InputFieldConfig<TValue>, { type: WrapperOrType<TValue, GraphQLInputType> }>;
 
 type InputFieldOverloads = {
   <TValue extends string | number | boolean>(config?: Thunk<PrimitiveInputFieldConfig<TValue>>):

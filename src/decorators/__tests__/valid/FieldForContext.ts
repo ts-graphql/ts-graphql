@@ -1,7 +1,6 @@
-import Field from '../../Field';
-import { nullable, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../..';
+import { fieldDecoratorForContext } from '../../Field';
+import { nullable, TSGraphQLID, TSGraphQLInt } from '../../..';
 import { Maybe } from '../../../types';
-import { GraphQLResolveInfo } from 'graphql';
 
 class Data {
   value!: string;
@@ -16,6 +15,8 @@ class SomeArgs {
 class Context {
   isAuthorized!: boolean;
 }
+
+const Field = fieldDecoratorForContext(Context);
 
 class SomeType {
   @Field()
@@ -38,23 +39,12 @@ class SomeType {
     return new Data();
   }
 
-  @Field({ type: Data, context: Context })
-  async dataWithContext() {
-    return new Data();
-  }
-
-  @Field({ type: Data })
-  dataNoContext(args: {}, context: undefined, info: GraphQLResolveInfo) {
-    return new Data();
-  }
-
   @Field({
     type: nullable(Data),
     args: SomeArgs,
     description: 'some data',
     isDeprecated: true,
     deprecationReason: 'old',
-    context: Context,
   })
   async oldData(args: SomeArgs, context: Context) {
     return null;

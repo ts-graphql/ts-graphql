@@ -2,7 +2,7 @@ import Field from '../../Field';
 import enumType from '../../../wrappers/enumType';
 
 enum AnEnum {
-  Foo,
+  Foo = 'Foo',
 }
 
 const AnEnumGraphQLType = enumType(AnEnum, { name: 'AnEnum' });

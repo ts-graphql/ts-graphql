@@ -1,7 +1,7 @@
 import { GraphQLInputObjectType } from 'graphql';
 import { getObjectTypeConfig, isInputObjectType } from '../metadata';
 import { AnyConstructor } from '../types';
-import getInputFieldConfigMap from './buildInputFieldConfigMap';
+import getInputFieldConfigMap from './buildInputObjectTypeFields';
 import { memoize } from 'lodash';
 
 export default memoize((source: AnyConstructor<any>): GraphQLInputObjectType => {
