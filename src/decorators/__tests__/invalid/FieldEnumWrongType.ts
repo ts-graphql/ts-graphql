@@ -9,5 +9,5 @@ const AnEnumGraphQLType = enumType(AnEnum, { name: 'AnEnum' });
 
 class Foo {
   @Field({ type: AnEnumGraphQLType })
-  foo!: number;
+  foo!: string;
 }
