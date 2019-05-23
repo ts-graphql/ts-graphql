@@ -1,11 +1,11 @@
 import 'jest';
 import Field from '../../decorators/Field';
 import { resolveThunk } from '../../utils/thunk';
-import buildFieldConfigMap from '../buildFieldConfigMap';
+import buildObjectTypeFields from '../buildObjectTypeFields';
 import InterfaceType from '../../decorators/InterfaceType';
 import Implements from '../../decorators/Implements';
 import { fields } from '../../fields';
-import { ObjectType, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../index';
+import { getExtensions, ObjectType, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../index';
 import Args from '../../decorators/Args';
 import Arg from '../../decorators/Arg';
 import list from '../../wrappers/list';
@@ -13,6 +13,9 @@ import nullable from '../../wrappers/nullable';
 import InputObjectType from '../../decorators/InputObjectType';
 import InputField from '../../decorators/InputField';
 import { GraphQLID } from 'graphql';
+import Extends from '../../decorators/Extends';
+import { Extension } from '../../Extension';
+import ExtensionField from '../../decorators/ExtensionField';
 
 class Simple {
   @Field()
@@ -97,29 +100,29 @@ const moreFields = fields({ source: Foo }, (field) => ({
   ),
 }));
 
-describe('getFieldConfigMap', () => {
+describe('buildObjectTypeFields', () => {
   it('should properly get fields for simple class', () => {
-    const config = resolveThunk(buildFieldConfigMap(Simple));
+    const config = resolveThunk(buildObjectTypeFields(Simple));
     for (const property in Object.keys(Simple.prototype)) {
       expect(config).toHaveProperty(property);
     }
   });
 
   it('should inherit fields from superclasses', () => {
-    const config = resolveThunk(buildFieldConfigMap(B));
+    const config = resolveThunk(buildObjectTypeFields(B));
     expect(config).toHaveProperty('a');
     expect(config).toHaveProperty('b');
   });
 
   it('should inherit fields from interfaces', () => {
-    const config = resolveThunk(buildFieldConfigMap(User));
+    const config = resolveThunk(buildObjectTypeFields(User));
     expect(config).toHaveProperty('id');
     expect(config).toHaveProperty('email');
     expect(config).toHaveProperty('displayName');
   });
 
   it('should inherit fields from interfaces on superclasses', () => {
-    const config = resolveThunk(buildFieldConfigMap(Employee));
+    const config = resolveThunk(buildObjectTypeFields(Employee));
     expect(config).toHaveProperty('id');
     expect(config).toHaveProperty('email');
     expect(config).toHaveProperty('displayName');
@@ -131,7 +134,7 @@ describe('getFieldConfigMap', () => {
       @Field({ type: nullable(TSGraphQLID) })
       id!: string;
     }
-    const config = resolveThunk(buildFieldConfigMap(OverrideTest));
+    const config = resolveThunk(buildObjectTypeFields(OverrideTest));
     expect(config.id.type).toEqual(GraphQLID);
   });
 
@@ -140,12 +143,12 @@ describe('getFieldConfigMap', () => {
       @Field({ type: nullable(TSGraphQLID) })
       str!: string;
     }
-    const config = resolveThunk(buildFieldConfigMap(OverrideTest));
+    const config = resolveThunk(buildObjectTypeFields(OverrideTest));
     expect(config.str.type).toEqual(GraphQLID);
   });
 
   it('should inherit fields from interfaces on superclass and interfaces on itself', () => {
-    const config = resolveThunk(buildFieldConfigMap(EmployeeWithPicture));
+    const config = resolveThunk(buildObjectTypeFields(EmployeeWithPicture));
     expect(config).toHaveProperty('id');
     expect(config).toHaveProperty('email');
     expect(config).toHaveProperty('displayName');
@@ -154,21 +157,21 @@ describe('getFieldConfigMap', () => {
   });
 
   it('should merge decorator fields with config fields', () => {
-    const config = resolveThunk(buildFieldConfigMap(Foo));
+    const config = resolveThunk(buildObjectTypeFields(Foo));
     expect(config).toHaveProperty('foo');
     expect(config).toHaveProperty('bar');
     expect(config).toHaveProperty('baz');
   });
 
   it('should create resolver from instance method', () => {
-    const config = resolveThunk(buildFieldConfigMap(Foo));
+    const config = resolveThunk(buildObjectTypeFields(Foo));
     expect(config).toHaveProperty('foo');
     expect(typeof config.foo.resolve).toEqual('function');
     expect(config.foo.resolve!(null, {}, null, null as any)).toEqual(new Foo().foo());
   });
 
   it('should use default resolver for plain fields', () => {
-    const config = resolveThunk(buildFieldConfigMap(Simple));
+    const config = resolveThunk(buildObjectTypeFields(Simple));
     expect(config).toHaveProperty('str');
     expect(config.str.resolve!({ str: 'foo' }, {}, null, null as any)).toEqual('foo');
   });
@@ -185,7 +188,7 @@ describe('getFieldConfigMap', () => {
       foo = test;
     }
 
-    const foo = resolveThunk(buildFieldConfigMap(Foo));
+    const foo = resolveThunk(buildObjectTypeFields(Foo));
     foo.foo.resolve!(new Foo(), {}, {}, null as any);
   })
 
@@ -231,7 +234,7 @@ describe('getFieldConfigMap', () => {
       ),
     }));
 
-    const config = resolveThunk(buildFieldConfigMap(ArgsTest));
+    const config = resolveThunk(buildObjectTypeFields(ArgsTest));
     expect(config).toHaveProperty('configTest');
     expect(config).toHaveProperty('initializerTest');
     expect(config).toHaveProperty('methodTest');
@@ -266,10 +269,47 @@ describe('getFieldConfigMap', () => {
       }
     }
 
-    const config = resolveThunk(buildFieldConfigMap(Foo));
+    const config = resolveThunk(buildObjectTypeFields(Foo));
     expect(config).toHaveProperty('foo');
     expect(config.foo!.resolve!(null, {}, null, null as any)).toEqual(['FOO', null]);
 
     expect(transformOutput).toHaveBeenCalledTimes(1);
+  });
+
+  it('should correctly include extension fields', () => {
+    @ObjectType({
+      extensions: () => getExtensions(Foo),
+    })
+    class Foo {
+      @Field({ type: TSGraphQLString })
+      bar = 'bar';
+    }
+
+    @Extends(Foo)
+    class FooExtensionA extends Extension<Foo> {
+      @ExtensionField()
+      static baz: number = 4;
+
+      @ExtensionField({ type: TSGraphQLString })
+      static blah() {
+        return 'blah';
+      }
+    }
+
+    @Extends(Foo)
+    class FooExtensionsB extends Extension<Foo> {
+      @ExtensionField()
+      static something: string = 'something';
+    }
+
+    const config = resolveThunk(buildObjectTypeFields(Foo));
+    expect(config).toHaveProperty('bar');
+    expect(config).toHaveProperty('baz');
+    expect(config).toHaveProperty('blah');
+    expect(config).toHaveProperty('something');
+
+    expect(config.baz!.resolve!(null, {}, null, null as any)).toEqual(4);
+    expect(config.blah!.resolve!(null, {}, null, null as any)).toEqual('blah');
+    expect(config.something!.resolve!(null, {}, null, null as any)).toEqual('something');
   });
 });

@@ -23,6 +23,8 @@ export type EnumTypeConfig<K extends keyof any> = {
   additional?: EnumValueConfigMap<K>,
 }
 
+type EnumValue<TEnumObject> = TEnumObject extends Record<keyof TEnumObject, infer V> ? V : never;
+
 const performChangeCase = (type: EnumTypeCase, value: string): string => {
   switch (type) {
     case EnumTypeCase.Constant:
@@ -32,10 +34,10 @@ const performChangeCase = (type: EnumTypeCase, value: string): string => {
   }
 };
 
-const enumType = <K extends string, TEnum extends string | number>(
-  enumObject: Record<K, TEnum>,
-  config: EnumTypeConfig<K>,
-): Wrapper<TEnum, GraphQLEnumType> => {
+const enumType = <TEnumObject extends Record<any, any>>(
+  enumObject: TEnumObject,
+  config: EnumTypeConfig<keyof TEnumObject>,
+): Wrapper<EnumValue<TEnumObject>, GraphQLEnumType> => {
   const { changeCase } = config;
 
   const getKey = (key: string) => changeCase ? performChangeCase(changeCase, key) : key;
@@ -49,8 +51,8 @@ const enumType = <K extends string, TEnum extends string | number>(
       return {
         ...map,
         [getKey(key)]: {
-          ...config.additional && (config.additional as any)[key],
-          value: (enumObject as any)[key],
+          ...config.additional && config.additional[key],
+          value: enumObject[key],
         },
       }
     }, {}),
@@ -58,7 +60,7 @@ const enumType = <K extends string, TEnum extends string | number>(
 
   return {
     graphQLType,
-    type: null as any as TEnum,
+    type: null as any as EnumValue<TEnumObject>,
   }
 }
 

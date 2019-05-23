@@ -124,7 +124,7 @@ const wrapSubscribe = <TSource, TContext, TReturn, TArgs>(
       }
     }
   }
-}
+};
 
 function wrapSubscriptionResolve<TSource, TContext, TReturn, TArgs>(
   resolve?: FieldResolver<TSource, TContext, TReturn, TArgs>,

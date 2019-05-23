@@ -17,10 +17,6 @@
     "strict": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "typeRoots": [
-      "../node_modules/@types"
-    ],
-    "types": ["node"],
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

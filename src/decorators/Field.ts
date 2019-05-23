@@ -9,7 +9,7 @@ import { InterfaceImplementation } from './Implements';
 
 export type FieldDecoratorConfig<TReturn, TArgs = {}, TContext = any> = FieldCreatorConfig<TReturn, TArgs> & {
   context?: AnyConstructor<TContext>
-}
+};
 
 export type FieldResolverMethod<TContext, TReturn, TArgs> =
   (args: TArgs, context: TContext, info: GraphQLResolveInfo) => MaybePromise<TReturn | InterfaceImplementation<TReturn>>;
@@ -17,25 +17,39 @@ export type FieldResolverMethod<TContext, TReturn, TArgs> =
 export type FieldProperty<TContext, TReturn, TArgs> =
   MaybePromise<TReturn> | FieldResolverMethod<TContext, TReturn, TArgs>;
 
-type FieldPropertyDecorator<TReturn, TArgs, TContext = undefined> = <TName extends string, TSource, TRArgs extends TArgs = TArgs>(
+type FieldPropertyDecorator<TReturn, TArgs, TContext = undefined> = <TName extends string, TSource>(
   prototype: Record<TName, FieldProperty<TContext, TReturn, TArgs>>,
   key: TName,
 ) => void;
 
+type InferredFieldPropertyDecorator = <TName extends string>(
+  prototype: Record<TName, string> | Record<TName, boolean> | Record<TName, number>,
+  key: TName,
+) => void;
+
 type FieldOverloads = {
-  <TArgs>(config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>):
-    <TName extends string, TSource, TContext, TRArgs extends TArgs = TArgs>(
-      prototype: Record<TName, string> | Record<TName, boolean> | Record<TName, number>,
-      key: TName,
-    ) => void;
+  <TArgs>(
+    config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>
+  ): InferredFieldPropertyDecorator;
+
   <TReturn, TArgs, TContext = undefined>(
     config: Thunk<FieldDecoratorConfig<TReturn, TArgs, TContext>>
   ): FieldPropertyDecorator<TReturn, TArgs, TContext>
-}
+};
 
-export const fieldDecoratorForContext = <TContext>(context: AnyConstructor<TContext>) =>
+export type FieldForContextOverloads<TContext> = {
+  <TArgs>(
+    config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>
+  ): InferredFieldPropertyDecorator;
+
+  <TReturn, TArgs>(
+    config: Thunk<Partial<FieldCreatorConfig<TReturn, TArgs>>>
+  ): FieldPropertyDecorator<TReturn, TArgs, TContext>
+};
+
+export const fieldDecoratorForContext = <TContext>(context: AnyConstructor<TContext>): FieldForContextOverloads<TContext> =>
   <TReturn, TArgs>(config?: Thunk<Partial<FieldCreatorConfig<TReturn, TArgs>>>) =>
-    Field<TReturn, TArgs, TContext>({ ...config, context, });
+    Field({ ...config, context });
 
 const Field = <TReturn, TArgs, TContext>(
   config?: Thunk<Partial<FieldDecoratorConfig<TReturn, TArgs, TContext>>>
@@ -53,6 +67,6 @@ const Field = <TReturn, TArgs, TContext>(
         type,
       };
     });
-  }
+  };
 
 export default Field as FieldOverloads;

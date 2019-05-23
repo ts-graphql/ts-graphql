@@ -1,7 +1,7 @@
 import { GraphQLObjectType } from 'graphql';
 import { getImplements, getObjectTypeConfig, isObjectType } from '../metadata';
 import { AnyConstructor } from '../types';
-import getFieldConfigMap from './buildFieldConfigMap';
+import buildObjectTypeFields from './buildObjectTypeFields';
 import getInterfaceType from './buildInterfaceType';
 import { memoize } from 'lodash';
 
@@ -15,7 +15,7 @@ export default memoize((source: AnyConstructor<any>): GraphQLObjectType => {
   return new GraphQLObjectType({
     name: name || source.name,
     interfaces: interfaces.map(getInterfaceType),
-    fields: getFieldConfigMap(source),
+    fields: buildObjectTypeFields(source),
     description,
   });
 });
