@@ -2,6 +2,8 @@ import Field from '../../Field';
 import { nullable, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../..';
 import { Maybe } from '../../../types';
 import { GraphQLResolveInfo } from 'graphql';
+import Implements from '../../Implements';
+import list from '../../../wrappers/list';
 
 class Data {
   value!: string;
@@ -15,6 +17,13 @@ class SomeArgs {
 
 class Context {
   isAuthorized!: boolean;
+}
+
+@Implements(Data)
+class DataImplementation {
+  value() {
+    return 'something';
+  }
 }
 
 class SomeType {
@@ -58,5 +67,15 @@ class SomeType {
   })
   async oldData(args: SomeArgs, context: Context) {
     return null;
+  }
+
+  @Field({ type: Data })
+  dataImpl() {
+    return new DataImplementation();
+  }
+
+  @Field({ type: list(list(Data)) })
+  dataImplArray() {
+    return [[new DataImplementation()]];
   }
 }

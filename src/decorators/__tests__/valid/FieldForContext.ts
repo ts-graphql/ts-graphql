@@ -1,9 +1,18 @@
 import { fieldDecoratorForContext } from '../../Field';
 import { nullable, TSGraphQLID, TSGraphQLInt } from '../../..';
 import { Maybe } from '../../../types';
+import list from '../../../wrappers/list';
+import Implements from '../../Implements';
 
 class Data {
   value!: string;
+}
+
+@Implements(Data)
+class DataImplementation {
+  value() {
+    return 'something';
+  }
 }
 
 class SomeArgs {
@@ -48,5 +57,15 @@ class SomeType {
   })
   async oldData(args: SomeArgs, context: Context) {
     return null;
+  }
+
+  @Field({ type: Data })
+  dataImpl() {
+    return new DataImplementation();
+  }
+
+  @Field({ type: list(list(Data)) })
+  dataImplArray() {
+    return [[new DataImplementation()]];
   }
 }

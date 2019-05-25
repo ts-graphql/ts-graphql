@@ -4,7 +4,7 @@ import { GraphQLOutputType, GraphQLResolveInfo } from 'graphql';
 import { mergeThunks, resolveThunk, Thunk } from './utils/thunk';
 import { isArray } from 'lodash';
 import { buildFieldConfigMap, buildSubscriptionFieldConfigMap } from './builders/buildObjectTypeFields';
-import { InterfaceImplementation } from './decorators/Implements';
+import { InterfaceImplementationReturn } from './decorators/Implements';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
   type: WrapperOrType<TReturn, GraphQLOutputType>,
@@ -16,7 +16,7 @@ export type FieldCreatorConfig<TReturn, TArgs = {}> = {
 
 export type FieldResolver<TSource, TContext, TReturn, TArgs = {}> =
   (source: TSource, args: TArgs, context: TContext, info: GraphQLResolveInfo) =>
-    MaybePromise<TReturn | InterfaceImplementation<TReturn>>;
+    MaybePromise<TReturn | InterfaceImplementationReturn<TReturn>>;
 
 export type FieldSubscriber<TSource, TContext, TReturn, TArgs = {}> =
   (source: TSource, args: TArgs, context: TContext, info: GraphQLResolveInfo) => AsyncIterable<TReturn>;

@@ -5,14 +5,14 @@ import { storeFieldConfig } from '../metadata';
 import { AnyConstructor, MaybePromise } from '../types';
 import { resolveThunk } from '../utils/thunk';
 import { resolveType } from './utils';
-import { InterfaceImplementation } from './Implements';
+import { InterfaceImplementationReturn } from './Implements';
 
 export type FieldDecoratorConfig<TReturn, TArgs = {}, TContext = any> = FieldCreatorConfig<TReturn, TArgs> & {
   context?: AnyConstructor<TContext>
 };
 
 export type FieldResolverMethod<TContext, TReturn, TArgs> =
-  (args: TArgs, context: TContext, info: GraphQLResolveInfo) => MaybePromise<TReturn | InterfaceImplementation<TReturn>>;
+  (args: TArgs, context: TContext, info: GraphQLResolveInfo) => MaybePromise<TReturn | InterfaceImplementationReturn<TReturn>>;
 
 export type FieldProperty<TContext, TReturn, TArgs> =
   MaybePromise<TReturn> | FieldResolverMethod<TContext, TReturn, TArgs>;

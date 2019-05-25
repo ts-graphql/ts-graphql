@@ -1,4 +1,4 @@
-import { Field, fields, Implements, InterfaceType, ObjectType, TSGraphQLString } from '../../index';
+import { Field, fields, Implements, InterfaceType, list, ObjectType, TSGraphQLString } from '../../index';
 
 @InterfaceType()
 abstract class Foo {
@@ -19,4 +19,8 @@ fields({}, (field) => ({
     { type: Foo },
     () => new FooA(),
   ),
+  foos: field(
+    { type: list(list(Foo)) },
+    () => [[new FooA()]],
+  )
 }));
