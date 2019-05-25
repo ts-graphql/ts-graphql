@@ -257,8 +257,7 @@ Interfaces are created with the `InterfaceType` decorator,
 and implemented with the `Implements` decorator. Multiple inheritance 
 is supported.
 
-> TypeScript interfaces weren't used as they don't support decorators or multiple
-> inheritance
+> TypeScript interfaces weren't used as they don't support decorators
 
 ```typescript
 import { 
