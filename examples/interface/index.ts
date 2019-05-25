@@ -39,7 +39,9 @@ class Apple {
 @ObjectType()
 @Implements(Fruit)
 class Orange {
-  name = 'Orange';
+  name() {
+    return 'Orange'
+  }
   color = 'Orange';
 }
 

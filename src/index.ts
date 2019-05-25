@@ -1,7 +1,7 @@
 import Arg from './decorators/Arg';
 import Args from './decorators/Args';
 import Field, { fieldDecoratorForContext } from './decorators/Field';
-import Implements from './decorators/Implements';
+import Implements, { InterfaceImplementation } from './decorators/Implements';
 import InputField from './decorators/InputField';
 import InputObjectType from './decorators/InputObjectType';
 import InterfaceType from './decorators/InterfaceType';
@@ -64,4 +64,5 @@ export {
   subscriptionFields,
   buildSubscriptionFields,
   fieldDecoratorForContext,
+  InterfaceImplementation,
 };
