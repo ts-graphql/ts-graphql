@@ -58,7 +58,7 @@ class SomeType {
   }
 
   @Field({
-    type: () => nullable(Data),
+    type: nullable(Data),
     args: SomeArgs,
     description: 'some data',
     isDeprecated: true,
