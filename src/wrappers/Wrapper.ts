@@ -4,9 +4,10 @@ import {
   GraphQLScalarType,
   GraphQLType,
 } from 'graphql';
+import { resolveThunk, Thunk } from '../utils/thunk';
 
 export type Wrapper<T, G extends GraphQLType = GraphQLType> = {
-  graphQLType: G,
+  graphQLType: Thunk<G>,
   type: T,
   transformOutput?: (output: T) => T;
   nullable?: boolean,
@@ -22,7 +23,7 @@ export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>)
 export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>, nonNull: false): G;
 export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>, nonNull?: boolean): G | GraphQLNonNull<G>;
 export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>, nonNull?: boolean): G | GraphQLNonNull<G> {
-  const type = wrapper.graphQLType;
+  const type = resolveThunk(wrapper.graphQLType);
   return (nonNull && !wrapper.nullable)
     ? new GraphQLNonNull(type)
     : type;
