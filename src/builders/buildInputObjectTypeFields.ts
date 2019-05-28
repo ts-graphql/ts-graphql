@@ -1,6 +1,6 @@
 import { AnyConstructor } from '../types';
 import { resolveThunk, Thunk } from '../utils/thunk';
-import { GraphQLInputFieldConfig, GraphQLInputFieldConfigMap } from 'graphql';
+import { GraphQLInputFieldConfigMap } from 'graphql';
 import { InputFieldConfig } from '../decorators/InputField';
 import { getConstructorChain } from './utils';
 import { getInputFieldConfig } from '../metadata';
@@ -16,10 +16,10 @@ export default (source: AnyConstructor<any>): Thunk<GraphQLInputFieldConfigMap> 
       .map((config) => mapValues(config, resolveThunk))
       .reduce((obj, config) => ({ ...obj, ...config }), {});
 
-    return mapValues(allFields, ((config) => ({
-      type: buildInputType(config.type, true),
+    return mapValues(allFields, ((config: InputFieldConfig<any>) => ({
+      type: buildInputType(config.type(), true),
       description: config.description,
       defaultValue: config.defaultValue,
-    } as GraphQLInputFieldConfig)));
+    })));
   };
 };

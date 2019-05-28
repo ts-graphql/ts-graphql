@@ -1,4 +1,4 @@
-import { AnyConstructor } from '../types';
+import { AnyConstructor, Constructor } from '../types';
 import {
   GraphQLNonNull,
   GraphQLScalarType,

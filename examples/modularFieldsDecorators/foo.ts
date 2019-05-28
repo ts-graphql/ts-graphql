@@ -4,7 +4,7 @@ import Root from './Root';
 @Extends(Root)
 export class FooQueryFields extends Extension<Root> {
   @ExtensionField({
-    type: TSGraphQLString,
+    type: () => TSGraphQLString,
     description: 'Foo'
   })
   static foo = 'foo';

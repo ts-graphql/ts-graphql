@@ -18,7 +18,7 @@ const schemaForSubscriptionFields = (subFields: SubscriptionFieldConfigMap<any, 
     name: 'Query',
     fields: buildFields(fields({}, (field) => ({
       foo: field(
-        { type: TSGraphQLString },
+        { type: () => TSGraphQLString },
         () => 'Required query field',
       ),
     })))
@@ -45,7 +45,7 @@ describe('fields', () => {
     it('should create working subscription type', async () => {
       const subFields = subscriptionFields({}, (field) => ({
         test: field(
-          { type: TSGraphQLString },
+          { type: () => TSGraphQLString },
           async function* () {
             yield 'A';
             yield 'B';
@@ -70,7 +70,7 @@ describe('fields', () => {
     it('should call resolver with yielded values', async () => {
       const subFields = subscriptionFields({}, (field) => ({
         test: field(
-          { type: TSGraphQLInt },
+          { type: () => TSGraphQLInt },
           async function* () {
             yield 1;
             yield 2;
@@ -96,7 +96,7 @@ describe('fields', () => {
     it('should return error if subscription queried incorrectly', async () => {
       const subFields = subscriptionFields({}, (field) => ({
         test: field(
-          { type: TSGraphQLString },
+          { type: () => TSGraphQLString },
           async function* () {
             yield 'A';
             yield 'B';

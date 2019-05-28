@@ -49,7 +49,7 @@ describe('TSGraphQLEnumType', () => {
 
     @ObjectType()
     class Query {
-      @Field({ type: AnEnum })
+      @Field({ type: () => AnEnum })
       enumTest() {
         return IntEnum.FooBar;
       }

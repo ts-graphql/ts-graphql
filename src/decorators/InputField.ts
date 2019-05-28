@@ -7,7 +7,7 @@ import { resolveType } from './utils';
 import { Constructor } from '../types';
 
 export type InputFieldConfig<TValue> = {
-  type: WrapperOrType<TValue, GraphQLInputType>,
+  type: () => WrapperOrType<TValue, GraphQLInputType>,
   defaultValue?: TValue,
   description?: string,
 }
@@ -42,11 +42,13 @@ const InputField = <TValue>(config?: Thunk<Partial<InputFieldConfig<TValue>>>) =
     storeInputFieldConfig(prototype, key, () => {
       const resolved = config && resolveThunk(config) || {};
       const defaultValue = resolved.defaultValue || getDefaultValueFromPrototype(prototype, key);
-      const type = resolveType(resolved.type, prototype, key);
       return {
         ...resolved,
         defaultValue,
-        type,
+        type: () => {
+          const typeOption = resolved && resolved.type ? resolved.type() : undefined;
+          return resolveType(typeOption, prototype, key);
+        },
       } as InputFieldConfig<any>;
     });
 

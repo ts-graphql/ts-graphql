@@ -45,7 +45,7 @@ class Orange {
 
 @ObjectType()
 class Query {
-  @Field({ type: Fruit })
+  @Field({ type: () => Fruit })
   async randomFruit() {
     return !!random(1, false)
       ? new Orange()
