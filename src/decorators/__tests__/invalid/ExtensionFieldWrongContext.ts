@@ -15,7 +15,7 @@ class Context {
 }
 
 class FooExtension extends Extension<Foo, Context> {
-  @ExtensionField({ type: TSGraphQLString })
+  @ExtensionField({ type: () => TSGraphQLString })
   static wrongContext(source: Foo, args: {}, context: string) {
     return '';
   }

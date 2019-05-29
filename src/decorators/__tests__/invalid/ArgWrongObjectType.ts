@@ -9,7 +9,7 @@ class B {
 }
 
 class Args {
-  @Arg({ type: A })
+  @Arg({ type: () => A })
   foo() {
     return B;
   }

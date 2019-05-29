@@ -37,19 +37,19 @@ class SomeType {
   @Field()
   number!: number;
 
-  @Field({ type: nullable(TSGraphQLInt) })
+  @Field({ type: () => nullable(TSGraphQLInt) })
   nullableInt: Maybe<number>;
 
-  @Field({ type: TSGraphQLID })
+  @Field({ type: () => TSGraphQLID })
   id!: Promise<string | number>;
 
-  @Field({ type: Data })
+  @Field({ type: () => Data })
   async data() {
     return new Data();
   }
 
   @Field({
-    type: nullable(Data),
+    type: () => nullable(Data),
     args: SomeArgs,
     description: 'some data',
     isDeprecated: true,
@@ -59,12 +59,12 @@ class SomeType {
     return null;
   }
 
-  @Field({ type: Data })
+  @Field({ type: () => Data })
   dataImpl() {
     return new DataImplementation();
   }
 
-  @Field({ type: list(list(Data)) })
+  @Field({ type: () => list(list(Data)) })
   dataImplArray() {
     return [[new DataImplementation()]];
   }

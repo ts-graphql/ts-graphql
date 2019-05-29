@@ -28,12 +28,12 @@ class FooExtension extends Extension<Foo, Context> {
   @ExtensionField()
   static inferredNumber = 4;
 
-  @ExtensionField({ type: TSGraphQLInt, args: SomeArgs })
+  @ExtensionField({ type: () => TSGraphQLInt, args: SomeArgs })
   static baz(foo: Foo, args: SomeArgs, context: Context) {
     return foo.bar.length;
   }
 
-  @ExtensionField({ type: TSGraphQLInt })
+  @ExtensionField({ type: () => TSGraphQLInt })
   static blah(foo: Foo) {
     return 42;
   }
@@ -44,7 +44,7 @@ class RootTypeFields extends Extension<undefined, Context> {
   @ExtensionField()
   static version: number = 4.2;
 
-  @ExtensionField({ type: TSGraphQLString })
+  @ExtensionField({ type: () => TSGraphQLString })
   static something(root: undefined, args: {}, context: Context) {
     return context.something;
   }

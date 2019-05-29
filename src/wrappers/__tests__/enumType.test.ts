@@ -18,7 +18,7 @@ enum StringEnum {
   FooBar = 'foobar',
 }
 
-describe('TSGraphQLEnumType', () => {
+describe('enumType', () => {
   it('should generate GraphQLEnumType with correct keys', () => {
     const PascalCase = enumType(IntEnum, { name: 'foo' });
     const pascalNames = resolveThunk(PascalCase.graphQLType).getValues().map(({ name }) => name);
@@ -49,7 +49,7 @@ describe('TSGraphQLEnumType', () => {
 
     @ObjectType()
     class Query {
-      @Field({ type: AnEnum })
+      @Field({ type: () => AnEnum })
       enumTest() {
         return IntEnum.FooBar;
       }

@@ -52,7 +52,7 @@ const buildInputConstructorTree = <T>(InputClass: EmptyConstructor<T>): Maybe<In
       continue;
     }
     const config = resolveThunk(map[key]);
-    const { type } = config;
+    const type = config.type();
     if (!isWrapper(type) && isEmptyConstructor(type) && isInputObjectType(type)) {
       const tree = buildInputConstructorTree(type);
       if (tree) {
@@ -84,7 +84,8 @@ const instantiateInputConstructorTree = <T>(tree: InputConstructorNode<T>, value
 const wrapResolverOnConfig = <TArgs>(
   config: FieldConfig<any, any, TArgs>
 ): FieldConfig<any, any, any> => {
-  const { resolve, type, args: Args } = config;
+  const { resolve, args: Args } = config;
+  const type = config.type();
   const transformOutput = isWrapper(type) && type.transformOutput;
   if (resolve) {
     const inputConstructorTree = Args && buildInputConstructorTree(Args);
@@ -105,9 +106,9 @@ const wrapResolverOnConfig = <TArgs>(
 export const buildFieldConfigMap = <TSource, TContext>(
   map: FieldConfigMap<TSource, TContext>,
 ): GraphQLFieldConfigMap<TSource, TContext> => {
-  return mapValues(map, (config) => ({
+  return mapValues(map, (config: FieldConfig<TSource, TContext, any, any>) => ({
     ...config,
-    type: buildOutputType(config.type, true),
+    type: buildOutputType(config.type(), true),
     args: config.args ? resolveThunk(getArgs(config.args)) : undefined,
   }));
 };
@@ -149,7 +150,7 @@ export const buildSubscriptionFieldConfigMap = <TSource, TContext>(
     ...config,
     resolve: wrapSubscriptionResolve(config.resolve),
     subscribe: wrapSubscribe(config.subscribe),
-    type: buildOutputType(config.type, true),
+    type: buildOutputType(config.type(), true),
     args: config.args ? resolveThunk(getArgs(config.args)) : undefined,
   }));
 }

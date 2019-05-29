@@ -28,19 +28,19 @@ type ID = string | number;
 
 @InterfaceType()
 abstract class Node {
-  @Field({ type: TSGraphQLID })
+  @Field({ type: () => TSGraphQLID })
   id!: ID;
 }
 
 @Args()
 class NodeArgs {
-  @Arg({ type: TSGraphQLID })
+  @Arg({ type: () => TSGraphQLID })
   id!: ID;
 }
 
 @Args()
 class NodesArgs {
-  @Arg({ type: list(TSGraphQLID) })
+  @Arg({ type: () => list(TSGraphQLID) })
   ids!: ID[];
 }
 
@@ -53,14 +53,14 @@ const randomNode = (id: ID, recordContents: string = 'Lorem ipsum') => {
 // Works well to modularize Query/Mutation fields
 const nodeQueryFields = fields({}, (field) => ({
   node: field(
-    { type: Node, args: NodeArgs },
+    { type: () => Node, args: NodeArgs },
     (root, { id }) => {
       return randomNode(id);
     },
   ),
 
   nodes: field(
-    { type: list(Node), args: NodesArgs },
+    { type: () => list(Node), args: NodesArgs },
     (root, { ids }) => {
       return ids.map((id) => randomNode(id));
     },
@@ -86,7 +86,7 @@ class User {
   @Field()
   name: string;
 
-  @Field({ type: UserRoleEnumType })
+  @Field({ type: () => UserRoleEnumType })
   role: UserRole;
 
   constructor(
@@ -105,15 +105,15 @@ class User {
 @Implements(Node)
 class Record {
   // Properties can be
-  @Field({ type: TSGraphQLInt })
+  @Field({ type: () => TSGraphQLInt })
   version = 1; // A plain value
   // version = Promise.resolve(1); // A Promise
   // version() { return 1 } // A resolver method (can also return Promise)
 
-  @Field({ type: nullable(TSGraphQLString) })
+  @Field({ type: () => nullable(TSGraphQLString) })
   contents: string | null;
 
-  @Field({ type: User })
+  @Field({ type: () => User })
   createdBy: User;
 
   constructor(
@@ -131,19 +131,19 @@ class AddRecordInput {
   @InputField()
   contents!: string;
 
-  @InputField({ type: TSGraphQLID })
+  @InputField({ type: () => TSGraphQLID })
   userID!: ID;
 }
 
 @Args()
 class AddRecordArgs {
-  @Arg({ type: AddRecordInput })
+  @Arg({ type: () => AddRecordInput })
   input!: AddRecordInput;
 }
 
 @ObjectType()
 class AddRecordPayload {
-  @Field({ type: Record })
+  @Field({ type: () => Record })
   record: Record;
 
   constructor(record: Record) {
@@ -153,7 +153,7 @@ class AddRecordPayload {
 
 const recordMutationFields = fields({}, (field) => ({
   addRecord: field(
-    { type: AddRecordPayload, args: AddRecordArgs },
+    { type: () => AddRecordPayload, args: AddRecordArgs },
     (root, { input }) => {
       const createdBy = new User(input.userID, UserRole.ADMIN, 'John Smith');
       return new AddRecordPayload(new Record('foo', input.contents, createdBy));
@@ -176,7 +176,7 @@ class SearchResultArgs {
 
 const searchQueryFields = fields({}, (field) => ({
   search: field(
-    { type: list(SearchResult), args: SearchResultArgs },
+    { type: () => list(SearchResult), args: SearchResultArgs },
     (root, { query }) => {
       return times(10, (n) => randomNode(n, query));
     },

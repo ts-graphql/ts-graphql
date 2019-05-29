@@ -1,13 +1,13 @@
-import { WrapperOrType } from './wrappers/Wrapper';
-import { MaybePromise, EmptyConstructor, MaybeArray, AnyConstructor } from './types';
-import { GraphQLOutputType, GraphQLResolveInfo } from 'graphql';
+import { Wrapper, WrapperOrType } from './wrappers/Wrapper';
+import { MaybePromise, EmptyConstructor, MaybeArray, AnyConstructor, Constructor } from './types';
+import { GraphQLOutputType, GraphQLResolveInfo, GraphQLType } from 'graphql';
 import { mergeThunks, resolveThunk, Thunk } from './utils/thunk';
 import { isArray } from 'lodash';
 import { buildFieldConfigMap, buildSubscriptionFieldConfigMap } from './builders/buildObjectTypeFields';
 import { InterfaceImplementationReturn } from './decorators/Implements';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
-  type: WrapperOrType<TReturn, GraphQLOutputType>,
+  type: () => WrapperOrType<TReturn, GraphQLOutputType>,
   description?: string,
   args?: EmptyConstructor<TArgs>,
   isDeprecated?: boolean,

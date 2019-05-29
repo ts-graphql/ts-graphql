@@ -42,11 +42,12 @@ const ExtensionField: ExtensionFieldOverloads = <TSource, TReturn, TArgs, TConte
 ) => {
   storeExtensionFieldConfig(ctor, key, () => {
     const resolved = config && resolveThunk(config as Partial<FieldCreatorConfig<any, any>>);
-    const type = resolveType(resolved && resolved.type, ctor, key);
-
     return {
       ...resolved,
-      type,
+      type: () => {
+        const typeOption = resolved && resolved.type ? resolved.type() : undefined;
+        return resolveType(typeOption, ctor, key);
+      },
     };
   })
 };

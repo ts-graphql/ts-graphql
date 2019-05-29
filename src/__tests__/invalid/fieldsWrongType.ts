@@ -2,13 +2,13 @@ import { Field, fields, Implements, InterfaceType, list, ObjectType, TSGraphQLSt
 
 @ObjectType()
 class Foo {
-  @Field({ type: TSGraphQLString })
+  @Field({ type: () => TSGraphQLString })
   bar!: string;
 }
 
 fields({}, (field) => ({
   foo: field(
-    { type: Foo },
+    { type: () => Foo },
     () => 'foo',
   ),
 }));

@@ -2,7 +2,7 @@ import Arg from '../../Arg';
 import { TSGraphQLString } from '../../..';
 
 class Args {
-  @Arg({ type: TSGraphQLString })
+  @Arg({ type: () => TSGraphQLString })
   foo() {
     return '';
   }

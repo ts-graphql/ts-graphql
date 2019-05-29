@@ -15,9 +15,9 @@ class Args {
   @Arg()
   bool!: boolean;
 
-  @Arg({ type: TSGraphQLID })
+  @Arg({ type: () => TSGraphQLID })
   id!: string | number;
 
-  @Arg({ type: Data })
+  @Arg({ type: () => Data })
   data!: Data;
 }

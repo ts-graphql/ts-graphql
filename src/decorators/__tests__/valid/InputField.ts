@@ -15,9 +15,9 @@ class Args {
   @InputField()
   bool!: boolean;
 
-  @InputField({ type: TSGraphQLID })
+  @InputField({ type: () => TSGraphQLID })
   id!: string | number;
 
-  @InputField({ type: Data })
+  @InputField({ type: () => Data })
   data!: Data;
 }
