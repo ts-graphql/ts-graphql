@@ -6,7 +6,7 @@ class Context {
 }
 
 class Foo {
-  @Field({ type: TSGraphQLString, context: Context })
+  @Field({ type: () => TSGraphQLString, context: Context })
   foo(args: {}, context: Foo) {
     return '';
   };

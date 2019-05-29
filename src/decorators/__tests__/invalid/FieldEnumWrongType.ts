@@ -8,6 +8,6 @@ enum AnEnum {
 const AnEnumGraphQLType = enumType(AnEnum, { name: 'AnEnum' });
 
 class Foo {
-  @Field({ type: AnEnumGraphQLType })
+  @Field({ type: () => AnEnumGraphQLType })
   foo!: string;
 }

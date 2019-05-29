@@ -5,7 +5,7 @@ class A {
 }
 
 class Test {
-  @Field({ type: A })
+  @Field({ type: () => A })
   async test() {
     return null;
   }
