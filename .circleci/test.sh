@@ -2,4 +2,4 @@
 
 set -eo pipefail
 
-npx jest --coverage --coverageReporters=text-lcov | npx coveralls
+npx jest -w 1 --coverage --coverageReporters=text-lcov | npx coveralls
