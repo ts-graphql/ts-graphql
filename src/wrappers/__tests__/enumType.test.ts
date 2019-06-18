@@ -24,6 +24,10 @@ describe('enumType', () => {
     const pascalNames = resolveThunk(PascalCase.graphQLType).getValues().map(({ name }) => name);
     expect(pascalNames).toEqual(['Foo', 'Bar', 'FooBar']);
 
+    const StringPascalCase = enumType(StringEnum, { name: 'foo' });
+    const stringPascalNames = resolveThunk(StringPascalCase.graphQLType).getValues().map(({ name }) => name);
+    expect(stringPascalNames).toEqual(['Foo', 'Bar', 'FooBar']);
+
     const ConstantCase = enumType(IntEnum, { name: 'foo', changeCase: EnumTypeCase.Constant });
     const constantNames = resolveThunk(ConstantCase.graphQLType).getValues().map(({ name }) => name);
     expect(constantNames).toEqual(['FOO', 'BAR', 'FOO_BAR']);
