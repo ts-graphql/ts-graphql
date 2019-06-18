@@ -4,6 +4,7 @@ import nullable from '../../../wrappers/nullable';
 import nullableInput from '../../../wrappers/nullableInput';
 import { Maybe } from '../../../types';
 import list from '../../../wrappers/list';
+import listInput from '../../../wrappers/listInput';
 
 class Data {
   foo!: number;
@@ -28,7 +29,7 @@ class Args {
   @InputField({ type: () => nullableInput(Data) })
   maybeData: Maybe<Data>;
 
-  @InputField({ type: () => list(Data) })
+  @InputField({ type: () => listInput(Data) })
   dataList!: Data[];
 
   @InputField({ type: () => list(nullableInput(Data)) })
