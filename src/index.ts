@@ -23,6 +23,8 @@ import ExtensionField from './decorators/ExtensionField';
 import Extends from './decorators/Extends';
 import { buildExtensions } from './builders/buildExtension';
 import { getExtensions } from './metadata';
+import nullableInput from './wrappers/nullableInput';
+import listInput from './wrappers/listInput';
 
 export {
   Arg,
@@ -39,7 +41,9 @@ export {
   enumType,
   EnumTypeCase,
   list,
+  listInput,
   nullable,
+  nullableInput,
   TSGraphQLBoolean,
   TSGraphQLFloat,
   TSGraphQLID,
