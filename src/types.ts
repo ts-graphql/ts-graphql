@@ -10,8 +10,6 @@ export type Constructor<T> = {
   new (...args: any[]): T;
 }
 
-export type AbstractConstructor<T> = Exclude<AnyConstructor<T>, Constructor<T>>;
-
 /**
  * Class with empty constructor
  */

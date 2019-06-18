@@ -18,7 +18,7 @@ const SOME_TOPIC = 'foobar';
 
 const subFields = subscriptionFields({}, (field) => ({
   date: field(
-    { type: TSGraphQLString },
+    { type: () => TSGraphQLString },
     // https://github.com/apollographql/graphql-subscriptions/issues/192
     () => pubSub.asyncIterator(SOME_TOPIC) as unknown as AsyncIterable<string>,
   ),
@@ -32,7 +32,7 @@ const subFields = subscriptionFields({}, (field) => ({
 })();
 
 const queryFields = fields({}, (field) => ({
-  version: field({ type: TSGraphQLString }, () => '1.0.0'),
+  version: field({ type: () => TSGraphQLString }, () => '1.0.0'),
 }));
 
 const query = new GraphQLObjectType({

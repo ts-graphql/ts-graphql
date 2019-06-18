@@ -109,12 +109,12 @@ class Vehicle {
   model: string;
   
   @Field({
-    type: TSGraphQLInt,
+    type: () => TSGraphQLInt,
     description: 'Year the vehicle was produced'
   })
   year: number;
   
-  @Field({ type: TSGraphQLString })
+  @Field({ type: () => TSGraphQLString })
   title() {
     return `${this.year} ${this.make} ${this.model}`;
   }
@@ -136,7 +136,7 @@ import {
 
 @InputObjectType()
 class ServiceRequestInput {
-  @InputField({ type: TSGraphQLID })
+  @InputField({ type: () => TSGraphQLID })
   vehicleID!: string | number;
   
   // You can use property initializers to specify the default value
@@ -145,7 +145,7 @@ class ServiceRequestInput {
  
   // Or the config option defaultValue
   @InputField({ 
-    type: TSGraphQLInt,
+    type: () => TSGraphQLInt,
     defaultValue: 55, 
   })
   code!: number;
@@ -168,7 +168,7 @@ import {
 
 @Args()
 class ServiceRequestArgs {
-  @Arg({ type: ServiceRequestInput })
+  @Arg({ type: () => ServiceRequestInput })
   input!: ServiceRequestInput;
 }
 
@@ -178,7 +178,7 @@ class ServiceRequestArgs {
 
 @ObjectType()
 class Mutation {
-  @Field({ type: ServiceRequestPayload, args: ServiceRequestArgs })
+  @Field({ type: () => ServiceRequestPayload, args: ServiceRequestArgs })
   requestService(args, context) {
     // args instanceof ServiceRequestArgs === true
     const { input } = args;
@@ -201,13 +201,13 @@ import {
   //...
 } from 'ts-graphql';
 
-@Field({ type: nullable(TSGraphQLString) })
+@Field({ type: () => nullable(TSGraphQLString) })
 nullableString!: string | null;
 
-@Field({ type: list(TSGraphQLInt) })
+@Field({ type: () => list(TSGraphQLInt) })
 integerList!: number[];
 
-@Field({ type: nullable(list(nullable(Foo))) })
+@Field({ type: () => nullable(list(nullable(Foo))) })
 maybeListOfMaybeFoo: Array<Foo | null> | null;
 ```
 
@@ -235,7 +235,7 @@ const ShapeType = enumType(Shape, {
 });
 
 // In an object type...
-@Field({ type: ShapeType })
+@Field({ type: () => ShapeType })
 shape() {
   return Shape.Circle;
 }
@@ -270,16 +270,16 @@ import {
 
 @InterfaceType()
 abstract class Node {
-  @Field({ type: TSGraphQLString })
+  @Field({ type: () => TSGraphQLString })
   id!: string;
 }
 
 @InterfaceType()
 abstract class Event {
-  @Field({ type: TSGraphQLString })
+  @Field({ type: () => TSGraphQLString })
   name!: string
   
-  @Field({ type: TSGraphQLString })
+  @Field({ type: () => TSGraphQLString })
   date!: string;
 }
 
@@ -382,14 +382,14 @@ import { GraphQLObjectType } from 'graphql';
 
 const subFields = subscriptionFields({}, (field) => ({
   withResolve: field(
-    { type: TSGraphQLInt },
+    { type: () => TSGraphQLInt },
     async function* () {
       yield 'foo';
     },
     (value) => value.length,
   ),
   onlySubscribe: field(
-    { type: TSGraphQLInt },
+    { type: () => TSGraphQLInt },
     async function* () {
       yield 42;
     }, 
@@ -438,7 +438,7 @@ For resolver methods, you can pass the context option:
 @ObjectType()
 class Foo { 
   @Field({
-    type: TSGraphQLString ,
+    type: () => TSGraphQLString ,
     context: Context,
   })
   bar(args: {}, context: Context) {
@@ -511,7 +511,7 @@ import Foo from '../Foo.ts';
 
 @Extends(Foo)
 class FooFieldsA extends Extension<Foo> {
-  @ExtensionField({ type: TSGraphQLString })
+  @ExtensionField({ type: () => TSGraphQLString })
   static data(source: Foo) {
     return source.data;
   }
@@ -523,7 +523,7 @@ import Foo from '../Foo.ts';
 
 @Extends(Foo)
 class FooFieldsB extends Extension<Foo> {
-  @ExtensionField({ type: TSGraphQLInt })
+  @ExtensionField({ type: () => TSGraphQLInt })
   static dataLength(source: Foo) {
     return source.data.length;
   }
@@ -559,7 +559,7 @@ import Foo from '../Foo.ts';
 
 export const fooFieldsA = fields({ source: Foo }, (field) => ({
   data: field(
-    { type: TSGraphQLString },
+    { type: () => TSGraphQLString },
     (source) => source.data,
   ),
 }));
@@ -570,7 +570,7 @@ import Foo from '../Foo.ts';
 
 export const fooFieldsB = fields({ source: Foo }, (field) => ({
   dataLength: field(
-    { type: TSGraphQLInt },
+    { type: () => TSGraphQLInt },
     (source) => source.data.length,
   ),
 }));
@@ -693,7 +693,7 @@ class B {
 
 @ObjectType()
 class C {
-  @Field({ type: A })
+  @Field({ type: () => A })
   a() {
     return new B();
   }

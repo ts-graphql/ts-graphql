@@ -80,7 +80,7 @@ class EmployeeWithPicture extends Employee {
   fields: () => [someFields, moreFields],
 })
 class Foo {
-  @Field({ type: TSGraphQLString })
+  @Field({ type: () => TSGraphQLString })
   foo(): string {
     return 'foo';
   }
@@ -88,14 +88,14 @@ class Foo {
 
 const someFields = fields({ source: Foo }, (field) => ({
   bar: field(
-    { type: TSGraphQLString },
+    { type: () => TSGraphQLString },
     () => 'bar',
   ),
 }));
 
 const moreFields = fields({ source: Foo }, (field) => ({
   baz: field(
-    { type: TSGraphQLInt },
+    { type: () => TSGraphQLInt },
     () => 4,
   ),
 }));
@@ -131,7 +131,7 @@ describe('buildObjectTypeFields', () => {
 
   it('should override fields with same name from interface', () => {
     class OverrideTest extends User {
-      @Field({ type: nullable(TSGraphQLID) })
+      @Field({ type: () => nullable(TSGraphQLID) })
       id!: string;
     }
     const config = resolveThunk(buildObjectTypeFields(OverrideTest));
@@ -140,7 +140,7 @@ describe('buildObjectTypeFields', () => {
 
   it('should override fields with same name on superclass', () => {
     class OverrideTest extends Simple {
-      @Field({ type: nullable(TSGraphQLID) })
+      @Field({ type: () => nullable(TSGraphQLID) })
       str!: string;
     }
     const config = resolveThunk(buildObjectTypeFields(OverrideTest));
@@ -184,7 +184,7 @@ describe('buildObjectTypeFields', () => {
 
     @ObjectType()
     class Foo {
-      @Field({ type: TSGraphQLString })
+      @Field({ type: () => TSGraphQLString })
       foo = test;
     }
 
@@ -204,7 +204,7 @@ describe('buildObjectTypeFields', () => {
       @Arg()
       bar!: string;
 
-      @Arg({ type: SomeInput })
+      @Arg({ type: () => SomeInput })
       input!: SomeInput;
     }
 
@@ -218,10 +218,10 @@ describe('buildObjectTypeFields', () => {
       fields: () => argsFields,
     })
     class ArgsTest {
-      @Field({ type: TSGraphQLString, args: SomeArgs })
+      @Field({ type: () => TSGraphQLString, args: SomeArgs })
       initializerTest = testResolver;
 
-      @Field({ type: TSGraphQLString, args: SomeArgs })
+      @Field({ type: () => TSGraphQLString, args: SomeArgs })
       methodTest(args: SomeArgs) {
         return testResolver(args);
       }
@@ -229,7 +229,7 @@ describe('buildObjectTypeFields', () => {
 
     const argsFields = fields({ source: ArgsTest }, (field) => ({
       configTest: field(
-        { type: TSGraphQLString, args: SomeArgs },
+        { type: () => TSGraphQLString, args: SomeArgs },
         (root, args) => testResolver(args),
       ),
     }));
@@ -263,7 +263,7 @@ describe('buildObjectTypeFields', () => {
 
     @ObjectType()
     class Foo {
-      @Field({ type: list(nullable(someType)) })
+      @Field({ type: () => list(nullable(someType)) })
       foo() {
         return ['', null];
       }
@@ -281,7 +281,7 @@ describe('buildObjectTypeFields', () => {
       extensions: () => getExtensions(Foo),
     })
     class Foo {
-      @Field({ type: TSGraphQLString })
+      @Field({ type: () => TSGraphQLString })
       bar = 'bar';
     }
 
@@ -290,7 +290,7 @@ describe('buildObjectTypeFields', () => {
       @ExtensionField()
       static baz: number = 4;
 
-      @ExtensionField({ type: TSGraphQLString })
+      @ExtensionField({ type: () => TSGraphQLString })
       static blah() {
         return 'blah';
       }

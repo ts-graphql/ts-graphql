@@ -3,6 +3,6 @@ import Root from './Root';
 
 @Extends(Root)
 export class BarQueryFields extends Extension<Root> {
-  @ExtensionField({ type: TSGraphQLString })
+  @ExtensionField({ type: () => TSGraphQLString })
   static bar = 'bar';
 }

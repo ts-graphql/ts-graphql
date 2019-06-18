@@ -1,5 +1,4 @@
 import Field from '../../Field';
-import enumType from '../../../wrappers/enumType';
 import unionType from '../../../wrappers/unionType';
 
 class A {
@@ -16,6 +15,6 @@ const AUnionType = unionType<A | B>({
 });
 
 class Foo {
-  @Field({ type: AUnionType })
+  @Field({ type: () => AUnionType })
   foo!: number;
 }

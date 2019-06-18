@@ -11,7 +11,8 @@
   "scripts": {
     "build": "rimraf ./lib && tsc",
     "prepublishOnly": "npm run build",
-    "test": "jest"
+    "test": "jest",
+    "test-no-types": "jest"
   },
   "publishConfig": {
     "access": "public"

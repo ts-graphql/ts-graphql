@@ -9,27 +9,27 @@ class Foo {
 
 subscriptionFields({}, (field) => ({
   string: field(
-    { type: TSGraphQLString },
+    { type: () => TSGraphQLString },
     async function* () {
       yield 1;
     },
     (num) => `${num}`,
   ),
   int: field(
-    { type: TSGraphQLInt },
+    { type: () => TSGraphQLInt },
     async function* () {
       yield 21;
     },
     (num) => num * 2,
   ),
   boolean: field(
-    { type: TSGraphQLBoolean },
+    { type: () => TSGraphQLBoolean },
     async function* () {
       yield false;
     },
   ),
   object: field(
-    { type: Foo },
+    { type: () => Foo },
     async function* () {
       yield new Foo();
     },

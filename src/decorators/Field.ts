@@ -60,11 +60,12 @@ const Field = <TReturn, TArgs, TContext>(
   ) => {
     storeFieldConfig(prototype, key, () => {
       const resolved = config && resolveThunk(config);
-      const type = resolveType(resolved && resolved.type, prototype, key);
-
       return {
         ...resolved,
-        type,
+        type: () => {
+          const typeOption = resolved && resolved.type ? resolved.type() : undefined;
+          return resolveType(typeOption, prototype, key);
+        },
       };
     });
   };

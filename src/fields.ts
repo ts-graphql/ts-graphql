@@ -7,7 +7,7 @@ import { buildFieldConfigMap, buildSubscriptionFieldConfigMap } from './builders
 import { InterfaceImplementationReturn } from './decorators/Implements';
 
 export type FieldCreatorConfig<TReturn, TArgs = {}> = {
-  type: WrapperOrType<TReturn, GraphQLOutputType>,
+  type: () => WrapperOrType<TReturn, GraphQLOutputType>,
   description?: string,
   args?: EmptyConstructor<TArgs>,
   isDeprecated?: boolean,

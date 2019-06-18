@@ -11,7 +11,7 @@ class Foo {
 }
 
 class FooExtension extends Extension<Foo> {
-  @ExtensionField({ type: TSGraphQLString })
+  @ExtensionField({ type: () => TSGraphQLString })
   notStatic(source: string) {
     return '';
   }

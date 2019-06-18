@@ -2,7 +2,7 @@ import { Field, fields, Implements, InterfaceType, list, ObjectType, TSGraphQLSt
 
 @InterfaceType()
 abstract class Foo {
-  @Field({ type: TSGraphQLString })
+  @Field({ type: () => TSGraphQLString })
   abstract bar: string;
 }
 
@@ -16,11 +16,11 @@ class FooA {
 
 fields({}, (field) => ({
   foo: field(
-    { type: Foo },
+    { type: () => Foo },
     () => new FooA(),
   ),
   foos: field(
-    { type: list(list(Foo)) },
+    { type: () => list(list(Foo)) },
     () => [[new FooA()]],
   )
 }));

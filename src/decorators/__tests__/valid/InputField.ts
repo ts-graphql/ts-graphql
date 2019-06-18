@@ -1,5 +1,10 @@
 import { TSGraphQLID } from '../../..';
 import InputField from '../../InputField';
+import nullable from '../../../wrappers/nullable';
+import nullableInput from '../../../wrappers/nullableInput';
+import { Maybe } from '../../../types';
+import list from '../../../wrappers/list';
+import listInput from '../../../wrappers/listInput';
 
 class Data {
   foo!: number;
@@ -15,9 +20,21 @@ class Args {
   @InputField()
   bool!: boolean;
 
-  @InputField({ type: TSGraphQLID })
+  @InputField({ type: () => TSGraphQLID })
   id!: string | number;
 
-  @InputField({ type: Data })
+  @InputField({ type: () => Data })
   data!: Data;
+
+  @InputField({ type: () => nullableInput(Data) })
+  maybeData: Maybe<Data>;
+
+  @InputField({ type: () => listInput(Data) })
+  dataList!: Data[];
+
+  @InputField({ type: () => list(nullableInput(Data)) })
+  nullableDataList!: Array<Maybe<Data>>;
+
+  @InputField({ type: () => nullable(list(nullableInput(Data))) })
+  maybeDataMaybeList: Maybe<Array<Maybe<Data>>>;
 }

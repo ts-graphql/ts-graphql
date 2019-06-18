@@ -3,7 +3,7 @@ import { TSGraphQLString } from '../..';
 
 subscriptionFields({}, (field) => ({
   string: field(
-    { type: TSGraphQLString },
+    { type: () => TSGraphQLString },
     async function* () {
       yield 4;
     },
