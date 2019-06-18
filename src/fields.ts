@@ -1,6 +1,6 @@
-import { Wrapper, WrapperOrType } from './wrappers/Wrapper';
-import { MaybePromise, EmptyConstructor, MaybeArray, AnyConstructor, Constructor } from './types';
-import { GraphQLOutputType, GraphQLResolveInfo, GraphQLType } from 'graphql';
+import { WrapperOrType } from './wrappers/Wrapper';
+import { MaybePromise, EmptyConstructor, MaybeArray, AnyConstructor } from './types';
+import { GraphQLOutputType, GraphQLResolveInfo } from 'graphql';
 import { mergeThunks, resolveThunk, Thunk } from './utils/thunk';
 import { isArray } from 'lodash';
 import { buildFieldConfigMap, buildSubscriptionFieldConfigMap } from './builders/buildObjectTypeFields';

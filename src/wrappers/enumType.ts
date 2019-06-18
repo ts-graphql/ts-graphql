@@ -48,9 +48,16 @@ const enumType = <TEnumObject extends Record<any, any>>(
       if (!isNaN(parseInt(key, 10))) {
         return map;
       }
+
+      const transformedKey = getKey(key);
+
+      if (map[transformedKey]) {
+        return map;
+      }
+
       return {
         ...map,
-        [getKey(key)]: {
+        [transformedKey]: {
           ...config.additional && config.additional[key],
           value: enumObject[key],
         },
