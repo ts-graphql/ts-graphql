@@ -13,7 +13,6 @@ import getInterfaceType from './builders/buildInterfaceType';
 import { Constructor } from './types';
 
 export function buildType(target: WrapperOrType<any, GraphQLType>, nonNull?: false): GraphQLType;
-export function buildType(target: WrapperOrType<any, GraphQLType>, nonNull: true): GraphQLNonNull<GraphQLType>;
 export function buildType(target: WrapperOrType<any, GraphQLType>, nonNull?: boolean): GraphQLType | GraphQLNonNull<GraphQLType>;
 export function buildType(
   target: WrapperOrType<any, GraphQLType>,
