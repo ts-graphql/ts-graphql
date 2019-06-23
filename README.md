@@ -211,6 +211,15 @@ integerList!: number[];
 maybeListOfMaybeFoo: Array<Foo | null> | null;
 ```
 
+Separate functions were necessary for the types to be correct when wrapping input object types -
+use `nullableInput` and `listInput` instead of `nullable`/`list`.
+
+For example, with an input object type `UserInput`:
+ - `UserInput` = `nullableInput(UserInput)`
+ - `[UserInput!]!` = `listInput(UserInput)`
+ - `[UserInput!]` = `nullable(listInput(UserInput))`
+ - `[UserInput]!` = `list(nullableInput(UserInput))`
+
 ### Enums
 
 You can use TS enums in your code, and create a type for TS GraphQL to use.
