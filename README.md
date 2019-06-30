@@ -219,6 +219,7 @@ For example, with an input object type `UserInput`:
  - `[UserInput!]!` = `listInput(UserInput)`
  - `[UserInput!]` = `nullable(listInput(UserInput))`
  - `[UserInput]!` = `list(nullableInput(UserInput))`
+ - `[UserInput]` = `nullable(list(nullableInput(UserInput)))`
 
 ### Enums
 
