@@ -12,7 +12,9 @@
     "build": "rimraf ./lib && tsc",
     "prepublishOnly": "npm run build",
     "test": "jest",
-    "test-no-types": "jest"
+    "test-no-types": "jest",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "publishConfig": {
     "access": "public"
@@ -44,7 +46,8 @@
     "constant-case": "^2.0.0",
     "lodash": "^4.17.11",
     "pascal-case": "^2.0.1",
-    "reflect-metadata": "^0.1.12"
+    "reflect-metadata": "^0.1.12",
+    "snyk": "^1.189.0"
   },
   "peerDependencies": {
     "graphql": "^14.0.2"
@@ -86,5 +89,6 @@
       "!**/__tests__/**",
       "!testUtils.ts"
     ]
-  }
+  },
+  "snyk": true
 }
