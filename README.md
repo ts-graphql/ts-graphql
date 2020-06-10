@@ -1,4 +1,4 @@
-# ts-graphql [![CircleCI](https://circleci.com/gh/stephentuso/ts-graphql.svg?style=svg)](https://circleci.com/gh/stephentuso/ts-graphql)  [![npm](https://img.shields.io/npm/v/ts-graphql.svg)](https://www.npmjs.com/package/ts-graphql) [![Coverage Status](https://coveralls.io/repos/github/stephentuso/ts-graphql/badge.svg?branch=dev)](https://coveralls.io/github/stephentuso/ts-graphql?branch=dev) [![Known Vulnerabilities](https://snyk.io/test/github/stephentuso/ts-graphql/badge.svg?targetFile=package.json)](https://snyk.io/test/github/stephentuso/ts-graphql?targetFile=package.json)
+# ts-graphql [![CircleCI](https://circleci.com/gh/ts-graphql/ts-graphql.svg?style=svg)](https://circleci.com/gh/ts-graphql/ts-graphql)  [![npm](https://img.shields.io/npm/v/ts-graphql.svg)](https://www.npmjs.com/package/ts-graphql) [![Coverage Status](https://coveralls.io/repos/github/ts-graphql/ts-graphql/badge.svg?branch=dev)](https://coveralls.io/github/ts-graphql/ts-graphql?branch=dev) [![Known Vulnerabilities](https://snyk.io/test/github/ts-graphql/ts-graphql/badge.svg?targetFile=package.json)](https://snyk.io/test/github/ts-graphql/ts-graphql?targetFile=package.json)
 
 A TypeScript library for building GraphQL APIs efficiently with type safe decorators.
 
@@ -210,6 +210,16 @@ integerList!: number[];
 @Field({ type: () => nullable(list(nullable(Foo))) })
 maybeListOfMaybeFoo: Array<Foo | null> | null;
 ```
+
+Separate functions were necessary for the types to be correct when wrapping input object types -
+use `nullableInput` and `listInput` instead of `nullable`/`list`.
+
+For example, with an input object type `UserInput`:
+ - `UserInput` = `nullableInput(UserInput)`
+ - `[UserInput!]!` = `listInput(UserInput)`
+ - `[UserInput!]` = `nullable(listInput(UserInput))`
+ - `[UserInput]!` = `list(nullableInput(UserInput))`
+ - `[UserInput]` = `nullable(list(nullableInput(UserInput)))`
 
 ### Enums
 
