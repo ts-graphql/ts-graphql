@@ -70,6 +70,9 @@ class SomeType {
   }
 
   @Field({ type: () => Data })
+  dataImplProperty = new DataImplementation();
+
+  @Field({ type: () => Data })
   dataImpl() {
     return new DataImplementation();
   }

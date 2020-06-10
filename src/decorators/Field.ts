@@ -15,7 +15,7 @@ export type FieldResolverMethod<TContext, TReturn, TArgs> =
   (args: TArgs, context: TContext, info: GraphQLResolveInfo) => MaybePromise<TReturn | InterfaceImplementationReturn<TReturn>>;
 
 export type FieldProperty<TContext, TReturn, TArgs> =
-  MaybePromise<TReturn> | FieldResolverMethod<TContext, TReturn, TArgs>;
+  MaybePromise<TReturn | InterfaceImplementationReturn<TReturn>> | FieldResolverMethod<TContext, TReturn, TArgs>;
 
 type FieldPropertyDecorator<TReturn, TArgs, TContext = undefined> = <TName extends string, TSource>(
   prototype: Record<TName, FieldProperty<TContext, TReturn, TArgs>>,
