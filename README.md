@@ -50,7 +50,7 @@ npm i ts-graphql
 
 > This guide assumes familiarity with [GraphQL](https://graphql.org/learn/).
 
-To quickly try out the library, you can clone it and run the [examples](https://github.com/stephentuso/ts-graphql/blob/master/examples).
+To quickly try out the library, you can clone it and run the [examples](https://github.com/stephentuso/ts-graphql/blob/main/examples).
 E.g. `npx ts-node examples/interface/index.ts`
 
 ### Patterns
@@ -383,7 +383,7 @@ Your `subscribe` function must return an `AsyncIterable`. You can either have
 `subscribe` directly yield the field value, or use `resolve` to transform or
 perform further actions with the yielded value.
 
-See the [subscription example](https://github.com/stephentuso/ts-graphql/tree/master/examples/subscriptions)
+See the [subscription example](https://github.com/stephentuso/ts-graphql/tree/main/examples/subscriptions)
 for a complete example.
 
 ```typescript
