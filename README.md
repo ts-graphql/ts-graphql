@@ -37,7 +37,7 @@ Project goals:
 * [Why?](#why)
 * [Similar Libraries](#similar-libraries)
 * [Caveats](#caveats)
-   
+
 ## Installation
  
 ```
