@@ -1,5 +1,5 @@
 import Field from '../../Field';
-import { nullable, TSGraphQLID, TSGraphQLInt, TSGraphQLString } from '../../..';
+import { nullable, TSGraphQLID, TSGraphQLInt } from '../../..';
 import { Maybe } from '../../../types';
 import { GraphQLResolveInfo } from 'graphql';
 import Implements from '../../Implements';

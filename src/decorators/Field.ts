@@ -22,17 +22,20 @@ type FieldPropertyDecorator<TReturn, TArgs, TContext = undefined> = <TName exten
   key: TName,
 ) => void;
 
+// This doesn't work as intended with the latest TS update, for example:
+// Record<TName, string | number | number> is now assignable to
+// Record<TName, string> | Record<TName, boolean> | Record<TName, number>
 type InferredFieldPropertyDecorator = <TName extends string>(
   prototype: Record<TName, string> | Record<TName, boolean> | Record<TName, number>,
   key: TName,
 ) => void;
 
 type FieldOverloads = {
-  <TArgs>(
+  <TArgs = {}>(
     config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>
   ): InferredFieldPropertyDecorator;
 
-  <TReturn, TArgs, TContext = undefined>(
+  <TReturn, TArgs = {}, TContext = undefined>(
     config: Thunk<FieldDecoratorConfig<TReturn, TArgs, TContext>>
   ): FieldPropertyDecorator<TReturn, TArgs, TContext>
 };

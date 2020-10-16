@@ -6,14 +6,14 @@ import { storeExtensionFieldConfig } from '../metadata';
 import { resolveType } from './utils';
 import { Extension } from '../Extension';
 
-type ExtensionFieldProperty<TSource, TContext, TReturn, TArgs> =
+type ExtensionFieldProperty<TSource, TContext, TReturn, TArgs = {}> =
   MaybePromise<TReturn> | FieldResolver<TSource, TContext, TReturn, TArgs>;
 
 type ExtensionClassStaticMethod<TSource, TContext, TName extends string, TMethod> =
   AnyConstructor<Extension<TSource, TContext>> & Record<TName, TMethod>;
 
 type ExtensionClassInferredProp<TSource, TContext, TName extends string> =
-  AnyConstructor<Extension<TSource, TContext>> & (Record<TName, string> | Record<TName, string> | Record<TName, number>);
+  AnyConstructor<Extension<TSource, TContext>> & (Record<TName, string> | Record<TName, number> | Record<TName, boolean>);
 
 type ExtensionFieldPropertyDecorator<TReturn, TArgs> =
   <TName extends string, TSource, TContext>(
@@ -22,12 +22,12 @@ type ExtensionFieldPropertyDecorator<TReturn, TArgs> =
   ) => void;
 
 type ExtensionFieldOverloads = {
-  <TArgs>(config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>):
+  <TArgs = {}>(config?: Thunk<Partial<FieldCreatorConfig<undefined, TArgs>>>):
     <TName extends string>(
       ctor: ExtensionClassInferredProp<any, any, TName>,
       key: TName,
     ) => void;
-  <TSource, TReturn, TArgs, TContext>(
+  <TSource, TReturn, TContext, TArgs = {}>(
     config: Thunk<FieldDecoratorConfig<TReturn, TArgs, TContext>>,
   ): ExtensionFieldPropertyDecorator<TReturn, TArgs>;
 };
@@ -49,7 +49,7 @@ const ExtensionField: ExtensionFieldOverloads = <TSource, TReturn, TArgs, TConte
         return resolveType(typeOption, ctor, key);
       },
     };
-  })
+  });
 };
 
 export default ExtensionField;
