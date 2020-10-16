@@ -26,13 +26,13 @@ describe('buildInterfaceType', () => {
     const iface = buildInterfaceType(Foo);
 
     it('should resolve correct object type', () => {
-      expect(iface.resolveType!(new A(), {}, null as any)).toEqual(buildObjectType(A));
-      expect(iface.resolveType!(new B(), {}, null as any)).toEqual(buildObjectType(B));
+      expect(iface.resolveType!(new A(), {}, null as any, iface)).toEqual(buildObjectType(A));
+      expect(iface.resolveType!(new B(), {}, null as any, iface)).toEqual(buildObjectType(B));
     });
 
     it('should throw if source does not implement', () => {
       class C {}
-      expect(() => iface.resolveType!(new C(), {}, null as any)).toThrow();
+      expect(() => iface.resolveType!(new C(), {}, null as any, iface)).toThrow();
     });
 
     it('should support multiple inheritance', () => {
@@ -50,8 +50,8 @@ describe('buildInterfaceType', () => {
       const ifaceA = buildInterfaceType(IfaceA);
       const ifaceB = buildInterfaceType(IfaceB);
 
-      expect(ifaceA.resolveType!(new Bar(), {}, null as any)).toEqual(buildObjectType(Bar));
-      expect(ifaceB.resolveType!(new Bar(), {}, null as any)).toEqual(buildObjectType(Bar));
+      expect(ifaceA.resolveType!(new Bar(), {}, null as any, ifaceA)).toEqual(buildObjectType(Bar));
+      expect(ifaceB.resolveType!(new Bar(), {}, null as any, ifaceB)).toEqual(buildObjectType(Bar));
     })
   })
 });

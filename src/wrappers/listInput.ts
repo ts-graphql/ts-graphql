@@ -7,8 +7,9 @@ import buildInputObjectType from '../builders/buildInputObjectType';
 export default function listInput<T>(
   type: AnyConstructor<T>,
 ): Wrapper<T[], GraphQLList<GraphQLNonNull<GraphQLInputObjectType>>> {
+  // GraphQLList doesn't seem to support type inference anymore
   const getGraphQLType = once(() => new GraphQLList(
-    new GraphQLNonNull(buildInputObjectType(type))),
+    new GraphQLNonNull(buildInputObjectType(type))) as GraphQLList<GraphQLNonNull<GraphQLInputObjectType>>,
   );
   return {
     graphQLType: getGraphQLType,

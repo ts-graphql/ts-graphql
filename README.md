@@ -682,6 +682,16 @@ shape: 'circle' | 'square';
 color = 'red';
 ```
 
+###### Primitive Union Types
+
+Similar to the above case: due to recent TS updates, leaving out the field type for primitive unions 
+now won't throw at compile time, but will at runtime:
+
+```typescript
+@Field()
+foo: string | number;
+```
+
 ###### Matching object types
 
 Because TS is "duck-typed", if you manage to have two classes used for object
