@@ -52,14 +52,14 @@ describe('unionType', () => {
       const BType = buildObjectType(B);
 
       const ABGql = resolveThunk(AB.graphQLType);
-      expect(ABGql.resolveType!(new A(), null, {} as any)).toEqual(AType);
-      expect(ABGql.resolveType!(new B(), null, {} as any)).toEqual(BType);
+      expect(ABGql.resolveType!(new A(), null, {} as any, ABGql)).toEqual(AType);
+      expect(ABGql.resolveType!(new B(), null, {} as any, ABGql)).toEqual(BType);
     });
 
     it('should throw error if called with unknown instance', () => {
       class Foo {}
       const ABGql = resolveThunk(AB.graphQLType);
-      expect(() => ABGql.resolveType!(new Foo(), null, {} as any)).toThrow();
+      expect(() => ABGql.resolveType!(new Foo(), null, {} as any, ABGql)).toThrow();
     });
   });
 });

@@ -6,7 +6,7 @@ import { once } from 'lodash';
 export default function list<T, Q extends GraphQLType>(
   type: WrapperOrType<T, Q>,
 ): Wrapper<T[], GraphQLList<Q | GraphQLNonNull<Q>>> {
-  const getGraphQLType = once(() => new GraphQLList(buildType(type, true) as GraphQLNonNull<Q> | Q));
+  const getGraphQLType = once(() => new GraphQLList(buildType(type, true)) as GraphQLList<GraphQLNonNull<Q> | Q>);
   const transformOutput = isWrapper(type) && type.transformOutput;
   return {
     graphQLType: getGraphQLType,

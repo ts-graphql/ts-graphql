@@ -25,7 +25,7 @@ export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>,
 export function resolveWrapper<T, G extends GraphQLType>(wrapper: Wrapper<T, G>, nonNull?: boolean): G | GraphQLNonNull<G> {
   const type = resolveThunk(wrapper.graphQLType);
   return (nonNull && !wrapper.nullable)
-    ? new GraphQLNonNull(type)
+    ? new GraphQLNonNull(type) as GraphQLNonNull<G>
     : type;
 }
 

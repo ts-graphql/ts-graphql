@@ -11,6 +11,9 @@ class Foo {
 
   @Field()
   b = 'b';
+
+  @Field()
+  c: string | number = 4;
 }
 
 describe('utils', () => {
@@ -22,6 +25,7 @@ describe('utils', () => {
 
     it('should throw error if type not available', () => {
       expect(() => resolveType(undefined, Foo.prototype, 'b')).toThrow();
+      expect(() => resolveType(undefined, Foo.prototype, 'c')).toThrow();
     });
   });
 });

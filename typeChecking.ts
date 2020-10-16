@@ -6,8 +6,8 @@ import path from "path";
 // Would be better to do this programmatically, didn't look straightforward though.
 export const typeCheckFiles = async (files: string[], expectError?: boolean) => {
   await Promise.all(files.map(file => new Promise((resolve, reject) => {
-    const tscArgs = '--strict --experimentalDecorators --emitDecoratorMetadata --esModuleInterop --noEmit --lib esnext';
-    exec(`$(npm bin)/tsc ${tscArgs} ${file}`, (err) => {
+    const tscArgs = '--strict --experimentalDecorators --emitDecoratorMetadata --esModuleInterop --noEmit --lib ES6';
+    exec(`$(yarn bin)/tsc ${tscArgs} ${file}`, (err) => {
       if ((err && expectError) || (!err && !expectError)) {
         resolve();
       } else {
