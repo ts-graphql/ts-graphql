@@ -44,7 +44,7 @@
     "constant-case": "^2.0.0",
     "lodash": "^4.17.11",
     "pascal-case": "^2.0.1",
-    "reflect-metadata": "^0.1.12"
+    "reflect-metadata": "^0.1.14"
   },
   "peerDependencies": {
     "graphql": "^14.0.0 || ^15.0.0",
